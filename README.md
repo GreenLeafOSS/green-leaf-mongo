@@ -1,0 +1,1 @@
+# spray-json-mongodb-queries
