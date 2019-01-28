@@ -1,4 +1,5 @@
 name := "spray-json-mongodb-queries"
+organization := "com.github.lashchenko"
 
 version := "0.1"
 
@@ -15,3 +16,6 @@ libraryDependencies += "org.mongodb.scala" %% "mongo-scala-driver" % "2.5.0"
 
 libraryDependencies += "de.flapdoodle.embed" % "de.flapdoodle.embed.mongo" % "2.1.1" % Test
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.5" % Test
+
+resolvers += Resolver.jcenterRepo
+licenses += ("MIT", url("https://opensource.org/licenses/Apache-2.0"))
