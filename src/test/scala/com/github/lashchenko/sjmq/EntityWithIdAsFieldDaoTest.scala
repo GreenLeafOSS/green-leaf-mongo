@@ -70,7 +70,7 @@ class EntityWithIdAsFieldDaoTest extends TestMongoServer {
   import EntityWithIdAsFieldDaoTest._
   import BuildingModel._
 
-  // https://en.wikipedia.org/wiki/List_of_tallest_buildings_in_New_York_City
+  // https://en.wikipedia.org/wiki/List_of_tallest_buildings_in_New_York_City#Tallest_buildings
   val BuildingsInNyc = Map(
     1L -> Building(1, "One World Trade Center", 541, 104, 2014, "285 Fulton Street"),
     2L -> Building(2, "432 Park Avenue", 426, 96, 2015, "432 Park Avenue"),
