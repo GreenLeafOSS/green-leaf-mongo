@@ -76,6 +76,15 @@ trait ScalaSprayJsonProtocol
     }
   }
 
+  implicit def UuidAsStrJsonFormat: JsonFormat[UUID] = new JsonFormat[UUID] {
+    def write(v: UUID): JsValue = JsString(v.toString)
+
+    def read(value: JsValue): UUID = value match {
+      case JsString(v) => UUID.fromString(v)
+      case x => deserializationError(s"Expected UUID, but got $x")
+    }
+  }
+
 }
 
 object ScalaSprayJsonProtocol extends ScalaSprayJsonProtocol
