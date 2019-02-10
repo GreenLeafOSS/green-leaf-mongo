@@ -21,7 +21,7 @@ trait ScalaSprayMongoQueryDsl {
     }
   }
 
-  implicit def json2bson(j: JsObject): Bson = {
+  implicit def json2document(j: JsValue): Document = {
     org.bson.BsonDocument.parse(j.compactPrint)
   }
 

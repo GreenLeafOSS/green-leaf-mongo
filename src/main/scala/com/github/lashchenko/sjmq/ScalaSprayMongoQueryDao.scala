@@ -2,7 +2,7 @@ package com.github.lashchenko.sjmq
 
 import org.mongodb.scala.bson.collection.immutable.Document
 import org.mongodb.scala.bson.conversions.Bson
-import org.mongodb.scala.model.FindOneAndReplaceOptions
+import org.mongodb.scala.model.{FindOneAndReplaceOptions, FindOneAndUpdateOptions}
 import org.mongodb.scala.{Completed, FindObservable, MongoCollection, MongoDatabase, SingleObservable}
 import org.slf4j.{Logger, LoggerFactory}
 import spray.json._
@@ -30,8 +30,12 @@ trait ScalaSprayMongoQueryDao[Id, E]
     def asOpt: Future[Option[E]] = x.headOption().map(_.map(_.toJson().parseJson.convertTo[E]))
     def asObj: Future[E] = x.head().map(_.toJson().parseJson.convertTo[E])
   }
-  protected implicit class MongoSingleObservableToFutureRes(x: SingleObservable[Document]) {
-    def asObj: Future[E] = x.toFuture().map(_.toJson().parseJson.convertTo[E])
+
+  protected implicit class MongoSingleObservableDocumentToFutureRes(x: SingleObservable[Document]) {
+    def asOpt: Future[Option[E]] = x.toFuture().map {
+      case d: Document => Option(d.toJson().parseJson.convertTo[E])
+      case _ /* SingleObservable may contains null (Java) */ => None
+    }
   }
 
   def insert(e: E): Future[Completed] =
@@ -81,15 +85,67 @@ trait ScalaSprayMongoQueryDao[Id, E]
     internalFindBy(Document.empty, offset, limit).asSeq
   }
 
-  def updateById(id: Id, e: E): Future[E] = {
+  // ********************************************************************************
+  // https://docs.mongodb.com/manual/reference/method/db.collection.findOneAndUpdate/
+  // ********************************************************************************
+
+  protected def internalUpdateBy(filter: Bson, update: Bson, upsert: Boolean = false): SingleObservable[Document] = {
+    log.trace(s"DAO.internalUpdateBy [$primaryKey] : $filter")
+    // By default "ReturnDocument.BEFORE" property used and returns the document before the update
+    // val option = FindOneAndUpdateOptions().upsert(true).returnDocument(ReturnDocument.AFTER)
+    val option = FindOneAndUpdateOptions().upsert(upsert)
+    collection.findOneAndUpdate(filter, update, option)
+  }
+
+  def updateById(id: Id, e: Document, upsert: Boolean = false): Future[Option[E]] = {
     val filter = primaryKey $eq id
     log.trace(s"DAO.updateById [$primaryKey] : $filter")
-    val update = Document(e.toJson.compactPrint)
+    internalUpdateBy(filter, e, upsert).asOpt
+  }
+
+  def updateBy(filter: Bson, e: Document, upsert: Boolean = false): Future[Option[E]] = {
+    log.trace(s"DAO.updateBy [$primaryKey] : $filter")
+    internalUpdateBy(filter, e, upsert).asOpt
+  }
+
+
+  // ********************************************************************************
+  // https://docs.mongodb.com/manual/reference/method/db.collection.findOneAndReplace/
+  // ********************************************************************************
+
+  protected def internalReplaceBy(filter: Bson, replacement: Document, upsert: Boolean = false): SingleObservable[Document] = {
+    log.trace(s"DAO.internalReplaceBy [$primaryKey] : $filter")
     // By default "ReturnDocument.BEFORE" property used and returns the document before the update
     // val option = FindOneAndReplaceOptions().upsert(true).returnDocument(ReturnDocument.AFTER)
-    val option = FindOneAndReplaceOptions().upsert(true)
-    collection.findOneAndReplace(filter, update, option).asObj
+    val option = FindOneAndReplaceOptions().upsert(upsert)
+    collection.findOneAndReplace(filter, replacement, option)
   }
+
+  def replaceById(id: Id, e: E, upsert: Boolean = false): Future[Option[E]] = {
+    val filter = primaryKey $eq id
+    log.trace(s"DAO.replaceById [$primaryKey] : $filter")
+    internalReplaceBy(filter, e.toJson, upsert).asOpt
+  }
+
+  def createOrReplaceById(id: Id, e: E): Future[Option[E]] = {
+    replaceById(id, e, upsert = true)
+  }
+
+  def replaceOrInsertById(id: Id, e: E): Future[Option[E]] = {
+    replaceById(id, e /* upsert = false */).flatMap {
+      case beforeOpt @ Some(_) /* replaced */ => Future.successful(beforeOpt)
+      case None => insert(e).map { _: Completed => None }
+    }
+  }
+
+  def replaceBy(filter: Bson, e: E, upsert: Boolean = false): Future[Option[E]] = {
+    internalReplaceBy(filter, e.toJson, upsert).asOpt
+  }
+
+  def createOrReplaceBy(filter: Bson, e: E): Future[Option[E]] = {
+    replaceBy(filter, e, upsert = true)
+  }
+
 
   def deleteById(id: Id): Future[E] = ???
   def deleteByIds(id: Seq[Id]): Future[E] = ???
