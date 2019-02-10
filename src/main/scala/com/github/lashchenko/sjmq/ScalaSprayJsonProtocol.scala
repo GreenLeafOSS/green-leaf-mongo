@@ -1,6 +1,7 @@
 package com.github.lashchenko.sjmq
 
 import java.time.ZonedDateTime
+import java.util.UUID
 
 import org.mongodb.scala.bson.ObjectId
 import spray.json.{AdditionalFormats, CollectionFormats, DefaultJsonProtocol, JsNumber, JsString, JsValue, JsonFormat, ProductFormats, StandardFormats, deserializationError}
@@ -37,19 +38,14 @@ trait ScalaSprayJsonProtocol
 
   implicit val SymbolJsonFormat: JsonFormat[Symbol] = DefaultJsonProtocol.SymbolJsonFormat
 
-  implicit val ZdtJsonFormat: JsonFormat[ZonedDateTime] = new JsonFormat[ZonedDateTime] {
-
-    import ZonedDateTimeOps._
-
-    def write(obj: ZonedDateTime): JsValue = {
-      JsString(obj.format(DateTimePattern))
-    }
+  implicit val ZdtJsonFormat: JsonFormat[ZonedDateTime] = new JsonFormat[ZonedDateTime] with ZonedDateTimeOps {
+    def write(obj: ZonedDateTime): JsValue = JsString(obj.format(DateTimePattern))
 
     def read(jsValue: JsValue): ZonedDateTime = jsValue match {
       case JsString(zdt) if zdt.length >= 20 => parseDateTimeIso(zdt)
       case JsString(zdt) if zdt.length > 10 => parseDateTime(zdt)
       case JsString(zdt) => parseDate(zdt)
-      case x => deserializationError("Expected ZonedDateTime, but got " + x)
+      case x => deserializationError(s"Expected ZonedDateTime, but got $x")
     }
   }
 
@@ -58,7 +54,7 @@ trait ScalaSprayJsonProtocol
 
     def read(jsValue: JsValue): ObjectId = jsValue match {
       case JsString(value) => new ObjectId(value)
-      case x => deserializationError("Expected ObjectId, but got " + x)
+      case x => deserializationError(s"Expected ObjectId, but got $x")
     }
   }
 
@@ -67,7 +63,7 @@ trait ScalaSprayJsonProtocol
 
     def read(value: JsValue): e.Value = value match {
       case JsString(v) => e.withName(v)
-      case _ => deserializationError(s"Unexpected enum $value")
+      case x => deserializationError(s"Expected enum, but got $x")
     }
   }
 
@@ -76,7 +72,7 @@ trait ScalaSprayJsonProtocol
 
     def read(value: JsValue): e.Value = value match {
       case JsNumber(v) => e.apply(v.intValue())
-      case _ => deserializationError(s"Unexpected enum $value")
+      case x => deserializationError(s"Expected enum, but got $x")
     }
   }
 
