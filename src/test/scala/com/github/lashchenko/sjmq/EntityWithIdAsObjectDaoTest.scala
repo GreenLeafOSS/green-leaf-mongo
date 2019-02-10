@@ -277,15 +277,85 @@ class EntityWithIdAsObjectDaoTest extends TestMongoServer {
       for {
         insertRes <- dao.insert(oldRate)
         findRes1 <- dao.findById(id)
-        updateRes <- dao.updateById(id, newRate)
+        updateRes <- dao.replaceById(id, newRate)
         findRes2 <- dao.findById(id)
       } yield {
         insertRes shouldBe Completed()
         findRes1.toSet should contain only oldRate
-        updateRes shouldBe oldRate
+        updateRes shouldBe Some(oldRate)
         findRes2.toSet should contain only newRate
       }
     }
+
+    "replaceById if previous entity doesn't exist" in {
+      val dao = ExchangeRateDao()
+      for {
+        updateRes <- dao.replaceById(ExchangeRates("2019-01-02").id, ExchangeRates("2019-01-02"))
+        findRes <- dao.findById(ExchangeRates("2019-01-02").id)
+      } yield {
+        updateRes shouldBe None
+        // entity doesn't exist and upsert = false by default
+        findRes shouldBe None
+      }
+    }
+
+    "replaceOrInsertById if previous entity doesn't exist" in {
+      val dao = ExchangeRateDao()
+      for {
+        updateRes <- dao.replaceOrInsertById(ExchangeRates("2019-01-02").id, ExchangeRates("2019-01-02"))
+        findRes <- dao.findById(ExchangeRates("2019-01-02").id)
+      } yield {
+        updateRes shouldBe None
+        // entity doesn't exist and will be inserted
+        findRes shouldBe Some(ExchangeRates("2019-01-02"))
+      }
+    }
+
+    "replaceById if previous entity exists" in {
+      val dao = ExchangeRateDao()
+      val createEntity = ExchangeRates("2019-01-02")
+      val updateEntity = ExchangeRates("2019-01-02").copy(rates = Map.empty)
+      for {
+        insertRes <- dao.insert(createEntity)
+        updateRes <- dao.replaceById(createEntity.id, updateEntity)
+        findRes <- dao.findById(updateEntity.id)
+      } yield {
+        insertRes shouldBe Completed()
+        updateRes shouldBe Some(createEntity)
+        findRes shouldBe Some(updateEntity)
+      }
+    }
+
+    "createOrReplaceById if previous entity exists" in {
+      val dao = ExchangeRateDao()
+      val createEntity = ExchangeRates("2019-01-02")
+      val updateEntity = ExchangeRates("2019-01-02").copy(rates = Map.empty)
+      for {
+        insertRes <- dao.insert(createEntity)
+        updateRes <- dao.createOrReplaceById(createEntity.id, updateEntity)
+        findRes <- dao.findById(updateEntity.id)
+      } yield {
+        insertRes shouldBe Completed()
+        updateRes shouldBe Some(createEntity)
+        findRes shouldBe Some(updateEntity)
+      }
+    }
+
+    "replaceOrInsertById if previous entity exists" in {
+      val dao = ExchangeRateDao()
+      val createEntity = ExchangeRates("2019-01-02")
+      val updateEntity = ExchangeRates("2019-01-02").copy(rates = Map.empty)
+      for {
+        insertRes <- dao.insert(createEntity)
+        updateRes <- dao.replaceOrInsertById(createEntity.id, updateEntity)
+        findRes <- dao.findById(updateEntity.id)
+      } yield {
+        insertRes shouldBe Completed()
+        updateRes shouldBe Some(createEntity)
+        findRes shouldBe Some(updateEntity)
+      }
+    }
+
   }
 
 }

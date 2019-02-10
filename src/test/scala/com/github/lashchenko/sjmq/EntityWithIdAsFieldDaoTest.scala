@@ -175,6 +175,61 @@ class EntityWithIdAsFieldDaoTest extends TestMongoServer {
         xAvenue2000 should contain only (BuildingsInNyc(2), BuildingsInNyc(5), BuildingsInNyc(9))
       }
     }
+
+    "replaceById if previous entity doesn't exist" in {
+      val dao = BuildingDao()
+      for {
+        updateRes <- dao.replaceById(1, BuildingsInNyc(1))
+        findRes <- dao.findById(1)
+      } yield {
+        updateRes shouldBe None
+        // entity doesn't exist and upsert = false by default
+        findRes shouldBe None
+      }
+    }
+
+    "createOrReplaceById if previous entity doesn't exist" in {
+      val dao = BuildingDao()
+      for {
+        updateRes <- dao.createOrReplaceById(1, BuildingsInNyc(1))
+        findRes <- dao.findById(1)
+      } yield {
+        updateRes shouldBe None
+        // entity doesn't exist but upsert = true in this case
+        findRes shouldBe Some(BuildingsInNyc(1))
+      }
+    }
+
+    "replaceById if previous entity exists" in {
+      val dao = BuildingDao()
+      val entityToCreate = BuildingsInNyc(1)
+      val entityToUpdate = BuildingsInNyc(1).copy(name = "UPDATED")
+      for {
+        insertRes <- dao.insert(entityToCreate)
+        updateRes <- dao.replaceById(1, entityToUpdate)
+        findRes <- dao.findById(1)
+      } yield {
+        insertRes shouldBe Completed()
+        updateRes shouldBe Some(entityToCreate)
+        findRes shouldBe Some(entityToUpdate)
+      }
+    }
+
+    "createOrReplaceById if previous entity exists" in {
+      val dao = BuildingDao()
+      val entityToCreate = BuildingsInNyc(1)
+      val entityToUpdate = BuildingsInNyc(1).copy(name = "UPDATED")
+      for {
+        insertRes <- dao.insert(entityToCreate)
+        updateRes <- dao.createOrReplaceById(1, entityToUpdate)
+        findRes <- dao.findById(1)
+      } yield {
+        insertRes shouldBe Completed()
+        updateRes shouldBe Some(entityToCreate)
+        findRes shouldBe Some(entityToUpdate)
+      }
+    }
+
   }
 
 }

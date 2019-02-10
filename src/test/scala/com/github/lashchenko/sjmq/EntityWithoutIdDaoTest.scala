@@ -166,8 +166,6 @@ class EntityWithoutIdDaoTest extends TestMongoServer {
       }
     }
 
-    // TODO write JSON BSON with different ordering of fields ...
-
   }
 
 }
