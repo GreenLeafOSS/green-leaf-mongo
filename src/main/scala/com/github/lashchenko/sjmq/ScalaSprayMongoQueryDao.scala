@@ -26,16 +26,25 @@ trait ScalaSprayMongoQueryDao[Id, E]
   protected val primaryKey: String = "_id"
 
   protected implicit class MongoFindObservableToFutureRes(x: FindObservable[Document]) {
-    def asSeq: Future[Seq[E]] = x.toFuture().map(_.map(_.toJson().parseJson.convertTo[E]))
-    def asOpt: Future[Option[E]] = x.headOption().map(_.map(_.toJson().parseJson.convertTo[E]))
-    def asObj: Future[E] = x.head().map(_.toJson().parseJson.convertTo[E])
+    def asSeq[T](implicit jf: JsonFormat[T]): Future[Seq[T]] =
+      x.toFuture().map(_.map(_.toJson().parseJson.convertTo[T]))
+    def asSeq: Future[Seq[E]] = asSeq[E]
+
+    def asOpt[T](implicit jf: JsonFormat[T]): Future[Option[T]] =
+      x.headOption().map(_.map(_.toJson().parseJson.convertTo[T]))
+    def asOpt: Future[Option[E]] = asOpt[E]
+
+    def asObj[T](implicit jf: JsonFormat[T]): Future[T] =
+      x.head().map(_.toJson().parseJson.convertTo[T])
+    def asObj: Future[E] = asObj[E]
   }
 
   protected implicit class MongoSingleObservableDocumentToFutureRes(x: SingleObservable[Document]) {
-    def asOpt: Future[Option[E]] = x.toFuture().map {
-      case d: Document => Option(d.toJson().parseJson.convertTo[E])
+    def asOpt[T](implicit jf: JsonFormat[T]): Future[Option[T]] = x.toFuture().map {
+      case d: Document => Option(d.toJson().parseJson.convertTo[T])
       case _ /* SingleObservable may contains null (Java) */ => None
     }
+    def asOpt: Future[Option[E]] = asOpt[E]
   }
 
   def insert(e: E): Future[Completed] =
