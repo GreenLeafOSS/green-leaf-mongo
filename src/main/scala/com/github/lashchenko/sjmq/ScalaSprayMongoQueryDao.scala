@@ -61,7 +61,7 @@ trait ScalaSprayMongoQueryDao[Id, E]
   }
 
   def getById(id: Id): Future[E] = {
-    val filter = primaryKey $eq id.asJsonExpanded(primaryKey)
+    val filter = primaryKey $eq id
     log.trace(s"DAO.getById [$primaryKey] : $filter")
     internalFindBy(filter, 0, 1).asObj
   }
