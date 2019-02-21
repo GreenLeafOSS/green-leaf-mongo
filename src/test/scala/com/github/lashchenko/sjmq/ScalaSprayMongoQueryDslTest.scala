@@ -56,6 +56,7 @@ class ScalaSprayMongoQueryDslTest
       ("qty" $in (2.7, 3.1415)).asBson shouldBe """{ qty: { $in: [ 2.7, 3.1415] } }""".asBson
       ("qty" $in (127L, 256, 512)).asBson shouldBe """{ qty: { $in: [ { $numberLong: "127" }, { $numberLong: "256" }, { $numberLong: "512" } ] } }""".asBson
       ("tags" $in ("appliances", "school")).asBson shouldBe """{ tags: { $in: ["appliances", "school"] } }""".asBson
+      // Impossible too use $regex inside $in query https://jira.mongodb.org/browse/SERVER-14595
       ("tags" $in ("^be".r, "^st".r)).asBson shouldBe """{ tags: { "$in" : [ { "$regex": "^be" }, { "$regex": "^st" }] } }""".asBson
     }
 
