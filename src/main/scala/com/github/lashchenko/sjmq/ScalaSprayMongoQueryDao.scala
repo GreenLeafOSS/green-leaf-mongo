@@ -4,7 +4,6 @@ import org.mongodb.scala.bson.collection.immutable.Document
 import org.mongodb.scala.bson.conversions.Bson
 import org.mongodb.scala.model.{FindOneAndReplaceOptions, FindOneAndUpdateOptions}
 import org.mongodb.scala.{Completed, FindObservable, MongoCollection, MongoDatabase, SingleObservable}
-import org.slf4j.{Logger, LoggerFactory}
 import spray.json._
 
 import scala.concurrent.{ExecutionContext, Future}
