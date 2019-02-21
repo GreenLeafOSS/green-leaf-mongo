@@ -3,12 +3,13 @@ package com.github.lashchenko.sjmq
 import java.time.{Instant, ZoneOffset, ZonedDateTime}
 
 import org.mongodb.scala.bson.ObjectId
-import spray.json.{JsNumber, JsObject, JsString, JsValue, JsonFormat, deserializationError}
+import spray.json.{JsNumber, JsObject, JsString, JsValue, JsonFormat, NullOptions, deserializationError}
 
 import scala.util.matching.Regex
 
 trait ScalaSprayBsonProtocol
-  extends ScalaSprayJsonProtocol {
+  extends ScalaSprayJsonProtocol
+  with NullOptions {
 
   override implicit val LongJsonFormat: JsonFormat[Long] = new JsonFormat[Long] {
 
