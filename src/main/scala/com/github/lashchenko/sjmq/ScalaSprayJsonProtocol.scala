@@ -42,9 +42,10 @@ trait ScalaSprayJsonProtocol
     def write(obj: ZonedDateTime): JsValue = JsString(obj.format(DateTimePattern))
 
     def read(jsValue: JsValue): ZonedDateTime = jsValue match {
-      case JsString(zdt) if zdt.length >= 20 => parseDateTimeIso(zdt)
-      case JsString(zdt) if zdt.length > 10 => parseDateTime(zdt)
-      case JsString(zdt) => parseDate(zdt)
+      case JsString(zdt) if zdt.length >= 20 => parseDateTimeIso (zdt) // 1970-01-01T01:02:03+04:00
+      case JsString(zdt) if zdt.length >= 19 && zdt.contains('T') => parseDateTimeIso(zdt) // 1970-01-01T00:00:00
+      case JsString(zdt) if zdt.length == 19 => parseDateTime (zdt) // 1970-01-01 00:00:00
+      case JsString(zdt) => parseDate (zdt)
       case x => deserializationError(s"Expected ZonedDateTime, but got $x")
     }
   }
