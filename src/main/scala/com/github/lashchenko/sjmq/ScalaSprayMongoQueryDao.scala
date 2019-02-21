@@ -11,8 +11,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 object ScalaSprayMongoQueryDao {
   trait DaoBsonProtocol[Id, E] {
-    implicit def jsonProtocolId : JsonFormat[Id]
-    implicit def jsonProtocolEntity: JsonFormat[E]
+    implicit def idFormat : JsonFormat[Id]
+    implicit def entityFormat: JsonFormat[E]
   }
 }
 

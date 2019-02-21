@@ -37,8 +37,8 @@ object EntityWithOptionalFieldsDaoTest {
     }
 
     object GeoModelBsonProtocol extends GeoModelBsonProtocol with DaoBsonProtocol[GeoKey, GeoRecord] {
-      override implicit def jsonProtocolId: RootJsonFormat[GeoKey] = GeoKeyFormat
-      override implicit def jsonProtocolEntity: RootJsonFormat[GeoRecord] = GeoRecordFormat
+      override implicit def idFormat: RootJsonFormat[GeoKey] = GeoKeyFormat
+      override implicit def entityFormat: RootJsonFormat[GeoRecord] = GeoRecordFormat
     }
   }
 

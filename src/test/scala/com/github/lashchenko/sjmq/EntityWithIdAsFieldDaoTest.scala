@@ -34,8 +34,8 @@ object EntityWithIdAsFieldDaoTest {
     }
 
     object BuildingModelBsonProtocol extends BuildingModelBsonProtocol with DaoBsonProtocol[Long, Building] {
-      override implicit val jsonProtocolId: JsonFormat[Long] = LongJsonFormat
-      override implicit val jsonProtocolEntity: JsonFormat[Building] = BuildingFormat
+      override implicit val idFormat: JsonFormat[Long] = LongJsonFormat
+      override implicit val entityFormat: JsonFormat[Building] = BuildingFormat
     }
 
   }

@@ -48,8 +48,8 @@ object EntityWithoutIdDaoTest {
     }
 
     object EventBsonProtocol extends EventBsonProtocol with DaoBsonProtocol[ObjectId, Event] {
-      override implicit val jsonProtocolId: JsonFormat[ObjectId] = ObjectIdJsonFormat
-      override implicit val jsonProtocolEntity: JsonFormat[Event] = EventFormat
+      override implicit val idFormat: JsonFormat[ObjectId] = ObjectIdJsonFormat
+      override implicit val entityFormat: JsonFormat[Event] = EventFormat
     }
 
   }

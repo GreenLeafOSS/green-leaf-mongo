@@ -55,8 +55,8 @@ object EntityWithIdAsObjectDaoTest {
     }
 
     object ExchangeRateBsonProtocol extends ExchangeRateBsonProtocol with DaoBsonProtocol[ExchangeRateId, ExchangeRate] {
-      override implicit val jsonProtocolId: JsonFormat[ExchangeRateId] = ExchangeRateIdFormat
-      override implicit val jsonProtocolEntity: JsonFormat[ExchangeRate] = ExchangeRateFormat
+      override implicit val idFormat: JsonFormat[ExchangeRateId] = ExchangeRateIdFormat
+      override implicit val entityFormat: JsonFormat[ExchangeRate] = ExchangeRateFormat
     }
 
   }
