@@ -53,7 +53,8 @@ class ScalaSprayMongoQueryDslTest
       // https://docs.mongodb.com/manual/reference/operator/query/in/
 
       ("qty" $in (5, 15)).asBson shouldBe """{ qty: { $in: [ 5, 15 ] } }""".asBson
-      ("qty" $in (127, 256.0, 512L)).asBson shouldBe """{ qty: { $in: [ 127, 256.0, { $numberLong: "512" } ] } }""".asBson
+      ("qty" $in (2.7, 3.1415)).asBson shouldBe """{ qty: { $in: [ 2.7, 3.1415] } }""".asBson
+      ("qty" $in (127L, 256, 512)).asBson shouldBe """{ qty: { $in: [ { $numberLong: "127" }, { $numberLong: "256" }, { $numberLong: "512" } ] } }""".asBson
       ("tags" $in ("appliances", "school")).asBson shouldBe """{ tags: { $in: ["appliances", "school"] } }""".asBson
       ("tags" $in ("^be".r, "^st".r)).asBson shouldBe """{ tags: { "$in" : [ { "$regex": "^be" }, { "$regex": "^st" }] } }""".asBson
     }

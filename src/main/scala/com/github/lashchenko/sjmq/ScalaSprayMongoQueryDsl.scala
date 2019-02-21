@@ -28,7 +28,11 @@ trait ScalaSprayMongoQueryDsl {
     org.bson.BsonDocument.parse(j.compactPrint)
   }
 
-  implicit def obj2JsVal[T](t: T)(implicit writer: JsonWriter[T]): JsValue = {
+  protected def seqObjAsSeqJsVal[T](seq: Seq[T])(implicit writer: JsonWriter[T]): Seq[JsValue] = {
+    seq.map(_.asJsonExpanded)
+  }
+
+  implicit def objAsJsVal[T](t: T)(implicit writer: JsonWriter[T]): JsValue = {
     t.asJsonExpanded
   }
 
@@ -89,6 +93,9 @@ trait ScalaSprayMongoQueryDsl {
   def $and(filters: JsValue*): JsObject =
     JsObject("$and" -> JsArray(filters: _*))
 
+  def $and[T](filters: T*)(implicit writer: JsonWriter[T]): JsObject =
+    JsObject("$and" -> JsArray(seqObjAsSeqJsVal(filters): _*))
+
   /**
     * The $or operator performs a logical OR operation on an array of two or more expressions and selects the documents
     * that satisfy at least one of the expressions.
@@ -99,8 +106,11 @@ trait ScalaSprayMongoQueryDsl {
     * @param filters are expressions
     * @return the filter
     */
+  def $or[T](filters: T*)(implicit writer: JsonWriter[T]): JsObject =
+    JsObject("$or" -> JsArray(seqObjAsSeqJsVal(filters).toVector))
+
   def $or(filters: JsValue*): JsObject =
-    JsObject("$or" -> JsArray(filters.toVector))
+    JsObject("$or" -> JsArray(filters: _*))
 
   /**
     * $nor performs a logical NOR operation on an array of one or more query expression and selects the documents that
@@ -113,7 +123,10 @@ trait ScalaSprayMongoQueryDsl {
     * @return the filter
     */
   def $nor(filters: JsValue*): JsObject =
-    JsObject("$nor" -> JsArray(filters.toVector))
+    JsObject("$nor" -> JsArray(filters: _*))
+
+  def $nor[T](filters: T*)(implicit writer: JsonWriter[T]): JsObject =
+    JsObject("$nor" -> JsArray(seqObjAsSeqJsVal(filters): _*))
 
   /**
     * The $elemMatch operator matches documents that contain an array field with at least one element that matches
@@ -220,6 +233,9 @@ trait ScalaSprayMongoQueryDsl {
     def $in(v: JsValue*): JsObject =
       JsObject(field -> JsObject("$in" -> JsArray(v: _*)))
 
+    def $in[T](v: T*)(implicit writer: JsonWriter[T]): JsObject =
+      JsObject(field -> JsObject("$in" -> JsArray(seqObjAsSeqJsVal(v): _*)))
+
     /**
       * $nin selects the documents where:
       * • the field value is not in the specified array or
@@ -233,6 +249,9 @@ trait ScalaSprayMongoQueryDsl {
       */
     def $nin(v: JsValue*): JsObject =
       JsObject(field -> JsObject("$nin" -> JsArray(v: _*)))
+
+    def $nin[T](v: T*)(implicit writer: JsonWriter[T]): JsObject =
+      JsObject(field -> JsObject("$nin" -> JsArray(seqObjAsSeqJsVal(v): _*)))
 
     /**
       * When exists is true, $exists matches the documents that contain the field, including documents where the
@@ -299,7 +318,10 @@ trait ScalaSprayMongoQueryDsl {
       * @return the filter
       */
     def $all(v: JsValue*): JsObject =
-      JsObject(field -> JsObject("$all" -> JsArray(v.toVector)))
+      JsObject(field -> JsObject("$all" -> JsArray(v: _*)))
+
+    def $all[T](v: T*)(implicit writer: JsonWriter[T]): JsObject =
+      JsObject(field -> JsObject("$all" -> JsArray(seqObjAsSeqJsVal(v): _*)))
 
     /**
       * The $elemMatch operator matches documents that contain an array field with at least one element that matches
