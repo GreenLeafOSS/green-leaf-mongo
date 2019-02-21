@@ -86,7 +86,7 @@ trait ScalaSprayMongoQueryDao[Id, E]
   def findByIdsIn(ids: Seq[Id], offset: Int = 0, limit: Int = 0): Future[Seq[E]] = ids match {
     case Nil => Future.successful(Seq.empty)
     case id :: Nil => findById(id).map(_.toSeq)
-    case _ => internalFindBy(primaryKey $in (ids.map(_.asJsonExpanded): _*), offset, limit).asSeq
+    case _ => internalFindBy(primaryKey $in (ids: _*), offset, limit).asSeq
   }
 
   def findByIdsOr(ids: Seq[Id], offset: Int = 0, limit: Int = 0): Future[Seq[E]] = ids match {
