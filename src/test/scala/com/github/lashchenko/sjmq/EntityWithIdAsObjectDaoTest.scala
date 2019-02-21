@@ -189,10 +189,12 @@ class EntityWithIdAsObjectDaoTest extends TestMongoServer {
       for {
         insertRes <- dao.insert(Seq(
           ExchangeRates("2019-01-02"), ExchangeRates("2019-01-03"), ExchangeRates("2019-01-04")))
-        x <- dao.findById(ExchangeRateId(USD, "2019-01-03"))
+        findRes <- dao.findById(ExchangeRateId(USD, "2019-01-03"))
+        getRes <- dao.getById(ExchangeRateId(USD, "2019-01-03"))
       } yield {
         insertRes shouldBe Completed()
-        x.toSet should contain only ExchangeRates("2019-01-03")
+        findRes shouldBe Some(ExchangeRates("2019-01-03"))
+        getRes shouldBe ExchangeRates("2019-01-03")
       }
     }
 
@@ -237,11 +239,13 @@ class EntityWithIdAsObjectDaoTest extends TestMongoServer {
 
       for {
         insertRes <- dao.insertDocuments(d1, d2)
-        x <- dao.findById(ExchangeRateId(USD, "2019-01-03"))
+        findRes <- dao.findById(ExchangeRateId(USD, "2019-01-03"))
+        getRes <- dao.getById(ExchangeRateId(USD, "2019-01-03"))
       } yield {
         insertRes shouldBe Completed()
         val resetUpdated = now
-        x.map(_.copy(updated = resetUpdated)) shouldBe Some(ExchangeRates("2019-01-03").copy(updated = resetUpdated))
+        findRes.map(_.copy(updated = resetUpdated)) shouldBe Some(ExchangeRates("2019-01-03").copy(updated = resetUpdated))
+        getRes.copy(updated = resetUpdated) shouldBe ExchangeRates("2019-01-03").copy(updated = resetUpdated)
       }
     }
 
@@ -277,13 +281,17 @@ class EntityWithIdAsObjectDaoTest extends TestMongoServer {
       for {
         insertRes <- dao.insert(oldRate)
         findRes1 <- dao.findById(id)
+        getRes1 <- dao.getById(id)
         updateRes <- dao.replaceById(id, newRate)
         findRes2 <- dao.findById(id)
+        getRes2 <- dao.getById(id)
       } yield {
         insertRes shouldBe Completed()
-        findRes1.toSet should contain only oldRate
+        findRes1 shouldBe Some(oldRate)
+        getRes1 shouldBe oldRate
         updateRes shouldBe Some(oldRate)
-        findRes2.toSet should contain only newRate
+        findRes2 shouldBe Some(newRate)
+        getRes2 shouldBe newRate
       }
     }
 
@@ -304,10 +312,12 @@ class EntityWithIdAsObjectDaoTest extends TestMongoServer {
       for {
         updateRes <- dao.replaceOrInsertById(ExchangeRates("2019-01-02").id, ExchangeRates("2019-01-02"))
         findRes <- dao.findById(ExchangeRates("2019-01-02").id)
+        getRes <- dao.getById(ExchangeRates("2019-01-02").id)
       } yield {
         updateRes shouldBe None
         // entity doesn't exist and will be inserted
         findRes shouldBe Some(ExchangeRates("2019-01-02"))
+        getRes shouldBe ExchangeRates("2019-01-02")
       }
     }
 
@@ -319,10 +329,12 @@ class EntityWithIdAsObjectDaoTest extends TestMongoServer {
         insertRes <- dao.insert(createEntity)
         updateRes <- dao.replaceById(createEntity.id, updateEntity)
         findRes <- dao.findById(updateEntity.id)
+        getRes <- dao.getById(updateEntity.id)
       } yield {
         insertRes shouldBe Completed()
         updateRes shouldBe Some(createEntity)
         findRes shouldBe Some(updateEntity)
+        getRes shouldBe updateEntity
       }
     }
 
@@ -334,10 +346,12 @@ class EntityWithIdAsObjectDaoTest extends TestMongoServer {
         insertRes <- dao.insert(createEntity)
         updateRes <- dao.createOrReplaceById(createEntity.id, updateEntity)
         findRes <- dao.findById(updateEntity.id)
+        getRes <- dao.getById(updateEntity.id)
       } yield {
         insertRes shouldBe Completed()
         updateRes shouldBe Some(createEntity)
         findRes shouldBe Some(updateEntity)
+        getRes shouldBe updateEntity
       }
     }
 
@@ -349,10 +363,12 @@ class EntityWithIdAsObjectDaoTest extends TestMongoServer {
         insertRes <- dao.insert(createEntity)
         updateRes <- dao.replaceOrInsertById(createEntity.id, updateEntity)
         findRes <- dao.findById(updateEntity.id)
+        getRes <- dao.getById(updateEntity.id)
       } yield {
         insertRes shouldBe Completed()
         updateRes shouldBe Some(createEntity)
         findRes shouldBe Some(updateEntity)
+        getRes shouldBe updateEntity
       }
     }
 
