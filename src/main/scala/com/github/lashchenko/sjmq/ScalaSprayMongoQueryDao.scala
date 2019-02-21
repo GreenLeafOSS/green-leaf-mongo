@@ -1,5 +1,6 @@
 package com.github.lashchenko.sjmq
 
+import com.github.lashchenko.sjmq.ScalaSprayMongoQueryDao.DaoBsonProtocol
 import org.mongodb.scala.bson.collection.immutable.Document
 import org.mongodb.scala.bson.conversions.Bson
 import org.mongodb.scala.model.{FindOneAndReplaceOptions, FindOneAndUpdateOptions}
@@ -8,16 +9,23 @@ import spray.json._
 
 import scala.concurrent.{ExecutionContext, Future}
 
+object ScalaSprayMongoQueryDao {
+  trait DaoBsonProtocol[Id, E] {
+    implicit def jsonProtocolId : JsonFormat[Id]
+    implicit def jsonProtocolEntity: JsonFormat[E]
+  }
+}
+
 trait ScalaSprayMongoQueryDao[Id, E]
   extends ScalaSprayMongoQueryDsl {
 
   protected implicit val ec: ExecutionContext
 
-  protected implicit val jsonProtocolId: JsonFormat[Id]
-  protected implicit val jsonProtocolEntity: JsonFormat[E]
-
   protected val db: MongoDatabase
   protected val collection: MongoCollection[Document]
+
+  protected val protocol: DaoBsonProtocol[Id, E]
+  import protocol._
 
   // _id, id, key, ...
   protected val primaryKey: String = "_id"

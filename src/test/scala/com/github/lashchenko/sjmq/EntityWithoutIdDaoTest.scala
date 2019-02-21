@@ -3,6 +3,7 @@ package com.github.lashchenko.sjmq
 import java.time.ZonedDateTime
 import java.util.UUID
 
+import com.github.lashchenko.sjmq.ScalaSprayMongoQueryDao.DaoBsonProtocol
 import com.github.lashchenko.sjmq.ZonedDateTimeOps._
 import org.mongodb.scala.bson.ObjectId
 import org.mongodb.scala.bson.collection.immutable.Document
@@ -46,7 +47,10 @@ object EntityWithoutIdDaoTest {
       override implicit lazy val EventSourceFormat: JsonFormat[EventSource.EventSource] = enumToJsonFormatAsInt(EventSource)
     }
 
-    object EventBsonProtocol extends EventBsonProtocol
+    object EventBsonProtocol extends EventBsonProtocol with DaoBsonProtocol[ObjectId, Event] {
+      override implicit val jsonProtocolId: JsonFormat[ObjectId] = ObjectIdJsonFormat
+      override implicit val jsonProtocolEntity: JsonFormat[Event] = EventFormat
+    }
 
   }
 
@@ -54,13 +58,11 @@ object EntityWithoutIdDaoTest {
 
   class EventDao(collectionName: String) extends TestScalaSprayMongoQueryDao[ObjectId, Event] {
 
-    import EventBsonProtocol._
-    protected implicit val jsonProtocolId: JsonFormat[ObjectId] = ObjectIdJsonFormat
-    protected implicit val jsonProtocolEntity: JsonFormat[Event] = EventFormat
-
     protected val collection: MongoCollection[Document] = db.getCollection(collectionName)
-
     collection.createIndex(key = ascending("timestamp"), IndexOptions().name("idx-timestamp")).toFuture()
+
+    override protected val protocol = EventBsonProtocol
+    import protocol._
 
     override def findAll(offset: Int = 0, limit: Int = 0): Future[Seq[Event]] = {
       internalFindBy(Document.empty, offset, limit).sort(Document("""{timestamp: 1}""")).asSeq

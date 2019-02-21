@@ -2,6 +2,7 @@ package com.github.lashchenko.sjmq
 
 import java.util.UUID
 
+import com.github.lashchenko.sjmq.ScalaSprayMongoQueryDao.DaoBsonProtocol
 import org.mongodb.scala.bson.collection.immutable.Document
 import org.mongodb.scala.{Completed, MongoCollection}
 import spray.json._
@@ -32,7 +33,10 @@ object EntityWithIdAsFieldDaoTest {
         jsonFormat(Building, "_id", "name", "height", "floors", "year", "address")
     }
 
-    object BuildingModelBsonProtocol extends BuildingModelBsonProtocol
+    object BuildingModelBsonProtocol extends BuildingModelBsonProtocol with DaoBsonProtocol[Long, Building] {
+      override implicit val jsonProtocolId: JsonFormat[Long] = LongJsonFormat
+      override implicit val jsonProtocolEntity: JsonFormat[Building] = BuildingFormat
+    }
 
   }
 
@@ -41,11 +45,10 @@ object EntityWithIdAsFieldDaoTest {
 
   class BuildingDao(collectionName: String) extends TestScalaSprayMongoQueryDao[Long, Building] {
 
-    import BuildingModelBsonProtocol._
-    override protected implicit val jsonProtocolId: JsonFormat[Long] = LongJsonFormat
-    override protected implicit val jsonProtocolEntity: JsonFormat[Building] = BuildingFormat
-
     override protected val collection: MongoCollection[Document] = db.getCollection(collectionName)
+
+    override protected val protocol = BuildingModelBsonProtocol
+    import protocol._
 
     def findByName(name: String): Future[Seq[Building]] = {
       internalFindBy("name" $regex (name, "i"), 0, 0).asSeq
