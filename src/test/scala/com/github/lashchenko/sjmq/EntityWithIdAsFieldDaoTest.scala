@@ -109,9 +109,11 @@ class EntityWithIdAsFieldDaoTest extends TestMongoServer {
       for {
         insertRes <- dao.insert(BuildingsInNyc(5))
         findRes <- dao.findById(5)
+        getRes <- dao.getById(5)
       } yield {
         insertRes shouldBe Completed()
         findRes shouldBe Some(BuildingsInNyc(5))
+        getRes shouldBe BuildingsInNyc(5)
       }
     }
 
@@ -193,10 +195,12 @@ class EntityWithIdAsFieldDaoTest extends TestMongoServer {
       for {
         updateRes <- dao.createOrReplaceById(1, BuildingsInNyc(1))
         findRes <- dao.findById(1)
+        getRes <- dao.getById(1)
       } yield {
         updateRes shouldBe None
         // entity doesn't exist but upsert = true in this case
         findRes shouldBe Some(BuildingsInNyc(1))
+        getRes shouldBe BuildingsInNyc(1)
       }
     }
 
@@ -208,10 +212,12 @@ class EntityWithIdAsFieldDaoTest extends TestMongoServer {
         insertRes <- dao.insert(entityToCreate)
         updateRes <- dao.replaceById(1, entityToUpdate)
         findRes <- dao.findById(1)
+        getRes <- dao.getById(1)
       } yield {
         insertRes shouldBe Completed()
         updateRes shouldBe Some(entityToCreate)
         findRes shouldBe Some(entityToUpdate)
+        getRes shouldBe entityToUpdate
       }
     }
 
@@ -223,10 +229,12 @@ class EntityWithIdAsFieldDaoTest extends TestMongoServer {
         insertRes <- dao.insert(entityToCreate)
         updateRes <- dao.createOrReplaceById(1, entityToUpdate)
         findRes <- dao.findById(1)
+        getRes <- dao.getById(1)
       } yield {
         insertRes shouldBe Completed()
         updateRes shouldBe Some(entityToCreate)
         findRes shouldBe Some(entityToUpdate)
+        getRes shouldBe entityToUpdate
       }
     }
 
