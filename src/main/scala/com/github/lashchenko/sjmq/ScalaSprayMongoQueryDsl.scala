@@ -36,6 +36,24 @@ trait ScalaSprayMongoQueryDsl {
     t.asJsonExpanded
   }
 
+  // TODO test it
+  implicit class JsValueWithoutNull(j: JsValue) {
+
+    private def skipNull(jsObject: JsObject): JsObject = {
+      JsObject((Map.empty[String, JsValue] /: jsObject.fields) {
+        case (res, (_, JsNull)) => res
+        case (res, (k, v: JsObject)) => res ++ Map(k -> JsObject(skipNull(v).fields))
+        case (res, (k, v)) => res ++ Map(k -> v)
+      })
+    }
+
+    def skipNull: JsValue = j match {
+      case x: JsObject /* TODO and $MONGO_SKIP_NULL == TRUE */ => skipNull(x)
+      case x => x
+    }
+
+  }
+
 
   implicit class ObjAsJson[T](t: T) {
 
