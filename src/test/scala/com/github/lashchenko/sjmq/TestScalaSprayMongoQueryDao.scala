@@ -9,7 +9,8 @@ abstract class TestScalaSprayMongoQueryDao[Id, E] extends ScalaSprayMongoQueryDa
 
   override protected implicit val ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
 
-  override protected val db: MongoDatabase = MongoClient().getDatabase("test-in-memory-db")
+  // TODO move to config
+  override protected val db: MongoDatabase = MongoClient("mongodb://localhost:27027").getDatabase("test-in-memory-db")
 
   def insertDocuments(documents: Document*): Future[Completed] = {
     collection.insertMany(documents).toFuture()

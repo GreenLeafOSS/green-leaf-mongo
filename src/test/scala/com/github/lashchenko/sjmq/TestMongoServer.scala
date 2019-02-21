@@ -18,7 +18,8 @@ trait TestMongoServer extends AsyncWordSpec with Matchers with BeforeAndAfterAll
     val mCfg = new MongodConfigBuilder()
       .version(Version.Main.PRODUCTION)
       // TODO from config
-      .net(new Net("localhost", 27017, Network.localhostIsIPv6()))
+//      .net(new Net("localhost", 27017, Network.localhostIsIPv6()))
+      .net(new Net("localhost", 27027, Network.localhostIsIPv6()))
       .build()
 
     val mExe = TestMongoServer.starter.prepare(mCfg)
