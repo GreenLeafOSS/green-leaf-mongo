@@ -5,12 +5,15 @@ import org.mongodb.scala.bson.BsonDocument
 import org.mongodb.scala.bson.collection.immutable.Document
 import org.mongodb.scala.bson.conversions.Bson
 import org.mongodb.scala.model.Filters
+import org.slf4j.{Logger, LoggerFactory}
 import spray.json._
 
 import scala.language.implicitConversions
 import scala.util.matching.Regex
 
 trait ScalaSprayMongoQueryDsl {
+
+  protected val log: Logger = LoggerFactory.getLogger(getClass)
 
   private implicit class BsonToJsObjectTransformer(d: Bson) {
     def toJson: JsObject = {

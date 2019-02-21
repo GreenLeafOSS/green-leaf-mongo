@@ -12,8 +12,6 @@ import scala.concurrent.{ExecutionContext, Future}
 trait ScalaSprayMongoQueryDao[Id, E]
   extends ScalaSprayMongoQueryDsl {
 
-  protected val log: Logger = LoggerFactory.getLogger(getClass)
-
   protected implicit val ec: ExecutionContext
 
   protected implicit val jsonProtocolId: JsonFormat[Id]
