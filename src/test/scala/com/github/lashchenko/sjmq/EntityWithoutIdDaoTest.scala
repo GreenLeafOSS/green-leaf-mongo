@@ -73,8 +73,7 @@ object EntityWithoutIdDaoTest {
     }
 
     def findBySource(source: EventSource.EventSource): Future[Seq[Event]] = {
-      val filter = "source" $eq source
-      internalFindBy(filter, 0, 0).asSeq
+      internalFindBy("source" $eq source, 0, 0).asSeq
     }
   }
 
