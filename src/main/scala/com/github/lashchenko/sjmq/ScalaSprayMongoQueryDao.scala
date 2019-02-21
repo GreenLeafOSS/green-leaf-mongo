@@ -45,7 +45,7 @@ trait ScalaSprayMongoQueryDao[Id, E]
   }
 
   def insert(e: E): Future[Completed] =
-    collection.insertOne(Document(e.toJson.compactPrint)).toFuture()
+    collection.insertOne(e.toJson).toFuture()
 
   def insert(entities: Seq[E]): Future[Completed] = {
     // Document([ obj1, obj2, ... ]) can't be created
