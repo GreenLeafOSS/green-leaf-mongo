@@ -36,7 +36,6 @@ trait ScalaSprayMongoQueryDsl {
     t.asJsonExpanded
   }
 
-  // TODO test it
   implicit class JsValueWithoutNull(j: JsValue) {
 
     private def skipNull(jsObject: JsObject): JsObject = {
@@ -47,8 +46,8 @@ trait ScalaSprayMongoQueryDsl {
       })
     }
 
-    def skipNull: JsValue = j match {
-      case x: JsObject /* TODO and $MONGO_SKIP_NULL == TRUE */ => skipNull(x)
+    def skipNull(skip: Boolean = true): JsValue = j match {
+      case x: JsObject if skip => skipNull(x)
       case x => x
     }
 
