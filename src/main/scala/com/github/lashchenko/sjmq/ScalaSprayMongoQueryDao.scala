@@ -29,6 +29,7 @@ trait ScalaSprayMongoQueryDao[Id, E]
 
   // _id, id, key, ...
   protected val primaryKey: String = "_id"
+  protected def skipNull: Boolean = true
 
   protected implicit class MongoFindObservableToFutureRes(x: FindObservable[Document]) {
     def asSeq[T](implicit jf: JsonFormat[T]): Future[Seq[T]] =
@@ -53,12 +54,12 @@ trait ScalaSprayMongoQueryDao[Id, E]
   }
 
   def insert(e: E): Future[Completed] =
-    collection.insertOne(e.toJson).toFuture()
+    collection.insertOne(e.toJson.skipNull(skipNull)).toFuture()
 
   def insert(entities: Seq[E]): Future[Completed] = {
     // Document([ obj1, obj2, ... ]) can't be created
     // [ Document(obj1), Document(obj2), ... ] - OK
-    val documents = entities.map(d => Document(d.toJson.compactPrint))
+    val documents = entities.map(d => Document(d.toJson.skipNull(skipNull).compactPrint))
     collection.insertMany(documents).toFuture()
   }
 
@@ -138,7 +139,7 @@ trait ScalaSprayMongoQueryDao[Id, E]
   def replaceById(id: Id, e: E, upsert: Boolean = false): Future[Option[E]] = {
     val filter = primaryKey $eq id
     log.trace(s"DAO.replaceById [$primaryKey] : $filter")
-    internalReplaceBy(filter, e.toJson, upsert).asOpt
+    internalReplaceBy(filter, e.toJson.skipNull(skipNull), upsert).asOpt
   }
 
   def createOrReplaceById(id: Id, e: E): Future[Option[E]] = {
@@ -153,7 +154,7 @@ trait ScalaSprayMongoQueryDao[Id, E]
   }
 
   def replaceBy(filter: Bson, e: E, upsert: Boolean = false): Future[Option[E]] = {
-    internalReplaceBy(filter, e.toJson, upsert).asOpt
+    internalReplaceBy(filter, e.toJson.skipNull(skipNull), upsert).asOpt
   }
 
   def createOrReplaceBy(filter: Bson, e: E): Future[Option[E]] = {
