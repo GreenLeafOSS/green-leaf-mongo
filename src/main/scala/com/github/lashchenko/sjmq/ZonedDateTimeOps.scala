@@ -22,6 +22,11 @@ trait ZonedDateTimeOps {
 
   def now: ZonedDateTime = ZonedDateTime.now(ZoneOffset.UTC)
 
+  object Implicits {
+    implicit def strToDate(str: String): ZonedDateTime = parseDate(str)
+    implicit def strToDateTime(str: String): ZonedDateTime = parseDateTime(str)
+    implicit def strToDateTimeIso(str: String): ZonedDateTime = parseDateTimeIso(str)
+  }
 }
 
 object ZonedDateTimeOps extends ZonedDateTimeOps
