@@ -38,17 +38,28 @@ trait ScalaSprayMongoQueryDsl {
 
   implicit class JsValueWithoutNull(j: JsValue) {
 
+    private def skipNull(jsArray: JsArray): JsArray = {
+      JsArray(jsArray.elements.flatMap {
+        case JsNull => None
+        case v: JsArray => Some(skipNull(v))
+        case v: JsObject => Some(skipNull(v))
+        case v: JsValue => Some(v)
+      })
+    }
+
     private def skipNull(jsObject: JsObject): JsObject = {
       JsObject((Map.empty[String, JsValue] /: jsObject.fields) {
         case (res, (_, JsNull)) => res
-        case (res, (k, v: JsObject)) => res ++ Map(k -> JsObject(skipNull(v).fields))
+        case (res, (k, v: JsObject)) => res ++ Map(k -> skipNull(v))
+        case (res, (k, v: JsArray)) => res ++ Map(k -> skipNull(v))
         case (res, (k, v)) => res ++ Map(k -> v)
       })
     }
 
     def skipNull(skip: Boolean = true): JsValue = j match {
-      case x: JsObject if skip => skipNull(x)
-      case x => x
+      case v: JsObject if skip => skipNull(v)
+      case v: JsArray if skip => skipNull(v)
+      case v => v
     }
 
   }
