@@ -4,6 +4,13 @@
 # Short description
 This extension created on top of official [MongoDB Scala Driver](http://mongodb.github.io/mongo-scala-driver), allows to fully utilize [Spray JSON](https://github.com/spray/spray-json) and represents bidirectional serialization for case classes in BSON, as well as flexible DSL for [MongoDB query operators](https://docs.mongodb.com/manual/reference/operator/query/), documents and collections.
 
+# Usage
+```scala
+// build.sbt
+resolvers += Resolver.bintrayRepo("lashchenko", "maven")
+libraryDependencies += "com.github.lashchenko" %% "spray-json-mongodb-queries" % "0.1.1",
+```
+
 # JSON and BSON protocols
 
 `ScalaSprayJsonProtocol` based on DefaultJsonProtocol from Spray JSON and allows to override predefined JsonFormats to make possible use custom seriallization in BSON format.
