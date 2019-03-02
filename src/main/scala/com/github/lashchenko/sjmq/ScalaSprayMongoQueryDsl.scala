@@ -13,6 +13,8 @@ import scala.util.matching.Regex
 
 trait ScalaSprayMongoQueryDsl {
 
+  //  System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "debug")
+
   protected val log: Logger = LoggerFactory.getLogger(getClass)
 
   private implicit class BsonToJsObjectTransformer(d: Bson) {
