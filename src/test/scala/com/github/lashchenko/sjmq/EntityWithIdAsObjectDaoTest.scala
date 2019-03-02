@@ -10,7 +10,6 @@ import org.mongodb.scala.{Completed, MongoCollection}
 import spray.json.{JsonFormat, RootJsonFormat}
 
 import scala.concurrent.Future
-import scala.language.implicitConversions
 
 object EntityWithIdAsObjectDaoTest {
   object ExchangeRateModel {
@@ -94,12 +93,10 @@ object EntityWithIdAsObjectDaoTest {
 
 class EntityWithIdAsObjectDaoTest extends TestMongoServer {
 
+  import ZonedDateTimeOps.Implicits.strToDate
   import EntityWithIdAsObjectDaoTest._
   import ExchangeRateModel._
   import Currency._
-
-  // in test only to reduce code
-  private implicit def str2zdt(str: String): ZonedDateTime = parseDate(str)
 
   private val ExchangeRates = Map[String, ExchangeRate](
 
