@@ -123,6 +123,18 @@ trait ScalaSprayMongoQueryDsl {
   def $and(filters: JsValue*): JsObject =
     JsObject("$and" -> JsArray(filters: _*))
 
+  /**
+    * $and performs a logical AND operation on an array of two or more expressions
+    * (e.g. expression1, expression2, etc.) and selects the documents that satisfy all the expressions in the array.
+    * The $and operator uses short-circuit evaluation.
+    * If the first expression (e.g. expression1) evaluates to false, MongoDB will not evaluate the remaining expressions.
+    * @see https://docs.mongodb.com/manual/reference/operator/query/and/
+    *
+    * @example {{{$and("price" $ne 1.99, "price" $exists true)}}}
+    *
+    * @param filters are expressions
+    * @return the filter
+    */
   def $and[T](filters: T*)(implicit writer: JsonWriter[T]): JsObject =
     JsObject("$and" -> JsArray(seqObjAsSeqJsVal(filters): _*))
 
@@ -139,6 +151,16 @@ trait ScalaSprayMongoQueryDsl {
   def $or[T](filters: T*)(implicit writer: JsonWriter[T]): JsObject =
     JsObject("$or" -> JsArray(seqObjAsSeqJsVal(filters).toVector))
 
+  /**
+    * The $or operator performs a logical OR operation on an array of two or more expressions and selects the documents
+    * that satisfy at least one of the expressions.
+    * @see https://docs.mongodb.com/manual/reference/operator/query/or/
+    *
+    * @example {{{$or("quantity" $lt 20, "price" $eq 10)}}}
+    *
+    * @param filters are expressions
+    * @return the filter
+    */
   def $or(filters: JsValue*): JsObject =
     JsObject("$or" -> JsArray(filters: _*))
 
@@ -155,6 +177,16 @@ trait ScalaSprayMongoQueryDsl {
   def $nor(filters: JsValue*): JsObject =
     JsObject("$nor" -> JsArray(filters: _*))
 
+  /**
+    * $nor performs a logical NOR operation on an array of one or more query expression and selects the documents that
+    * fail all the query expressions in the array.
+    * @see https://docs.mongodb.com/manual/reference/operator/query/nor/
+    *
+    * @example {{{$nor("price" $eq 1.99, "qty" $lt 20, "sale" $eq true)}}}
+    *
+    * @param filters are expressions
+    * @return the filter
+    */
   def $nor[T](filters: T*)(implicit writer: JsonWriter[T]): JsObject =
     JsObject("$nor" -> JsArray(seqObjAsSeqJsVal(filters): _*))
 
@@ -263,6 +295,15 @@ trait ScalaSprayMongoQueryDsl {
     def $in(v: JsValue*): JsObject =
       JsObject(field -> JsObject("$in" -> JsArray(v: _*)))
 
+    /**
+      * The $in operator selects the documents where the value of a field equals any value in the specified array.
+      * @see https://docs.mongodb.com/manual/reference/operator/query/in/
+      *
+      * @example {{{"qty" $in (5, 15)}}}
+      *
+      * @param v is value
+      * @return the filter
+      */
     def $in[T](v: T*)(implicit writer: JsonWriter[T]): JsObject =
       JsObject(field -> JsObject("$in" -> JsArray(seqObjAsSeqJsVal(v): _*)))
 
@@ -280,6 +321,17 @@ trait ScalaSprayMongoQueryDsl {
     def $nin(v: JsValue*): JsObject =
       JsObject(field -> JsObject("$nin" -> JsArray(v: _*)))
 
+    /**
+      * $nin selects the documents where:
+      * • the field value is not in the specified array or
+      * • the field does not exist.
+      * @see https://docs.mongodb.com/manual/reference/operator/query/nin/
+      *
+      * @example {{{"qty" $nin (5, 15)}}}
+      *
+      * @param v is value
+      * @return the filter
+      */
     def $nin[T](v: T*)(implicit writer: JsonWriter[T]): JsObject =
       JsObject(field -> JsObject("$nin" -> JsArray(seqObjAsSeqJsVal(v): _*)))
 
@@ -350,6 +402,16 @@ trait ScalaSprayMongoQueryDsl {
     def $all(v: JsValue*): JsObject =
       JsObject(field -> JsObject("$all" -> JsArray(v: _*)))
 
+    /**
+      * The $all operator selects the documents where the value of a field is an array that contains all the specified
+      * elements.
+      * @see https://docs.mongodb.com/manual/reference/operator/query/all/
+      *
+      * @example {{{"tags" $all ("ssl", "security")}}}
+      *
+      * @param v is value
+      * @return the filter
+      */
     def $all[T](v: T*)(implicit writer: JsonWriter[T]): JsObject =
       JsObject(field -> JsObject("$all" -> JsArray(seqObjAsSeqJsVal(v): _*)))
 
