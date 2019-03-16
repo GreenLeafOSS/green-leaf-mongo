@@ -8,7 +8,7 @@ This extension created on top of official [MongoDB Scala Driver](http://mongodb.
 ```scala
 // build.sbt
 resolvers += Resolver.bintrayRepo("lashchenko", "maven")
-libraryDependencies += "com.github.lashchenko" %% "spray-json-mongodb-queries" % "0.1.1",
+libraryDependencies += "com.github.lashchenko" %% "spray-json-mongodb-queries" % "0.1.2",
 ```
 
 # JSON and BSON protocols
