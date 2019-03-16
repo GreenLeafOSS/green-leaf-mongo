@@ -28,8 +28,11 @@ class ScalaSprayMongoQueryDslTest
       // https://docs.mongodb.com/manual/reference/operator/query/eq/
 
       ("qty" $eq 20).asBson shouldBe """{ qty: { $eq: 20 } }""".asBson
-      ("qty" $eq 20L).asBson shouldBe """{ qty: { $eq: { $numberLong: "20" } } }""".asBson
-      ("qty" $eq BigDecimal(20.0)).asBson shouldBe """{ qty: { $eq: 20.0 } }""".asBson
+      ("qty" $eq 20L).asBson shouldBe """{ qty: { $eq: 20 } }""".asBson
+      ("qty" $eq 0x123456789L).asBson shouldBe """{ qty: { $eq: { $numberLong: "4886718345" } } }""".asBson
+      ("qty" $eq 20.0f).asBson shouldBe """{ qty: { $eq: 20.0 } }""".asBson
+      ("qty" $eq 20.0d).asBson shouldBe """{ qty: { $eq: 20.0 } }""".asBson
+      ("qty" $eq BigDecimal(20.0)).asBson shouldBe """{ qty: { $eq: { $numberDecimal: "20.0" } } }""".asBson
       ("item.name" $eq "ab").asBson shouldBe """{ "item.name": { $eq: "ab" } }""".asBson
       ("tags" $eq "B").asBson shouldBe """{ tags: { $eq: "B" } }""".asBson
       ("tags" $eq ("A", "B")).asBson shouldBe """{ tags: { $eq: [ "A", "B" ] } }""".asBson
@@ -54,7 +57,7 @@ class ScalaSprayMongoQueryDslTest
 
       ("qty" $in (5, 15)).asBson shouldBe """{ qty: { $in: [ 5, 15 ] } }""".asBson
       ("qty" $in (2.7, 3.1415)).asBson shouldBe """{ qty: { $in: [ 2.7, 3.1415] } }""".asBson
-      ("qty" $in (127L, 256, 512)).asBson shouldBe """{ qty: { $in: [ { $numberLong: "127" }, { $numberLong: "256" }, { $numberLong: "512" } ] } }""".asBson
+      ("qty" $in (0x123456789L, 128, 256, 512)).asBson shouldBe """{ qty: { $in: [ { $numberLong: "4886718345" }, 128, 256, 512 ] } }""".asBson
       ("tags" $in ("appliances", "school")).asBson shouldBe """{ tags: { $in: ["appliances", "school"] } }""".asBson
       // Impossible too use $regex inside $in query https://jira.mongodb.org/browse/SERVER-14595
       ("tags" $in ("^be".r, "^st".r)).asBson shouldBe """{ tags: { "$in" : [ { "$regex": "^be" }, { "$regex": "^st" }] } }""".asBson
