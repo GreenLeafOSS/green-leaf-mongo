@@ -27,4 +27,4 @@ libraryDependencies += "de.flapdoodle.embed" % "de.flapdoodle.embed.mongo" % "2.
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.5" % Test
 
 resolvers += Resolver.jcenterRepo
-licenses += ("MIT", url("https://opensource.org/licenses/Apache-2.0"))
+licenses += ("Apache-2.0", url("https://opensource.org/licenses/Apache-2.0"))
