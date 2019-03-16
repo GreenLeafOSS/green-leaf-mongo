@@ -38,7 +38,7 @@ object TestBsonProtocol extends TestBsonProtocol
 
 Once protocols defined, we can make instance of Test case class and use TestJsonProtocol to print related JSON:
 ```scala
-val obj = Test(new ObjectId("5c72b799306e355b83ef3c86"), 1, 1024L, true, "1970-01-01")
+val obj = Test(new ObjectId("5c72b799306e355b83ef3c86"), 1, 0x123456789L, true, "1970-01-01")
 
 import TestJsonProtocol._
 println(obj.toJson.prettyPrint)
@@ -48,7 +48,7 @@ Output in this case will be:
 {
   "id": "5c72b799306e355b83ef3c86",
   "i": 1,
-  "l": 1024,
+  "l": 4886718345,
   "b": true,
   "zdt": "1970-01-01 00:00:00"
 }
@@ -57,7 +57,7 @@ Output in this case will be:
 Changing single line of import `TestJsonProtocol` to `TestBsonProtocol` allows us to (de)serialize this instance to and from BSON:
 
 ```scala
-val obj = Test(new ObjectId("5c72b799306e355b83ef3c86"), 1, 1024L, true, "1970-01-01")
+val obj = Test(new ObjectId("5c72b799306e355b83ef3c86"), 1, 0x123456789L, true, "1970-01-01")
 
 import TestBsonProtocol._
 println(obj.toJson.prettyPrint)
@@ -71,7 +71,7 @@ Output in this case will be:
   },
   "i": 1,
   "l": {
-    "$numberLong": "1024"
+    "$numberLong": "4886718345"
   },
   "b": true,
   "zdt": {
