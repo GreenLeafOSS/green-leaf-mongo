@@ -59,7 +59,7 @@ class GreenLeafJsonAndBsonProtocolsTest
     """.stripMargin
 
 
-  "ScalaSprayJsonAndBsonProtocols" should {
+  "GreenLeafJsonAndBsonProtocols" should {
 
     "write Obj as JSON" in {
       import TestJsonProtocol._
