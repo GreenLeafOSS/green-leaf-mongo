@@ -37,11 +37,11 @@ trait ScalaSprayMongoQueryDao[Id, E]
     def asSeq: Future[Seq[E]] = asSeq[E]
 
     def asOpt[T](implicit jf: JsonFormat[T]): Future[Option[T]] =
-      x.headOption().map(_.map(_.toJson().parseJson.convertTo[T]))
+      x.headOption().map { d => println(s"D: $d"); d }.map(_.map(_.toJson().parseJson.convertTo[T]))
     def asOpt: Future[Option[E]] = asOpt[E]
 
     def asObj[T](implicit jf: JsonFormat[T]): Future[T] =
-      x.head().map(_.toJson().parseJson.convertTo[T])
+      x.head().map { d => println(s"D: $d"); d }.map(_.toJson().parseJson.convertTo[T])
     def asObj: Future[E] = asObj[E]
   }
 
@@ -53,8 +53,11 @@ trait ScalaSprayMongoQueryDao[Id, E]
     def asOpt: Future[Option[E]] = asOpt[E]
   }
 
-  def insert(e: E): Future[Completed] =
-    collection.insertOne(e.toJson.skipNull(skipNull)).toFuture()
+  def insert(e: E): Future[Completed] = {
+    val d: Document = e.toJson.skipNull(skipNull)
+    println(s"DAO.insertOne: $d")
+    collection.insertOne(d).toFuture()
+  }
 
   def insert(entities: Seq[E]): Future[Completed] = {
     // Document([ obj1, obj2, ... ]) can't be created
@@ -78,6 +81,7 @@ trait ScalaSprayMongoQueryDao[Id, E]
   def findById(id: Id): Future[Option[E]] = {
     val filter = primaryKey $eq id
     log.trace(s"DAO.findById [$primaryKey] : $filter")
+    println(s"DAO.findById [$primaryKey] : $filter")
     internalFindBy(filter, 0, 1).asOpt
   }
 
@@ -129,7 +133,7 @@ trait ScalaSprayMongoQueryDao[Id, E]
   // ********************************************************************************
 
   protected def internalReplaceBy(filter: Bson, replacement: Document, upsert: Boolean = false): SingleObservable[Document] = {
-    log.trace(s"DAO.internalReplaceBy [$primaryKey] : $filter")
+    log.trace(s"DAO.internalReplaceBy : $filter")
     // By default "ReturnDocument.BEFORE" property used and returns the document before the update
     // val option = FindOneAndReplaceOptions().upsert(true).returnDocument(ReturnDocument.AFTER)
     val option = FindOneAndReplaceOptions().upsert(upsert)
@@ -138,7 +142,6 @@ trait ScalaSprayMongoQueryDao[Id, E]
 
   def replaceById(id: Id, e: E, upsert: Boolean = false): Future[Option[E]] = {
     val filter = primaryKey $eq id
-    log.trace(s"DAO.replaceById [$primaryKey] : $filter")
     internalReplaceBy(filter, e.toJson.skipNull(skipNull), upsert).asOpt
   }
 
@@ -146,6 +149,14 @@ trait ScalaSprayMongoQueryDao[Id, E]
     replaceById(id, e, upsert = true)
   }
 
+  /**
+    * NOT ATOMICALLY find a document and replace it.
+    * Impossible to upsert:true with a Dotted _id Query
+    * https://docs.mongodb.com/manual/reference/method/db.collection.update/#upsert-true-with-a-dotted-id-query
+    * @param id primary key filter
+    * @param e entity to replace
+    * @return None if document was created and Some(previous document) if the document was updated
+    */
   def replaceOrInsertById(id: Id, e: E): Future[Option[E]] = {
     replaceById(id, e /* upsert = false */).flatMap {
       case beforeOpt @ Some(_) /* replaced */ => Future.successful(beforeOpt)
