@@ -29,6 +29,8 @@ trait ScalaSprayBsonProtocol
     }
   }
 
+  // https://docs.mongodb.com/manual/reference/bson-types/#date
+  // https://docs.mongodb.com/manual/reference/mongodb-extended-json/#date
   override implicit val ZdtJsonFormat: JsonFormat[ZonedDateTime] = new JsonFormat[ZonedDateTime] {
 
     def write(obj: ZonedDateTime): JsValue = {
@@ -36,11 +38,10 @@ trait ScalaSprayBsonProtocol
     }
 
     def read(jsValue: JsValue): ZonedDateTime = jsValue match {
-      case JsObject(fields) =>
-        fields("$date") match {
-          case JsNumber(v) => Instant.ofEpochMilli(v.toLong).atZone(ZoneOffset.UTC)
-          case x => deserializationError("Expected ZonedDateTime, but got " + x)
-        }
+      case JsObject(fields) => fields("$date") match {
+        case JsNumber(v) => Instant.ofEpochMilli(v.toLong).atZone(ZoneOffset.UTC)
+        case x => deserializationError("Expected ZonedDateTime, but got " + x)
+      }
       case x => deserializationError("Expected ZonedDateTime, but got " + x)
     }
   }
