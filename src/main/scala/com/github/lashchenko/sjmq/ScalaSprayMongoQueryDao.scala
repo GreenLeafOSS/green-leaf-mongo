@@ -37,11 +37,11 @@ trait ScalaSprayMongoQueryDao[Id, E]
     def asSeq: Future[Seq[E]] = asSeq[E]
 
     def asOpt[T](implicit jf: JsonFormat[T]): Future[Option[T]] =
-      x.headOption().map { d => println(s"D: $d"); d }.map(_.map(_.toJson().parseJson.convertTo[T]))
+      x.headOption().map(_.map(_.toJson().parseJson.convertTo[T]))
     def asOpt: Future[Option[E]] = asOpt[E]
 
     def asObj[T](implicit jf: JsonFormat[T]): Future[T] =
-      x.head().map { d => println(s"D: $d"); d }.map(_.toJson().parseJson.convertTo[T])
+      x.head().map(_.toJson().parseJson.convertTo[T])
     def asObj: Future[E] = asObj[E]
   }
 
@@ -55,7 +55,7 @@ trait ScalaSprayMongoQueryDao[Id, E]
 
   def insert(e: E): Future[Completed] = {
     val d: Document = e.toJson.skipNull(skipNull)
-    println(s"DAO.insertOne: $d")
+    log.trace(s"DAO.insertOne: $d")
     collection.insertOne(d).toFuture()
   }
 
@@ -63,6 +63,7 @@ trait ScalaSprayMongoQueryDao[Id, E]
     // Document([ obj1, obj2, ... ]) can't be created
     // [ Document(obj1), Document(obj2), ... ] - OK
     val documents = entities.map(d => Document(d.toJson.skipNull(skipNull).compactPrint))
+    log.trace(s"DAO.insertMany: $documents")
     collection.insertMany(documents).toFuture()
   }
 
@@ -81,7 +82,6 @@ trait ScalaSprayMongoQueryDao[Id, E]
   def findById(id: Id): Future[Option[E]] = {
     val filter = primaryKey $eq id
     log.trace(s"DAO.findById [$primaryKey] : $filter")
-    println(s"DAO.findById [$primaryKey] : $filter")
     internalFindBy(filter, 0, 1).asOpt
   }
 
