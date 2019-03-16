@@ -1,7 +1,7 @@
 name := "green-leaf-mongo"
 organization := "io.github.greenleafoss"
 
-version := "0.1.2"
+version := "0.1.3"
 
 scalaVersion := "2.12.8"
 
