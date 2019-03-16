@@ -204,10 +204,11 @@ class EntityWithIdAsObjectDaoTest extends TestMongoServer {
       val dao = ExchangeRateDao()
 
       // 2019-01-03
+      // "_id": { "date": { "$date": 1546473600000 }, "base": "USD" },
       val d1 = Document(
         """
           |{
-          |  "_id": { "date": { "$date": 1546473600000 }, "base": "USD" },
+          |  "_id": { "date": { "$date": "2019-01-03T00:00:00.000Z" }, "base": "USD" },
           |  "rates": {
           |    "PLN": 3.787010927,
           |    "CAD": 1.3563623546,
@@ -222,10 +223,11 @@ class EntityWithIdAsObjectDaoTest extends TestMongoServer {
       )
 
       // 2019-01-04
+      // "_id": { "date": { "$date": 1546560000000 }, "base": "USD" },
       val d2 = Document(
         """
           |{
-          |  "_id": { "date": { "$date": 1546560000000 }, "base": "USD" },
+          |  "_id": { "date": { "$date": "2019-01-04T00:00:00.000Z" }, "base": "USD" },
           |  "rates": {
           |    "PLN": 3.7671665351,
           |    "CAD": 1.3442076646,
