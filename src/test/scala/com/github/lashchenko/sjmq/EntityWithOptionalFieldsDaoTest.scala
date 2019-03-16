@@ -53,7 +53,7 @@ object EntityWithOptionalFieldsDaoTest {
 
     def findCountryBy(countryCode: String): Future[Option[GeoRecord]] = {
       // will return all records with this countryCode
-      // val filter = Document(s"""{ "_id."country": $countryCode }""")
+      // val filter = Document(s"""{ "_id.country": $countryCode }""")
 
       // will not works because 'state' and 'city' fields may not exist or be nulls
       // val filter = Document(s"""{ "_id": { "country": $countryCode } }""")
