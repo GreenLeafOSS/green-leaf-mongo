@@ -1,5 +1,5 @@
-# spray-json-mongodb-queries
-[ ![Download](https://api.bintray.com/packages/lashchenko/maven/spray-json-mongodb-queries/images/download.svg) ](https://bintray.com/lashchenko/maven/spray-json-mongodb-queries/_latestVersion)
+# green-leaf-mongo
+[ ![Download](https://api.bintray.com/packages/greenleafoss/maven/green-leaf-mongo/images/download.svg) ](https://bintray.com/greenleafoss/maven/green-leaf-mongo/_latestVersion)
 
 # Short description
 This extension created on top of official [MongoDB Scala Driver](http://mongodb.github.io/mongo-scala-driver), allows to fully utilize [Spray JSON](https://github.com/spray/spray-json) and represents bidirectional serialization for case classes in BSON, as well as flexible DSL for [MongoDB query operators](https://docs.mongodb.com/manual/reference/operator/query/), documents and collections.
@@ -7,16 +7,16 @@ This extension created on top of official [MongoDB Scala Driver](http://mongodb.
 # Usage
 ```scala
 // build.sbt
-resolvers += Resolver.bintrayRepo("lashchenko", "maven")
-libraryDependencies += "com.github.lashchenko" %% "spray-json-mongodb-queries" % "0.1.2",
+resolvers += Resolver.bintrayRepo("greenleafoss", "maven")
+libraryDependencies += "io.github.greenleafoss" %% "green-leaf-mongo" % "0.1.2",
 ```
 
 # JSON and BSON protocols
 
-`ScalaSprayJsonProtocol` based on DefaultJsonProtocol from Spray JSON and allows to override predefined JsonFormats to make possible use custom seriallization in BSON format.
+`GreenLeafJsonProtocol` based on DefaultJsonProtocol from Spray JSON and allows to override predefined JsonFormats to make possible use custom seriallization in BSON format.
 This trait also includes a few additional JsonFormats for _ZonedDateTime_, _ObjectId_, _scala Enumeration_ and _UUID_.
 
-`ScalaSprayBsonProtocol` extends `ScalaSprayJsonProtocol` and overrides _Long_, _ZonedDateTime_, _ObjectId_, _scala Enumeration_, _UUID_ and _Regex_ JSON formats to represent them in related BSON formats.
+`GreenLeafBsonProtocol` extends `GreenLeafJsonProtocol` and overrides _Long_, _ZonedDateTime_, _ObjectId_, _scala Enumeration_, _UUID_ and _Regex_ JSON formats to represent them in related BSON formats.
 
 These base protocols allow to simply (de)serialize this instance to and from both JSON and BSON the same way as in Spray JSON:
 ```scala
@@ -24,13 +24,13 @@ These base protocols allow to simply (de)serialize this instance to and from bot
 case class Test(id: ObjectId, i: Int, l: Long, b: Boolean, zdt: ZonedDateTime)
 
 // JSON
-trait TestJsonProtocol extends ScalaSprayJsonProtocol {
+trait TestJsonProtocol extends GreenLeafJsonProtocol {
   implicit def testJf = jsonFormat5(Test)
 }
 object TestJsonProtocol extends TestJsonProtocol
 
 // BSON
-trait TestBsonProtocol extends TestJsonProtocol with ScalaSprayBsonProtocol {
+trait TestBsonProtocol extends TestJsonProtocol with GreenLeafBsonProtocol {
   override implicit def testJf = jsonFormat(Test, "_id", "i", "l", "b", "zdt")
 }
 object TestBsonProtocol extends TestBsonProtocol
@@ -80,10 +80,10 @@ Output in this case will be:
 }
 ```
 
-Full code of the examples above available in `ScalaSprayJsonAndBsonProtocolsTest`.
+Full code of the examples above available in `GreenLeafJsonAndBsonProtocolsTest`.
 
-# ScalaSprayMongoQueryDsl
-Import `ScalaSprayMongoQueryDsl._` makes it possible to write queries with a syntax that is more close to real queries in MongoDB, as was implemented in [Casbah Query DSL](http://mongodb.github.io/casbah/3.1/reference/query_dsl/).
+# GreenLeafMongoDsl
+Import `GreenLeafMongoDsl._` makes it possible to write queries with a syntax that is more close to real queries in MongoDB, as was implemented in [Casbah Query DSL](http://mongodb.github.io/casbah/3.1/reference/query_dsl/).
 
 ```scala
 "size" $all ("S", "M", "L")
@@ -103,11 +103,11 @@ $nor( "price" $eq 1.99 , "qty" $lt 20, "sale" $eq true )
 // ...
 ```
 
-More examples of queries available in `ScalaSprayMongoQueryDslTest`.
+More examples of queries available in `GreenLeafMongoDslTest`.
 
 
-# ScalaSprayMongoQueryDao
-`ScalaSprayMongoQueryDao` extends `ScalaSprayMongoQueryDsl` and provides simple DSL to transform Mongo's _Observable[Document]_ instances to _Future[Seq[T]]_, _Future[Option[T]]_ and _Future[T]_.
+# GreenLeafMongoDao
+`GreenLeafMongoDao` extends `GreenLeafMongoDsl` and provides simple DSL to transform Mongo's _Observable[Document]_ instances to _Future[Seq[T]]_, _Future[Option[T]]_ and _Future[T]_.
 In addition this trait provides many useful generic methods such as _insert_, _getById_, _findById_, _updateById_, _replaceById_ and others.
 You can find more details and examples in `EntityWithIdAsFieldDaoTest`, `EntityWithIdAsObjectDaoTest`, `EntityWithOptionalFieldsDaoTest` and `EntityWithoutIdDaoTest`.
 
