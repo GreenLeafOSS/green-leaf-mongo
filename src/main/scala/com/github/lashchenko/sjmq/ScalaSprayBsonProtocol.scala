@@ -45,15 +45,16 @@ trait ScalaSprayBsonProtocol
     }
   }
 
+  // https://docs.mongodb.com/manual/reference/bson-types/#objectid
+  // https://docs.mongodb.com/manual/reference/mongodb-extended-json/#oid
   override implicit val ObjectIdJsonFormat: JsonFormat[ObjectId] = new JsonFormat[ObjectId] {
     def write(obj: ObjectId): JsValue = JsObject("$oid" -> JsString(obj.toString))
 
     def read(jsValue: JsValue): ObjectId = jsValue match {
-      case JsObject(fields) =>
-        fields("$oid") match {
-          case JsString(oid) => new ObjectId(oid)
-          case x => deserializationError("Expected ObjectId, but got " + x)
-        }
+      case JsObject(fields) => fields("$oid") match {
+        case JsString(oid) => new ObjectId(oid)
+        case x => deserializationError("Expected ObjectId, but got " + x)
+      }
       case x => deserializationError("Expected ObjectId, but got " + x)
     }
   }
