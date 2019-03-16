@@ -23,7 +23,10 @@ trait ScalaSprayBsonProtocol
       case x => deserializationError("Expected Long, but got " + x)
     }
 
-    override def write(obj: Long): JsValue = JsObject("$numberLong" -> JsString(obj.toString))
+    override def write(obj: Long): JsValue = obj match {
+      case x if Int.MinValue <= x && x <= Int.MaxValue => JsNumber(x)
+      case x => JsObject("$numberLong" -> JsString(x.toString))
+    }
   }
 
   override implicit val ZdtJsonFormat: JsonFormat[ZonedDateTime] = new JsonFormat[ZonedDateTime] {
