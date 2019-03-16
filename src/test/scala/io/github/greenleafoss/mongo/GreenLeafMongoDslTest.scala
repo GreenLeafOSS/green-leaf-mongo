@@ -5,7 +5,7 @@ import org.mongodb.scala.bson.conversions.Bson
 import org.scalatest.{AsyncWordSpec, Matchers}
 import spray.json._
 
-class GreenLeafMongoQueryDslTest
+class GreenLeafMongoDslTest
   extends AsyncWordSpec
   with Matchers {
 
@@ -22,7 +22,7 @@ class GreenLeafMongoQueryDslTest
 
   // TODO add tests for custom case classes
 
-  "ScalaSprayMongoQueryDsl" should {
+  "GreenLeafMongoDsl" should {
 
     "$eq" in {
       // https://docs.mongodb.com/manual/reference/operator/query/eq/
