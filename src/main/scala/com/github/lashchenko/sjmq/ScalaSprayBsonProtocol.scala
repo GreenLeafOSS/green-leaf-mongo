@@ -11,16 +11,16 @@ trait ScalaSprayBsonProtocol
   extends ScalaSprayJsonProtocol
   with NullOptions {
 
+  // https://docs.mongodb.com/manual/reference/mongodb-extended-json/#numberlong
   override implicit val LongJsonFormat: JsonFormat[Long] = new JsonFormat[Long] {
 
     def read(jsValue: JsValue): Long = jsValue match {
-      case JsObject(fields) =>
-        fields("$numberLong") match {
-          case JsString(v) => v.toLong
-          case _ => deserializationError("Long expected")
-        }
+      case JsObject(fields) => fields("$numberLong") match {
+        case JsString(v) => v.toLong
+        case x => deserializationError("Expected Long, but got " + x)
+      }
       case JsNumber(v) => v.toLong
-      case _ => deserializationError("Long expected")
+      case x => deserializationError("Expected Long, but got " + x)
     }
 
     override def write(obj: Long): JsValue = JsObject("$numberLong" -> JsString(obj.toString))
