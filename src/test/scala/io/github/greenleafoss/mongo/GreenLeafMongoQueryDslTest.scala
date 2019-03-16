@@ -1,16 +1,16 @@
-package com.github.lashchenko.sjmq
+package io.github.greenleafoss.mongo
 
 import org.mongodb.scala.bson.collection.immutable.Document
 import org.mongodb.scala.bson.conversions.Bson
 import org.scalatest.{AsyncWordSpec, Matchers}
 import spray.json._
 
-class ScalaSprayMongoQueryDslTest
+class GreenLeafMongoQueryDslTest
   extends AsyncWordSpec
   with Matchers {
 
-  import com.github.lashchenko.sjmq.ScalaSprayBsonProtocol._
-  import com.github.lashchenko.sjmq.ScalaSprayMongoQueryDsl._
+  import GreenLeafBsonProtocol._
+  import GreenLeafMongoDsl._
 
   implicit class JsValueToBson(jsValue: JsValue) {
     def asBson: Bson = Document(jsValue.compactPrint)

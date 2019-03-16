@@ -1,10 +1,10 @@
-package com.github.lashchenko.sjmq
+package io.github.greenleafoss.mongo
 
 import java.time.ZonedDateTime
 import java.util.UUID
 
-import com.github.lashchenko.sjmq.ScalaSprayMongoQueryDao.DaoBsonProtocol
-import com.github.lashchenko.sjmq.ZonedDateTimeOps._
+import GreenLeafMongoDao.DaoBsonProtocol
+import ZonedDateTimeOps._
 import org.mongodb.scala.bson.ObjectId
 import org.mongodb.scala.bson.collection.immutable.Document
 import org.mongodb.scala.model.IndexOptions
@@ -34,7 +34,7 @@ object EntityWithoutIdDaoTest {
 
     // JSON
 
-    trait EventJsonProtocol extends ScalaSprayJsonProtocol {
+    trait EventJsonProtocol extends GreenLeafJsonProtocol {
       implicit lazy val EventSourceFormat: JsonFormat[EventSource.EventSource] = enumToJsonFormatAsString(EventSource)
       implicit lazy val EventFormat: RootJsonFormat[Event] = jsonFormat4(Event)
     }
@@ -43,7 +43,7 @@ object EntityWithoutIdDaoTest {
 
     // BSON
 
-    trait EventBsonProtocol extends EventJsonProtocol with ScalaSprayBsonProtocol {
+    trait EventBsonProtocol extends EventJsonProtocol with GreenLeafBsonProtocol {
       override implicit lazy val EventSourceFormat: JsonFormat[EventSource.EventSource] = enumToJsonFormatAsInt(EventSource)
     }
 
@@ -56,7 +56,7 @@ object EntityWithoutIdDaoTest {
 
   import EventModel._
 
-  class EventDao(collectionName: String) extends TestScalaSprayMongoQueryDao[ObjectId, Event] {
+  class EventDao(collectionName: String) extends TestGreenLeafMongoDao[ObjectId, Event] {
 
     protected val collection: MongoCollection[Document] = db.getCollection(collectionName)
     collection.createIndex(key = ascending("timestamp"), IndexOptions().name("idx-timestamp")).toFuture()

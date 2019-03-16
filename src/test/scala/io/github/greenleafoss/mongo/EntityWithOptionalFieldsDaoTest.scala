@@ -1,8 +1,8 @@
-package com.github.lashchenko.sjmq
+package io.github.greenleafoss.mongo
 
 import java.util.UUID
 
-import com.github.lashchenko.sjmq.ScalaSprayMongoQueryDao.DaoBsonProtocol
+import GreenLeafMongoDao.DaoBsonProtocol
 import org.mongodb.scala.{Completed, Document, MongoCollection}
 import spray.json._
 
@@ -23,7 +23,7 @@ object EntityWithOptionalFieldsDaoTest {
     }
 
     // JSON
-    trait GeoModelJsonProtocol extends ScalaSprayJsonProtocol {
+    trait GeoModelJsonProtocol extends GreenLeafJsonProtocol {
       implicit val GeoKeyFormat: RootJsonFormat[GeoKey] = jsonFormat3(GeoKey)
       implicit val GeoRecordFormat: RootJsonFormat[GeoRecord] = jsonFormat3(GeoRecord)
     }
@@ -31,7 +31,7 @@ object EntityWithOptionalFieldsDaoTest {
     object GeoModelJsonProtocol extends GeoModelJsonProtocol
 
     // BSON
-    trait GeoModelBsonProtocol extends GeoModelJsonProtocol with ScalaSprayBsonProtocol {
+    trait GeoModelBsonProtocol extends GeoModelJsonProtocol with GreenLeafBsonProtocol {
       override implicit val GeoRecordFormat: RootJsonFormat[GeoRecord] = jsonFormat(
         GeoRecord, "_id", "name", "population")
     }
@@ -44,7 +44,7 @@ object EntityWithOptionalFieldsDaoTest {
 
   import GeoModel._
 
-  class GeoModelDao(collectionName: String) extends TestScalaSprayMongoQueryDao[GeoKey, GeoRecord] {
+  class GeoModelDao(collectionName: String) extends TestGreenLeafMongoDao[GeoKey, GeoRecord] {
 
     override protected val collection: MongoCollection[Document] = db.getCollection(collectionName)
 

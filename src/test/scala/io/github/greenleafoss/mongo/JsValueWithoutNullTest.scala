@@ -1,4 +1,4 @@
-package com.github.lashchenko.sjmq
+package io.github.greenleafoss.mongo
 
 import org.scalatest.{Matchers, WordSpec}
 import spray.json._
@@ -14,11 +14,11 @@ class JsValueWithoutNullTest extends WordSpec with Matchers {
       b: Option[Boolean],
       a: Option[Seq[Option[Int]]] = None)
 
-  object TestNullsBsonProtocol extends ScalaSprayBsonProtocol {
+  object TestNullsBsonProtocol extends GreenLeafBsonProtocol {
     implicit val testNullsFormat: RootJsonFormat[TestNulls] = jsonFormat7(TestNulls)
   }
 
-  import ScalaSprayMongoQueryDsl.JsValueWithoutNull
+  import GreenLeafMongoDsl.JsValueWithoutNull
   import TestNullsBsonProtocol._
 
   "JsValueWithoutNull" should {

@@ -1,4 +1,4 @@
-package com.github.lashchenko.sjmq
+package io.github.greenleafoss.mongo
 
 import java.time._
 import java.time.format.DateTimeFormatter

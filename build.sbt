@@ -1,5 +1,5 @@
-name := "spray-json-mongodb-queries"
-organization := "com.github.lashchenko"
+name := "green-leaf-mongo"
+organization := "io.github.greenleafoss"
 
 version := "0.1.2"
 
@@ -14,7 +14,6 @@ scalacOptions ++= Seq(
 )
 
 parallelExecution in Test := false
-
 
 //libraryDependencies += "io.spray" %% "spray-json" % "1.3.4"
 libraryDependencies += "io.spray" %% "spray-json" % "1.3.5"

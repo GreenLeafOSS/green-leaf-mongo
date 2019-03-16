@@ -1,11 +1,11 @@
-package com.github.lashchenko.sjmq
+package io.github.greenleafoss.mongo
 
 import org.mongodb.scala.bson.collection.immutable.Document
 import org.mongodb.scala.{Completed, MongoClient, MongoDatabase}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-abstract class TestScalaSprayMongoQueryDao[Id, E] extends ScalaSprayMongoQueryDao[Id, E] {
+abstract class TestGreenLeafMongoDao[Id, E] extends GreenLeafMongoDao[Id, E] {
 
   override protected implicit val ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
 

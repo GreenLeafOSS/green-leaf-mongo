@@ -1,4 +1,4 @@
-package com.github.lashchenko.sjmq
+package io.github.greenleafoss.mongo
 
 import java.time.ZonedDateTime
 
@@ -8,7 +8,7 @@ import org.mongodb.scala.bson.ObjectId
 import org.scalatest.{Matchers, WordSpec}
 import spray.json._
 
-class ScalaSprayJsonAndBsonProtocolsTest
+class GreenLeafJsonAndBsonProtocolsTest
   extends WordSpec
   with Matchers {
 
@@ -16,13 +16,13 @@ class ScalaSprayJsonAndBsonProtocolsTest
   case class Test(id: ObjectId, i: Int, l: Long, b: Boolean, zdt: ZonedDateTime)
 
   // JSON
-  trait TestJsonProtocol extends ScalaSprayJsonProtocol {
+  trait TestJsonProtocol extends GreenLeafJsonProtocol {
     implicit def testJf: RootJsonFormat[Test] = jsonFormat5(Test)
   }
   object TestJsonProtocol extends TestJsonProtocol
 
   // BSON
-  trait TestBsonProtocol extends TestJsonProtocol with ScalaSprayBsonProtocol {
+  trait TestBsonProtocol extends TestJsonProtocol with GreenLeafBsonProtocol {
     override implicit def testJf: RootJsonFormat[Test] = jsonFormat(Test, "_id", "i", "l", "b", "zdt")
   }
   object TestBsonProtocol extends TestBsonProtocol

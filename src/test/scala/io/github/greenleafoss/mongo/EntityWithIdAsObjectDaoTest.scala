@@ -1,10 +1,10 @@
-package com.github.lashchenko.sjmq
+package io.github.greenleafoss.mongo
 
 import java.time.ZonedDateTime
 import java.util.UUID
 
-import com.github.lashchenko.sjmq.ScalaSprayMongoQueryDao.DaoBsonProtocol
-import com.github.lashchenko.sjmq.ZonedDateTimeOps._
+import ZonedDateTimeOps._
+import GreenLeafMongoDao.DaoBsonProtocol
 import org.mongodb.scala.bson.collection.immutable.Document
 import org.mongodb.scala.{Completed, MongoCollection}
 import spray.json.{JsonFormat, RootJsonFormat}
@@ -38,7 +38,7 @@ object EntityWithIdAsObjectDaoTest {
     case class ExchangeRate(id: ExchangeRateId, rates: Map[Currency, BigDecimal], updated: ZonedDateTime = now)
 
     // JSON
-    trait ExchangeRateJsonProtocol extends ScalaSprayJsonProtocol {
+    trait ExchangeRateJsonProtocol extends GreenLeafJsonProtocol {
       implicit lazy val ExchangeRateCurrencyFormat: JsonFormat[Currency] = enumToJsonFormatAsString(Currency)
       implicit lazy val ExchangeRateIdFormat: RootJsonFormat[ExchangeRateId] = jsonFormat2(ExchangeRateId)
       implicit lazy val ExchangeRateFormat: RootJsonFormat[ExchangeRate] = jsonFormat3(ExchangeRate)
@@ -48,7 +48,7 @@ object EntityWithIdAsObjectDaoTest {
 
     // BSON
 
-    trait ExchangeRateBsonProtocol extends ExchangeRateJsonProtocol with ScalaSprayBsonProtocol {
+    trait ExchangeRateBsonProtocol extends ExchangeRateJsonProtocol with GreenLeafBsonProtocol {
       override implicit lazy val ExchangeRateFormat: RootJsonFormat[ExchangeRate] =
         jsonFormat(ExchangeRate, "_id", "rates", "updated")
     }
@@ -62,7 +62,7 @@ object EntityWithIdAsObjectDaoTest {
 
   import ExchangeRateModel._
 
-  class ExchangeRateDao(collectionName: String) extends TestScalaSprayMongoQueryDao[ExchangeRateId, ExchangeRate] {
+  class ExchangeRateDao(collectionName: String) extends TestGreenLeafMongoDao[ExchangeRateId, ExchangeRate] {
 
     override protected val collection: MongoCollection[Document] = db.getCollection(collectionName)
 

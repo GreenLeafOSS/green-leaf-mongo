@@ -1,4 +1,4 @@
-package com.github.lashchenko.sjmq
+package io.github.greenleafoss.mongo
 
 import java.time.ZonedDateTime
 import java.util.UUID
@@ -6,7 +6,7 @@ import java.util.UUID
 import org.mongodb.scala.bson.ObjectId
 import spray.json.{AdditionalFormats, CollectionFormats, DefaultJsonProtocol, JsNumber, JsString, JsValue, JsonFormat, ProductFormats, StandardFormats, deserializationError}
 
-trait ScalaSprayJsonProtocol
+trait GreenLeafJsonProtocol
   extends StandardFormats
   with CollectionFormats
   with ProductFormats
@@ -88,4 +88,4 @@ trait ScalaSprayJsonProtocol
 
 }
 
-object ScalaSprayJsonProtocol extends ScalaSprayJsonProtocol
+object GreenLeafJsonProtocol extends GreenLeafJsonProtocol

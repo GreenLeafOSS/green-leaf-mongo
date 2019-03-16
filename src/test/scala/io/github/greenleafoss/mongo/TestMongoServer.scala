@@ -1,4 +1,4 @@
-package com.github.lashchenko.sjmq
+package io.github.greenleafoss.mongo
 
 import de.flapdoodle.embed.mongo.config.{MongodConfigBuilder, Net, RuntimeConfigBuilder}
 import de.flapdoodle.embed.mongo.distribution.Version

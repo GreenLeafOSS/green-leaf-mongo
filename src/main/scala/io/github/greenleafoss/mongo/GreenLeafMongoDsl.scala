@@ -1,4 +1,4 @@
-package com.github.lashchenko.sjmq
+package io.github.greenleafoss.mongo
 
 import org.mongodb.scala.MongoClient
 import org.mongodb.scala.bson.BsonDocument
@@ -11,7 +11,7 @@ import spray.json._
 import scala.language.implicitConversions
 import scala.util.matching.Regex
 
-trait ScalaSprayMongoQueryDsl {
+trait GreenLeafMongoDsl {
 
   //  System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "debug")
 
@@ -457,4 +457,4 @@ trait ScalaSprayMongoQueryDsl {
 
 }
 
-object ScalaSprayMongoQueryDsl extends ScalaSprayMongoQueryDsl
+object GreenLeafMongoDsl extends GreenLeafMongoDsl

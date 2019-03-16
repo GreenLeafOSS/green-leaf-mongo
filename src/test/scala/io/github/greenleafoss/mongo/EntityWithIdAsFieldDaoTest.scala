@@ -1,8 +1,8 @@
-package com.github.lashchenko.sjmq
+package io.github.greenleafoss.mongo
 
 import java.util.UUID
 
-import com.github.lashchenko.sjmq.ScalaSprayMongoQueryDao.DaoBsonProtocol
+import GreenLeafMongoDao.DaoBsonProtocol
 import org.mongodb.scala.bson.collection.immutable.Document
 import org.mongodb.scala.{Completed, MongoCollection}
 import spray.json._
@@ -20,7 +20,7 @@ object EntityWithIdAsFieldDaoTest {
 
     // JSON
 
-    trait BuildingModelJsonProtocol extends ScalaSprayJsonProtocol {
+    trait BuildingModelJsonProtocol extends GreenLeafJsonProtocol {
       implicit lazy val BuildingFormat: RootJsonFormat[Building] = jsonFormat6(Building)
     }
 
@@ -28,7 +28,7 @@ object EntityWithIdAsFieldDaoTest {
 
     // BSON
 
-    trait BuildingModelBsonProtocol extends BuildingModelJsonProtocol with ScalaSprayBsonProtocol {
+    trait BuildingModelBsonProtocol extends BuildingModelJsonProtocol with GreenLeafBsonProtocol {
       override implicit lazy val BuildingFormat: RootJsonFormat[Building] =
         jsonFormat(Building, "_id", "name", "height", "floors", "year", "address")
     }
@@ -43,7 +43,7 @@ object EntityWithIdAsFieldDaoTest {
   import BuildingModel._
 
 
-  class BuildingDao(collectionName: String) extends TestScalaSprayMongoQueryDao[Long, Building] {
+  class BuildingDao(collectionName: String) extends TestGreenLeafMongoDao[Long, Building] {
 
     override protected val collection: MongoCollection[Document] = db.getCollection(collectionName)
 

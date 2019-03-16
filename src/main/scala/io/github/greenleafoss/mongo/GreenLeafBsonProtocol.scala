@@ -1,4 +1,4 @@
-package com.github.lashchenko.sjmq
+package io.github.greenleafoss.mongo
 
 import java.time.{Instant, ZoneOffset, ZonedDateTime}
 
@@ -7,8 +7,8 @@ import spray.json.{JsNumber, JsObject, JsString, JsValue, JsonFormat, NullOption
 
 import scala.util.matching.Regex
 
-trait ScalaSprayBsonProtocol
-  extends ScalaSprayJsonProtocol
+trait GreenLeafBsonProtocol
+  extends GreenLeafJsonProtocol
   with NullOptions {
 
   // https://docs.mongodb.com/manual/reference/mongodb-extended-json/#numberlong
@@ -93,4 +93,4 @@ trait ScalaSprayBsonProtocol
   }
 }
 
-object ScalaSprayBsonProtocol extends ScalaSprayBsonProtocol
+object GreenLeafBsonProtocol extends GreenLeafBsonProtocol

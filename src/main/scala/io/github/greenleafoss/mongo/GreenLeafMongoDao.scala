@@ -1,6 +1,6 @@
-package com.github.lashchenko.sjmq
+package io.github.greenleafoss.mongo
 
-import com.github.lashchenko.sjmq.ScalaSprayMongoQueryDao.DaoBsonProtocol
+import GreenLeafMongoDao.DaoBsonProtocol
 import org.mongodb.scala.bson.collection.immutable.Document
 import org.mongodb.scala.bson.conversions.Bson
 import org.mongodb.scala.model.{FindOneAndReplaceOptions, FindOneAndUpdateOptions}
@@ -9,15 +9,15 @@ import spray.json._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-object ScalaSprayMongoQueryDao {
+object GreenLeafMongoDao {
   trait DaoBsonProtocol[Id, E] {
     implicit def idFormat : JsonFormat[Id]
     implicit def entityFormat: JsonFormat[E]
   }
 }
 
-trait ScalaSprayMongoQueryDao[Id, E]
-  extends ScalaSprayMongoQueryDsl {
+trait GreenLeafMongoDao[Id, E]
+  extends GreenLeafMongoDsl {
 
   protected implicit val ec: ExecutionContext
 
