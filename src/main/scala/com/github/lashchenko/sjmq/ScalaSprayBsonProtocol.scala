@@ -29,6 +29,24 @@ trait ScalaSprayBsonProtocol
     }
   }
 
+  // https://docs.mongodb.com/manual/core/shell-types/#numberdecimal
+  // https://docs.mongodb.com/manual/reference/mongodb-extended-json/#numberdecimal
+  override implicit val BigDecimalJsonFormat: JsonFormat[BigDecimal] = new JsonFormat[BigDecimal] {
+    override def read(jsValue: JsValue): BigDecimal = jsValue match {
+      case JsNumber(v) => v
+      case JsString(v) => BigDecimal(v)
+      case JsObject(fields) => fields("$numberDecimal") match {
+        case JsString(v) => BigDecimal(v)
+        case x => deserializationError("Expected BigDecimal/NumberDecimal, but got " + x)
+      }
+      case x => deserializationError("Expected BigDecimal/NumberDecimal, but got " + x)
+    }
+
+    override def write(obj: BigDecimal): JsValue = {
+      JsObject("$numberDecimal" -> JsString(obj.toString()))
+    }
+  }
+
   // https://docs.mongodb.com/manual/reference/bson-types/#date
   // https://docs.mongodb.com/manual/reference/mongodb-extended-json/#date
   override implicit val ZdtJsonFormat: JsonFormat[ZonedDateTime] = new JsonFormat[ZonedDateTime] {
