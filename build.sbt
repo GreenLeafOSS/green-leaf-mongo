@@ -14,6 +14,7 @@ scalacOptions ++= Seq(
 )
 
 parallelExecution in Test := false
+fork in Test := true
 
 //libraryDependencies += "io.spray" %% "spray-json" % "1.3.4"
 libraryDependencies += "io.spray" %% "spray-json" % "1.3.5"
