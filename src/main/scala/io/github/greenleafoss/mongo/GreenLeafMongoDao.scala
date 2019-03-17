@@ -46,10 +46,9 @@ trait GreenLeafMongoDao[Id, E]
   }
 
   protected implicit class MongoSingleObservableDocumentToFutureRes(x: SingleObservable[Document]) {
-    def asOpt[T](implicit jf: JsonFormat[T]): Future[Option[T]] = x.toFuture().map {
-      case d: Document => Option(d.toJson().parseJson.convertTo[T])
-      case _ /* SingleObservable may contains null (Java) */ => None
-    }
+    def asOpt[T](implicit jf: JsonFormat[T]): Future[Option[T]] =
+      x.toFutureOption().map { _.map(_.toJson().parseJson.convertTo[T]) }
+
     def asOpt: Future[Option[E]] = asOpt[E]
   }
 
