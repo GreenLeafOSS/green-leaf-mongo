@@ -12,33 +12,33 @@ trait GreenLeafJsonProtocol
   with ProductFormats
   with AdditionalFormats {
 
-  implicit val IntJsonFormat: JsonFormat[Int] = DefaultJsonProtocol.IntJsonFormat
+  implicit def IntJsonFormat: JsonFormat[Int] = DefaultJsonProtocol.IntJsonFormat
 
-  implicit val LongJsonFormat: JsonFormat[Long] = DefaultJsonProtocol.LongJsonFormat
+  implicit def LongJsonFormat: JsonFormat[Long] = DefaultJsonProtocol.LongJsonFormat
 
-  implicit val FloatJsonFormat: JsonFormat[Float] = DefaultJsonProtocol.FloatJsonFormat
+  implicit def FloatJsonFormat: JsonFormat[Float] = DefaultJsonProtocol.FloatJsonFormat
 
-  implicit val DoubleJsonFormat: JsonFormat[Double] = DefaultJsonProtocol.DoubleJsonFormat
+  implicit def DoubleJsonFormat: JsonFormat[Double] = DefaultJsonProtocol.DoubleJsonFormat
 
-  implicit val ByteJsonFormat: JsonFormat[Byte] = DefaultJsonProtocol.ByteJsonFormat
+  implicit def ByteJsonFormat: JsonFormat[Byte] = DefaultJsonProtocol.ByteJsonFormat
 
-  implicit val ShortJsonFormat: JsonFormat[Short] = DefaultJsonProtocol.ShortJsonFormat
+  implicit def ShortJsonFormat: JsonFormat[Short] = DefaultJsonProtocol.ShortJsonFormat
 
-  implicit val BigDecimalJsonFormat: JsonFormat[BigDecimal] = DefaultJsonProtocol.BigDecimalJsonFormat
+  implicit def BigDecimalJsonFormat: JsonFormat[BigDecimal] = DefaultJsonProtocol.BigDecimalJsonFormat
 
-  implicit val BigIntJsonFormat: JsonFormat[BigInt] = DefaultJsonProtocol.BigIntJsonFormat
+  implicit def BigIntJsonFormat: JsonFormat[BigInt] = DefaultJsonProtocol.BigIntJsonFormat
 
-  implicit val UnitJsonFormat: JsonFormat[Unit] = DefaultJsonProtocol.UnitJsonFormat
+  implicit def UnitJsonFormat: JsonFormat[Unit] = DefaultJsonProtocol.UnitJsonFormat
 
-  implicit val BooleanJsonFormat: JsonFormat[Boolean] = DefaultJsonProtocol.BooleanJsonFormat
+  implicit def BooleanJsonFormat: JsonFormat[Boolean] = DefaultJsonProtocol.BooleanJsonFormat
 
-  implicit val CharJsonFormat: JsonFormat[Char] = DefaultJsonProtocol.CharJsonFormat
+  implicit def CharJsonFormat: JsonFormat[Char] = DefaultJsonProtocol.CharJsonFormat
 
-  implicit val StringJsonFormat: JsonFormat[String] = DefaultJsonProtocol.StringJsonFormat
+  implicit def StringJsonFormat: JsonFormat[String] = DefaultJsonProtocol.StringJsonFormat
 
-  implicit val SymbolJsonFormat: JsonFormat[Symbol] = DefaultJsonProtocol.SymbolJsonFormat
+  implicit def SymbolJsonFormat: JsonFormat[Symbol] = DefaultJsonProtocol.SymbolJsonFormat
 
-  implicit val ZdtJsonFormat: JsonFormat[ZonedDateTime] = new JsonFormat[ZonedDateTime] with ZonedDateTimeOps {
+  implicit def ZdtJsonFormat: JsonFormat[ZonedDateTime] = new JsonFormat[ZonedDateTime] with ZonedDateTimeOps {
     def write(obj: ZonedDateTime): JsValue = JsString(obj.format(DateTimePattern))
 
     def read(jsValue: JsValue): ZonedDateTime = jsValue match {
@@ -50,7 +50,7 @@ trait GreenLeafJsonProtocol
     }
   }
 
-  implicit val ObjectIdJsonFormat: JsonFormat[ObjectId] = new JsonFormat[ObjectId] {
+  implicit def ObjectIdJsonFormat: JsonFormat[ObjectId] = new JsonFormat[ObjectId] {
     def write(obj: ObjectId): JsValue = JsString(obj.toString)
 
     def read(jsValue: JsValue): ObjectId = jsValue match {

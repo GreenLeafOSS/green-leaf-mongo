@@ -12,7 +12,7 @@ trait GreenLeafBsonProtocol
   with NullOptions {
 
   // https://docs.mongodb.com/manual/reference/mongodb-extended-json/#numberlong
-  override implicit val LongJsonFormat: JsonFormat[Long] = new JsonFormat[Long] {
+  override implicit def LongJsonFormat: JsonFormat[Long] = new JsonFormat[Long] {
 
     def read(jsValue: JsValue): Long = jsValue match {
       case JsObject(fields) => fields("$numberLong") match {
@@ -31,7 +31,7 @@ trait GreenLeafBsonProtocol
 
   // https://docs.mongodb.com/manual/core/shell-types/#numberdecimal
   // https://docs.mongodb.com/manual/reference/mongodb-extended-json/#numberdecimal
-  override implicit val BigDecimalJsonFormat: JsonFormat[BigDecimal] = new JsonFormat[BigDecimal] {
+  override implicit def BigDecimalJsonFormat: JsonFormat[BigDecimal] = new JsonFormat[BigDecimal] {
     override def read(jsValue: JsValue): BigDecimal = jsValue match {
       case JsNumber(v) => v
       case JsString(v) => BigDecimal(v)
@@ -49,7 +49,7 @@ trait GreenLeafBsonProtocol
 
   // https://docs.mongodb.com/manual/reference/bson-types/#date
   // https://docs.mongodb.com/manual/reference/mongodb-extended-json/#date
-  override implicit val ZdtJsonFormat: JsonFormat[ZonedDateTime] = new JsonFormat[ZonedDateTime] {
+  override implicit def ZdtJsonFormat: JsonFormat[ZonedDateTime] = new JsonFormat[ZonedDateTime] {
 
     def write(obj: ZonedDateTime): JsValue = {
       JsObject("$date" -> JsNumber(obj.toInstant.toEpochMilli))
@@ -66,7 +66,7 @@ trait GreenLeafBsonProtocol
 
   // https://docs.mongodb.com/manual/reference/bson-types/#objectid
   // https://docs.mongodb.com/manual/reference/mongodb-extended-json/#oid
-  override implicit val ObjectIdJsonFormat: JsonFormat[ObjectId] = new JsonFormat[ObjectId] {
+  override implicit def ObjectIdJsonFormat: JsonFormat[ObjectId] = new JsonFormat[ObjectId] {
     def write(obj: ObjectId): JsValue = JsObject("$oid" -> JsString(obj.toString))
 
     def read(jsValue: JsValue): ObjectId = jsValue match {
@@ -78,7 +78,7 @@ trait GreenLeafBsonProtocol
     }
   }
 
-  implicit val RegexJsonFormat: JsonFormat[Regex] = new JsonFormat[Regex] {
+  implicit def RegexJsonFormat: JsonFormat[Regex] = new JsonFormat[Regex] {
 
     override def read(jsValue: JsValue): Regex = jsValue match {
       case JsObject(fields) =>
