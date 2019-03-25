@@ -20,6 +20,7 @@ trait GreenLeafJsonProtocol
 
     def read(value: JsValue): Int = value match {
       case JsNumber(x) => x.intValue
+      case JsString.empty => 0
       case JsString(x) => x.toInt
       case x => deserializationError("Expected Int as JsNumber/JsString, but got " + x)
     }
@@ -33,6 +34,7 @@ trait GreenLeafJsonProtocol
 
     def read(value: JsValue): Long = value match {
       case JsNumber(x) => x.longValue
+      case JsString.empty => 0L
       case JsString(x) => x.toLong
       case x => deserializationError("Expected Long as JsNumber/JsString, but got " + x)
     }
@@ -46,6 +48,7 @@ trait GreenLeafJsonProtocol
 
     def read(value: JsValue): Float = value match {
       case JsNumber(x) => x.floatValue
+      case JsString.empty => 0f
       case JsString(x) => x.toFloat
       case JsNull      => Float.NaN
       case x => deserializationError("Expected Float as JsNumber/JsString, but got " + x)
@@ -60,6 +63,7 @@ trait GreenLeafJsonProtocol
 
     def read(value: JsValue): Double = value match {
       case JsNumber(x) => x.doubleValue
+      case JsString.empty => 0d
       case JsString(x) => x.toDouble
       case JsNull      => Double.NaN
       case x => deserializationError("Expected Double as JsNumber/JsString, but got " + x)
@@ -74,6 +78,7 @@ trait GreenLeafJsonProtocol
 
     def read(value: JsValue): Byte = value match {
       case JsNumber(x) => x.byteValue
+      case JsString.empty => 0.toByte
       case JsString(x) => x.toByte
       case x => deserializationError("Expected Byte as JsNumber/JsString, but got " + x)
     }
@@ -87,6 +92,7 @@ trait GreenLeafJsonProtocol
 
     def read(value: JsValue): Short = value match {
       case JsNumber(x) => x.shortValue
+      case JsString.empty => 0.toShort
       case JsString(x) => x.toShort
       case x => deserializationError("Expected Short as JsNumber/JsString, but got " + x)
     }
@@ -114,6 +120,7 @@ trait GreenLeafJsonProtocol
 
     def read(value: JsValue): BigInt = value match {
       case JsNumber(x) => x.toBigInt
+      case JsString.empty => BigInt(0)
       case JsString(x) => BigInt(x)
       case x => deserializationError("Expected BigInt as JsNumber/JsString, but got " + x)
     }
