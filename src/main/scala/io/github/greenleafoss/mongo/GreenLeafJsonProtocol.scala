@@ -4,7 +4,7 @@ import java.time.ZonedDateTime
 import java.util.UUID
 
 import org.mongodb.scala.bson.ObjectId
-import spray.json.{AdditionalFormats, CollectionFormats, DefaultJsonProtocol, JsNumber, JsString, JsValue, JsonFormat, ProductFormats, StandardFormats, deserializationError}
+import spray.json.{AdditionalFormats, CollectionFormats, DefaultJsonProtocol, JsBoolean, JsFalse, JsNull, JsNumber, JsString, JsTrue, JsValue, JsonFormat, ProductFormats, StandardFormats, deserializationError}
 
 trait GreenLeafJsonProtocol
   extends StandardFormats
@@ -12,21 +12,112 @@ trait GreenLeafJsonProtocol
   with ProductFormats
   with AdditionalFormats {
 
-  implicit def IntJsonFormat: JsonFormat[Int] = DefaultJsonProtocol.IntJsonFormat
+  implicit def IntJsonFormat: JsonFormat[Int] = new JsonFormat[Int] {
+    def write(x: Int): JsNumber = {
+      require(x ne null)
+      JsNumber(x)
+    }
 
-  implicit def LongJsonFormat: JsonFormat[Long] = DefaultJsonProtocol.LongJsonFormat
+    def read(value: JsValue): Int = value match {
+      case JsNumber(x) => x.intValue
+      case JsString(x) => x.toInt
+      case x => deserializationError("Expected Int as JsNumber/JsString, but got " + x)
+    }
+  }
 
-  implicit def FloatJsonFormat: JsonFormat[Float] = DefaultJsonProtocol.FloatJsonFormat
+  implicit def LongJsonFormat: JsonFormat[Long] = new JsonFormat[Long] {
+    def write(x: Long): JsNumber = {
+      require(x ne null)
+      JsNumber(x)
+    }
 
-  implicit def DoubleJsonFormat: JsonFormat[Double] = DefaultJsonProtocol.DoubleJsonFormat
+    def read(value: JsValue): Long = value match {
+      case JsNumber(x) => x.longValue
+      case JsString(x) => x.toLong
+      case x => deserializationError("Expected Long as JsNumber/JsString, but got " + x)
+    }
+  }
 
-  implicit def ByteJsonFormat: JsonFormat[Byte] = DefaultJsonProtocol.ByteJsonFormat
+  implicit def FloatJsonFormat: JsonFormat[Float] = new JsonFormat[Float] {
+    def write(x: Float): JsValue = {
+      require(x ne null)
+      JsNumber(x)
+    }
 
-  implicit def ShortJsonFormat: JsonFormat[Short] = DefaultJsonProtocol.ShortJsonFormat
+    def read(value: JsValue): Float = value match {
+      case JsNumber(x) => x.floatValue
+      case JsString(x) => x.toFloat
+      case JsNull      => Float.NaN
+      case x => deserializationError("Expected Float as JsNumber/JsString, but got " + x)
+    }
+  }
 
-  implicit def BigDecimalJsonFormat: JsonFormat[BigDecimal] = DefaultJsonProtocol.BigDecimalJsonFormat
+  implicit def DoubleJsonFormat: JsonFormat[Double] = new JsonFormat[Double] {
+    def write(x: Double): JsValue = {
+      require(x ne null)
+      JsNumber(x)
+    }
 
-  implicit def BigIntJsonFormat: JsonFormat[BigInt] = DefaultJsonProtocol.BigIntJsonFormat
+    def read(value: JsValue): Double = value match {
+      case JsNumber(x) => x.doubleValue
+      case JsString(x) => x.toDouble
+      case JsNull      => Double.NaN
+      case x => deserializationError("Expected Double as JsNumber/JsString, but got " + x)
+    }
+  }
+
+  implicit def ByteJsonFormat: JsonFormat[Byte] = new JsonFormat[Byte] {
+    def write(x: Byte): JsNumber = {
+      require(x ne null)
+      JsNumber(x)
+    }
+
+    def read(value: JsValue): Byte = value match {
+      case JsNumber(x) => x.byteValue
+      case JsString(x) => x.toByte
+      case x => deserializationError("Expected Byte as JsNumber/JsString, but got " + x)
+    }
+  }
+
+  implicit def ShortJsonFormat: JsonFormat[Short] = new JsonFormat[Short] {
+    def write(x: Short): JsNumber = {
+      require(x ne null)
+      JsNumber(x)
+    }
+
+    def read(value: JsValue): Short = value match {
+      case JsNumber(x) => x.shortValue
+      case JsString(x) => x.toShort
+      case x => deserializationError("Expected Short as JsNumber/JsString, but got " + x)
+    }
+  }
+
+  implicit def BigDecimalJsonFormat: JsonFormat[BigDecimal] = new JsonFormat[BigDecimal] {
+    def write(x: BigDecimal): JsNumber = {
+      require(x ne null)
+      JsNumber(x)
+    }
+
+    def read(value: JsValue): BigDecimal = value match {
+      case JsNumber(x) => x
+      case JsString.empty => BigDecimal(0)
+      case JsString(x) => BigDecimal(x)
+      case x => deserializationError("Expected BigDecimal as JsNumber/JsString, but got " + x)
+    }
+  }
+
+  implicit def BigIntJsonFormat: JsonFormat[BigInt] = new JsonFormat[BigInt] {
+    def write(x: BigInt): JsNumber = {
+      require(x ne null)
+      JsNumber(x)
+    }
+
+    def read(value: JsValue): BigInt = value match {
+      case JsNumber(x) => x.toBigInt
+      case JsString(x) => BigInt(x)
+      case x => deserializationError("Expected BigInt as JsNumber/JsString, but got " + x)
+    }
+  }
 
   implicit def UnitJsonFormat: JsonFormat[Unit] = DefaultJsonProtocol.UnitJsonFormat
 
