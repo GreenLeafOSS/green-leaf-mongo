@@ -121,7 +121,19 @@ trait GreenLeafJsonProtocol
 
   implicit def UnitJsonFormat: JsonFormat[Unit] = DefaultJsonProtocol.UnitJsonFormat
 
-  implicit def BooleanJsonFormat: JsonFormat[Boolean] = DefaultJsonProtocol.BooleanJsonFormat
+  implicit def BooleanJsonFormat: JsonFormat[Boolean] = new JsonFormat[Boolean] {
+    def write(x: Boolean): JsBoolean = {
+      require(x ne null)
+      JsBoolean(x)
+    }
+
+    def read(value: JsValue): Boolean = value match {
+      case JsTrue => true
+      case JsFalse => false
+      case JsString(x) => java.lang.Boolean.parseBoolean(x)
+      case x => deserializationError("Expected JsBoolean/JsString, but got " + x)
+    }
+  }
 
   implicit def CharJsonFormat: JsonFormat[Char] = DefaultJsonProtocol.CharJsonFormat
 
