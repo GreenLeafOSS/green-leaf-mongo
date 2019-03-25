@@ -15,6 +15,7 @@ class NumbersJsonFormatTest extends WordSpec with Matchers {
 
     "read Int value as JsString in JSON" in {
       "\"1024\"".parseJson.convertTo[Int] shouldBe 1024
+      "\"\"".parseJson.convertTo[Int] shouldBe 0
     }
 
 
@@ -24,6 +25,7 @@ class NumbersJsonFormatTest extends WordSpec with Matchers {
 
     "read Long value as JsString in JSON" in {
       "\"4886718345\"".parseJson.convertTo[Long] shouldBe 0x123456789L
+      "\"0\"".parseJson.convertTo[Long] shouldBe 0L
     }
 
 
@@ -33,6 +35,7 @@ class NumbersJsonFormatTest extends WordSpec with Matchers {
 
     "read Float value as JsString in JSON" in {
       "\"3.1415\"".parseJson.convertTo[Float] shouldBe 3.1415f
+      "\"\"".parseJson.convertTo[Float] shouldBe 0f
     }
 
 
@@ -41,7 +44,8 @@ class NumbersJsonFormatTest extends WordSpec with Matchers {
     }
 
     "read Double value as JsString in JSON" in {
-      "\"3.1415926535\"".parseJson.convertTo[Double] shouldBe 3.1415926535
+      "\"3.1415926535\"".parseJson.convertTo[Double] shouldBe 3.1415926535d
+      "\"\"".parseJson.convertTo[Double] shouldBe 0d
     }
 
 
@@ -53,6 +57,7 @@ class NumbersJsonFormatTest extends WordSpec with Matchers {
     "read Byte value as JsString in JSON" in {
       "\"0\"".parseJson.convertTo[Byte] shouldBe 0.toByte
       "\"1\"".parseJson.convertTo[Byte] shouldBe 1.toByte
+      "\"\"".parseJson.convertTo[Byte] shouldBe 0.toByte
     }
 
 
@@ -64,6 +69,7 @@ class NumbersJsonFormatTest extends WordSpec with Matchers {
     "read Short value as JsString in JSON" in {
       "\"0\"".parseJson.convertTo[Short] shouldBe 0.toShort
       "\"1\"".parseJson.convertTo[Short] shouldBe 1.toShort
+      "\"\"".parseJson.convertTo[Short] shouldBe 0.toShort
     }
 
 
@@ -75,6 +81,7 @@ class NumbersJsonFormatTest extends WordSpec with Matchers {
     "read BigDecimal value as JsString in JSON" in {
       "\"3.141592653589793238462643383279\"".parseJson.convertTo[BigDecimal] shouldBe BigDecimal("3.141592653589793238462643383279")
       "\"2.718281828459045235360287471352\"".parseJson.convertTo[BigDecimal] shouldBe BigDecimal("2.718281828459045235360287471352")
+      "\"\"".parseJson.convertTo[BigDecimal] shouldBe BigDecimal(0)
     }
 
 
@@ -86,6 +93,7 @@ class NumbersJsonFormatTest extends WordSpec with Matchers {
     "read BigInt value as JsString in JSON" in {
       "\"3316923598096294713661\"".parseJson.convertTo[BigInt] shouldBe BigInt("3316923598096294713661")
       "\"1000000000000066600000000000001\"".parseJson.convertTo[BigInt] shouldBe BigInt("1000000000000066600000000000001")
+      "\"\"".parseJson.convertTo[BigInt] shouldBe BigInt(0)
     }
 
   }
