@@ -111,5 +111,5 @@ More examples of queries available in `GreenLeafMongoDslTest`.
 ## GreenLeafMongoDao
 `GreenLeafMongoDao` extends `GreenLeafMongoDsl` and provides simple DSL to transform Mongo's _Observable[Document]_ instances to _Future[Seq[T]]_, _Future[Option[T]]_ and _Future[T]_.
 In addition this trait provides many useful generic methods such as _insert_, _getById_, _findById_, _updateById_, _replaceById_ and others.
-You can find more details and examples in `EntityWithIdAsFieldDaoTest`, `EntityWithIdAsObjectDaoTest`, `EntityWithOptionalFieldsDaoTest` and `EntityWithoutIdDaoTest`.
+You can find more details and examples in [EntityWithIdAsFieldDaoTest](https://github.com/GreenLeafOSS/green-leaf-mongo/blob/master/src/test/scala/io/github/greenleafoss/mongo/EntityWithIdAsFieldDaoTest.scala), [EntityWithIdAsObjectDaoTest](https://github.com/GreenLeafOSS/green-leaf-mongo/blob/master/src/test/scala/io/github/greenleafoss/mongo/EntityWithIdAsObjectDaoTest.scala), [EntityWithOptionalFieldsDaoTest](https://github.com/GreenLeafOSS/green-leaf-mongo/blob/master/src/test/scala/io/github/greenleafoss/mongo/EntityWithOptionalFieldsDaoTest.scala) and [EntityWithoutIdDaoTest](https://github.com/GreenLeafOSS/green-leaf-mongo/blob/master/src/test/scala/io/github/greenleafoss/mongo/EntityWithoutIdDaoTest.scala).
 
