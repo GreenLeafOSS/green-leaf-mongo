@@ -1,5 +1,6 @@
 # green-leaf-mongo
 ![GitHub](https://img.shields.io/github/license/GreenLeafOSS/green-leaf-mongo.svg)
+[![Build Status](https://travis-ci.org/GreenLeafOSS/green-leaf-mongo.svg?branch=master)](https://travis-ci.org/GreenLeafOSS/green-leaf-mongo)
 [ ![Download](https://api.bintray.com/packages/greenleafoss/maven/green-leaf-mongo/images/download.svg) ](https://bintray.com/greenleafoss/maven/green-leaf-mongo/_latestVersion)
 
 ## Short description
