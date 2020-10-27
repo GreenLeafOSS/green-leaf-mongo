@@ -1,9 +1,10 @@
 package io.github.greenleafoss.mongo
 
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import spray.json._
 
-class NumbersJsonFormatTest extends WordSpec with Matchers {
+class NumbersJsonFormatTest extends AnyWordSpec with Matchers {
 
   import GreenLeafJsonProtocol._
 

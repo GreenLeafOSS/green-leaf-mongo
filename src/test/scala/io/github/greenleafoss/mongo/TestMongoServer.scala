@@ -5,7 +5,9 @@ import de.flapdoodle.embed.mongo.distribution.Version
 import de.flapdoodle.embed.mongo.{Command, MongodExecutable, MongodProcess, MongodStarter}
 import de.flapdoodle.embed.process.config.IRuntimeConfig
 import de.flapdoodle.embed.process.runtime.Network
-import org.scalatest.{AsyncWordSpec, BeforeAndAfterAll, Matchers}
+import org.scalatest.BeforeAndAfterAll
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AsyncWordSpec
 import org.slf4j.LoggerFactory
 
 trait TestMongoServer extends AsyncWordSpec with Matchers with BeforeAndAfterAll {

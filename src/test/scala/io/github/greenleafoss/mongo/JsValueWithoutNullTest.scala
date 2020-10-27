@@ -1,9 +1,10 @@
 package io.github.greenleafoss.mongo
 
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import spray.json._
 
-class JsValueWithoutNullTest extends WordSpec with Matchers {
+class JsValueWithoutNullTest extends AnyWordSpec with Matchers {
 
   case class TestNulls(
       i: Option[Int],

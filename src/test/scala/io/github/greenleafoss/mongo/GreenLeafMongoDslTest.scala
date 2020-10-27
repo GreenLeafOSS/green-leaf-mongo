@@ -2,7 +2,8 @@ package io.github.greenleafoss.mongo
 
 import org.mongodb.scala.bson.collection.immutable.Document
 import org.mongodb.scala.bson.conversions.Bson
-import org.scalatest.{AsyncWordSpec, Matchers}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AsyncWordSpec
 import spray.json._
 
 class GreenLeafMongoDslTest
