@@ -8,6 +8,7 @@ import org.mongodb.scala.{Completed, FindObservable, MongoCollection, MongoDatab
 import spray.json._
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.reflect.ClassTag
 
 object GreenLeafMongoDao {
   trait DaoBsonProtocol[Id, E] {
@@ -89,14 +90,20 @@ trait GreenLeafMongoDao[Id, E]
   // find({"id": { $in: [ {"id.a": 1, "id.b": 2}, ... ] } }) - will not work
   def findByIdsIn(ids: Seq[Id], offset: Int = 0, limit: Int = 0): Future[Seq[E]] = ids match {
     case Nil => Future.successful(Seq.empty)
-    case id :: Nil => findById(id).map(_.toSeq)
     case _ => internalFindBy(primaryKey $in (ids: _*), offset, limit).asSeq
   }
 
   def findByIdsOr(ids: Seq[Id], offset: Int = 0, limit: Int = 0): Future[Seq[E]] = ids match {
     case Nil => Future.successful(Seq.empty)
-    case id :: Nil => findById(id).map(_.toSeq)
     case _ => internalFindBy($or(ids.map(_.asJsonExpanded(primaryKey)): _*), offset, limit).asSeq
+  }
+
+  def findBy(filter: Bson, offset: Int = 0, limit: Int = 0): Future[Seq[E]] = {
+    internalFindBy(filter, offset, limit).asSeq
+  }
+
+  def findOneBy(filter: Bson): Future[Option[E]] = {
+    internalFindBy(filter, offset = 0, limit = 1).asOpt
   }
 
   def findAll(offset: Int = 0, limit: Int = 0): Future[Seq[E]] = {
@@ -171,6 +178,13 @@ trait GreenLeafMongoDao[Id, E]
     replaceBy(filter, e, upsert = true)
   }
 
+  def distinct[T](fieldName: String, filter: Bson)(implicit ct: ClassTag[T]): Future[Seq[T]] = {
+    collection.distinct[T](fieldName, filter).toFuture()
+  }
+
+  def aggregate(pipeline: Seq[Bson]): Future[Seq[Document]] = {
+    collection.aggregate(pipeline).toFuture()
+  }
 
   def deleteById(id: Id): Future[E] = ???
   def deleteByIds(id: Seq[Id]): Future[E] = ???

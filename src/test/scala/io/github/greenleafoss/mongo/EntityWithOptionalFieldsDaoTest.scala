@@ -59,17 +59,17 @@ object EntityWithOptionalFieldsDaoTest {
       // val filter = Document(s"""{ "_id": { "country": $countryCode } }""")
 
       val filter = $and("_id.country" $eq countryCode, "_id.state" $eq JsNull, "_id.city" $eq JsNull)
-      internalFindBy(filter, 0, 1).asOpt
+      findOneBy(filter)
     }
 
     def findStateBy(countryCode: String, stateCode: String): Future[Option[GeoRecord]] = {
       val filter = $and("_id.country" $eq countryCode, "_id.state" $eq stateCode, "_id.city" $eq JsNull)
-      internalFindBy(filter, 0, 1).asOpt
+      findOneBy(filter)
     }
 
     def findCityBy(countryCode: String, stateCode: String, cityCode: String): Future[Option[GeoRecord]] = {
       val filter = $and("_id.country" $eq countryCode, "_id.state" $eq stateCode, "_id.city" $eq cityCode)
-      internalFindBy(filter, 0, 1).asOpt
+      findOneBy(filter)
     }
 
   }

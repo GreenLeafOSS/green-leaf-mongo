@@ -70,18 +70,15 @@ object EntityWithIdAsObjectDaoTest {
     import protocol._
 
     def findByDate(date: ZonedDateTime): Future[Seq[ExchangeRate]] = {
-      val filter = "id.date" $eq date
-      internalFindBy(filter, 0, 0).asSeq
+      findBy("_id.date" $eq date)
     }
 
     def findByDateGt(date: ZonedDateTime): Future[Seq[ExchangeRate]] = {
-      val filter = "id.date" $gt date
-      internalFindBy(filter, 0, 0).asSeq
+      findBy("_id.date" $gt date)
     }
 
     def findByDateGte(date: ZonedDateTime): Future[Seq[ExchangeRate]] = {
-      val filter = "id.date" $gte date
-      internalFindBy(filter, 0, 0).asSeq
+      findBy("_id.date" $gte date)
     }
 
   }
@@ -259,9 +256,27 @@ class EntityWithIdAsObjectDaoTest extends TestMongoServer {
         insertRes <- dao.insert(Seq(
           ExchangeRates("2019-01-02"), ExchangeRates("2019-01-03"), ExchangeRates("2019-01-04")))
         x <- dao.findByIdsOr(Seq(ExchangeRateId(USD, "2019-01-03"), ExchangeRateId(USD, "2019-01-04")))
+        y <- dao.findByIdsOr(Seq(ExchangeRateId(USD, "2019-01-02")))
       } yield {
         insertRes shouldBe Completed()
         x should contain allElementsOf Set(ExchangeRates("2019-01-03"), ExchangeRates("2019-01-04"))
+        y should contain allElementsOf Set(ExchangeRates("2019-01-02"))
+      }
+    }
+
+    "find records by filter" in {
+      val dao = ExchangeRateDao()
+      for {
+        insertRes <- dao.insert(Seq(
+          ExchangeRates("2019-01-02"), ExchangeRates("2019-01-03"), ExchangeRates("2019-01-04")))
+        x <- dao.findByDate(date = "2019-01-02")
+        y <- dao.findByDateGt(date = "2019-01-03")
+        z <- dao.findByDateGte(date = "2019-01-04")
+      } yield {
+        insertRes shouldBe Completed()
+        x should contain allElementsOf Set(ExchangeRates("2019-01-02"))
+        y should contain allElementsOf Set(ExchangeRates("2019-01-04"))
+        z should contain allElementsOf Set(ExchangeRates("2019-01-04"))
       }
     }
 

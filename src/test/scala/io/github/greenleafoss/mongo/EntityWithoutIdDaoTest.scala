@@ -73,7 +73,7 @@ object EntityWithoutIdDaoTest {
     }
 
     def findBySource(source: EventSource.EventSource): Future[Seq[Event]] = {
-      internalFindBy("source" $eq source, 0, 0).asSeq
+      findBy("source" $eq source)
     }
   }
 
