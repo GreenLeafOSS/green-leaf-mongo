@@ -8,6 +8,7 @@ import org.mongodb.scala.{Completed, FindObservable, MongoCollection, MongoDatab
 import spray.json._
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.reflect.ClassTag
 
 object GreenLeafMongoDao {
   trait DaoBsonProtocol[Id, E] {
@@ -30,6 +31,8 @@ trait GreenLeafMongoDao[Id, E]
   // _id, id, key, ...
   protected val primaryKey: String = "_id"
   protected def skipNull: Boolean = true
+
+  protected implicit val defaultSortBson: Bson = Document(s"{$primaryKey: 1}")
 
   protected implicit class MongoFindObservableToFutureRes(x: FindObservable[Document]) {
     def asSeq[T](implicit jf: JsonFormat[T]): Future[Seq[T]] =
@@ -66,22 +69,21 @@ trait GreenLeafMongoDao[Id, E]
     collection.insertMany(documents).toFuture()
   }
 
-  protected def internalFindBy(filter: Bson, offset: Int, limit: Int): FindObservable[Document] = {
-    // TODO add sort: Bson parameter
-    log.trace("DAO.internalFindBy: " + filter.toString)
-    collection.find(filter).skip(offset).limit(limit)
+  protected def internalFindBy(filter: Bson, offset: Int, limit: Int)(implicit sort: Bson): FindObservable[Document] = {
+    log.trace(s"DAO.internalFindBy: ${filter.toString} with sort ${sort.toString}")
+    collection.find(filter).skip(offset).limit(limit).sort(sort)
   }
 
   def getById(id: Id): Future[E] = {
     val filter = primaryKey $eq id
     log.trace(s"DAO.getById [$primaryKey] : $filter")
-    internalFindBy(filter, 0, 1).asObj
+    internalFindBy(filter, offset = 0, limit = 1).asObj
   }
 
   def findById(id: Id): Future[Option[E]] = {
     val filter = primaryKey $eq id
     log.trace(s"DAO.findById [$primaryKey] : $filter")
-    internalFindBy(filter, 0, 1).asOpt
+    internalFindBy(filter, offset = 0, limit = 1).asOpt
   }
 
   // JSON fields can have different order, so if Id type is object don't use this query.
@@ -89,14 +91,20 @@ trait GreenLeafMongoDao[Id, E]
   // find({"id": { $in: [ {"id.a": 1, "id.b": 2}, ... ] } }) - will not work
   def findByIdsIn(ids: Seq[Id], offset: Int = 0, limit: Int = 0): Future[Seq[E]] = ids match {
     case Nil => Future.successful(Seq.empty)
-    case id :: Nil => findById(id).map(_.toSeq)
     case _ => internalFindBy(primaryKey $in (ids: _*), offset, limit).asSeq
   }
 
   def findByIdsOr(ids: Seq[Id], offset: Int = 0, limit: Int = 0): Future[Seq[E]] = ids match {
     case Nil => Future.successful(Seq.empty)
-    case id :: Nil => findById(id).map(_.toSeq)
     case _ => internalFindBy($or(ids.map(_.asJsonExpanded(primaryKey)): _*), offset, limit).asSeq
+  }
+
+  def findBy(filter: Bson, offset: Int = 0, limit: Int = 0)(implicit sort: Bson = defaultSortBson): Future[Seq[E]] = {
+    internalFindBy(filter, offset, limit)(sort).asSeq
+  }
+
+  def findOneBy(filter: Bson): Future[Option[E]] = {
+    internalFindBy(filter, offset = 0, limit = 1).asOpt
   }
 
   def findAll(offset: Int = 0, limit: Int = 0): Future[Seq[E]] = {
@@ -171,6 +179,13 @@ trait GreenLeafMongoDao[Id, E]
     replaceBy(filter, e, upsert = true)
   }
 
+  def distinct[T](fieldName: String, filter: Bson)(implicit ct: ClassTag[T]): Future[Seq[T]] = {
+    collection.distinct[T](fieldName, filter).toFuture()
+  }
+
+  def aggregate(pipeline: Seq[Bson]): Future[Seq[Document]] = {
+    collection.aggregate(pipeline).toFuture()
+  }
 
   def deleteById(id: Id): Future[E] = ???
   def deleteByIds(id: Seq[Id]): Future[E] = ???

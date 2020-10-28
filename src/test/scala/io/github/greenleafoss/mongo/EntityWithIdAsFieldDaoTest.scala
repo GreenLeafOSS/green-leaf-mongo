@@ -51,15 +51,15 @@ object EntityWithIdAsFieldDaoTest {
     import protocol._
 
     def findByName(name: String): Future[Seq[Building]] = {
-      internalFindBy("name" $regex (name, "i"), 0, 0).asSeq
+      findBy("name" $regex (name, "i"))
     }
 
     def findByFloors(minFloors: Int): Future[Seq[Building]] = {
-      internalFindBy("floors" $gte minFloors, 0, 0).asSeq
+      findBy("floors" $gte minFloors)
     }
 
     def findByAddressAndYear(address: String, year: Int): Future[Seq[Building]] = {
-      internalFindBy($and("address" $regex (address, "i"), "year" $gte year), 0, 0).asSeq
+      findBy($and("address" $regex (address, "i"), "year" $gte year))
     }
   }
 
@@ -123,11 +123,13 @@ class EntityWithIdAsFieldDaoTest extends TestMongoServer {
     "find by ids" in {
       val dao = BuildingDao()
       for {
-        insertRes <- dao.insert(Seq(BuildingsInNyc(6), BuildingsInNyc(7), BuildingsInNyc(8)))
-        x <- dao.findByIdsIn(Seq(6L, 7L, 8))
+        insertRes <- dao.insert(Seq(BuildingsInNyc(6), BuildingsInNyc(7), BuildingsInNyc(8), BuildingsInNyc(9)))
+        x <- dao.findByIdsIn(Seq(6, 7, 8))
+        y <- dao.findByIdsIn(Seq(9))
       } yield {
         insertRes shouldBe Completed()
         x should contain allElementsOf Seq(BuildingsInNyc(6), BuildingsInNyc(7), BuildingsInNyc(8))
+        y should contain allElementsOf Seq(BuildingsInNyc(9))
       }
     }
 

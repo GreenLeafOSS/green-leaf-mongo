@@ -65,15 +65,15 @@ object EntityWithoutIdDaoTest {
     import protocol._
 
     override def findAll(offset: Int = 0, limit: Int = 0): Future[Seq[Event]] = {
-      internalFindBy(Document.empty, offset, limit).sort(Document("""{timestamp: 1}""")).asSeq
+      findBy(Document.empty, offset, limit)(Document("{timestamp: 1}"))
     }
 
     def findLastN(limit: Int = 0): Future[Seq[Event]] = {
-      internalFindBy(Document.empty, 0, limit).sort(Document("""{timestamp: -1}""")).asSeq
+      findBy(Document.empty, 0, limit)(Document("{timestamp: -1}"))
     }
 
     def findBySource(source: EventSource.EventSource): Future[Seq[Event]] = {
-      internalFindBy("source" $eq source, 0, 0).asSeq
+      findBy("source" $eq source)
     }
   }
 

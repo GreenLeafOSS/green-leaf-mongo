@@ -5,11 +5,12 @@ import java.time.ZonedDateTime
 import ZonedDateTimeOps.Implicits.strToDate
 
 import org.mongodb.scala.bson.ObjectId
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import spray.json._
 
 class GreenLeafJsonAndBsonProtocolsTest
-  extends WordSpec
+  extends AnyWordSpec
   with Matchers {
 
   // MODEL
