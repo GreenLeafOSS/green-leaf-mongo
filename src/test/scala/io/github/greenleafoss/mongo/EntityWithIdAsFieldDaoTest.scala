@@ -51,15 +51,15 @@ object EntityWithIdAsFieldDaoTest {
     import protocol._
 
     def findByName(name: String): Future[Seq[Building]] = {
-      findBy("name" $regex (name, "i"))
+      find("name" $regex (name, "i"))
     }
 
     def findByFloors(minFloors: Int): Future[Seq[Building]] = {
-      findBy("floors" $gte minFloors)
+      find("floors" $gte minFloors)
     }
 
     def findByAddressAndYear(address: String, year: Int): Future[Seq[Building]] = {
-      findBy($and("address" $regex (address, "i"), "year" $gte year))
+      find($and("address" $regex (address, "i"), "year" $gte year))
     }
   }
 

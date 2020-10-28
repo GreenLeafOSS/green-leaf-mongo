@@ -49,29 +49,29 @@ trait GreenLeafMongoDao[Id, E]
     collection.insertMany(documents).toFuture()
   }
 
-  protected def internalFindBy(filter: Bson, offset: Int, limit: Int, sortBy: Bson = defaultSortBy): FindObservable[Document] = {
-    log.trace("DAO.internalFindBy: " + filter.toString)
+  protected def internalFind(filter: Bson, offset: Int, limit: Int, sortBy: Bson = defaultSortBy): FindObservable[Document] = {
+    log.trace("DAO.internalFind: " + filter.toString)
     collection.find(filter).skip(offset).limit(limit).sort(sortBy)
   }
 
-  def findOneBy(filter: Bson, offset: Int = 0, sortBy: Bson = defaultSortBy): Future[Option[E]] = {
-    internalFindBy(filter, offset, limit = 1, sortBy).asOpt[E]
+  def findOne(filter: Bson, offset: Int = 0, sortBy: Bson = defaultSortBy): Future[Option[E]] = {
+    internalFind(filter, offset, limit = 1, sortBy).asOpt[E]
   }
 
-  def findBy(filter: Bson, offset: Int = 0, limit: Int = 0, sortBy: Bson = defaultSortBy): Future[Seq[E]] = {
-    internalFindBy(filter, offset, limit, sortBy).asSeq[E]
+  def find(filter: Bson, offset: Int = 0, limit: Int = 0, sortBy: Bson = defaultSortBy): Future[Seq[E]] = {
+    internalFind(filter, offset, limit, sortBy).asSeq[E]
   }
 
   def getById(id: Id): Future[E] = {
     val filter = primaryKey $eq id
     log.trace(s"DAO.getById [$primaryKey] : $filter")
-    internalFindBy(filter, 0, 1).asObj[E]
+    internalFind(filter, 0, 1).asObj[E]
   }
 
   def findById(id: Id): Future[Option[E]] = {
     val filter = primaryKey $eq id
     log.trace(s"DAO.findById [$primaryKey] : $filter")
-    internalFindBy(filter, 0, 1).asOpt[E]
+    internalFind(filter, 0, 1).asOpt[E]
   }
 
   // JSON fields can have different order, so if Id type is object don't use this query.
@@ -80,24 +80,24 @@ trait GreenLeafMongoDao[Id, E]
   def findByIdsIn(ids: Seq[Id], offset: Int = 0, limit: Int = 0, sortBy: Bson = defaultSortBy): Future[Seq[E]] = ids match {
     case Nil => Future.successful(Seq.empty)
     case id :: Nil => findById(id).map(_.toSeq)
-    case _ => internalFindBy(primaryKey $in (ids: _*), offset, limit, sortBy).asSeq[E]
+    case _ => internalFind(primaryKey $in (ids: _*), offset, limit, sortBy).asSeq[E]
   }
 
   def findByIdsOr(ids: Seq[Id], offset: Int = 0, limit: Int = 0, sortBy: Bson = defaultSortBy): Future[Seq[E]] = ids match {
     case Nil => Future.successful(Seq.empty)
     case id :: Nil => findById(id).map(_.toSeq)
-    case _ => internalFindBy($or(ids.map(_.asJsonExpanded(primaryKey)): _*), offset, limit, sortBy).asSeq[E]
+    case _ => internalFind($or(ids.map(_.asJsonExpanded(primaryKey)): _*), offset, limit, sortBy).asSeq[E]
   }
 
   def findAll(offset: Int = 0, limit: Int = 0, sortBy: Bson = defaultSortBy): Future[Seq[E]] = {
-    findBy(Document.empty, offset, limit, sortBy)
+    find(Document.empty, offset, limit, sortBy)
   }
 
   // ********************************************************************************
   // https://docs.mongodb.com/manual/reference/method/db.collection.findOneAndUpdate/
   // ********************************************************************************
 
-  protected def internalUpdateBy(filter: Bson, update: Bson, upsert: Boolean = false): SingleObservable[Document] = {
+  protected def internalUpdate(filter: Bson, update: Bson, upsert: Boolean = false): SingleObservable[Document] = {
     log.trace(s"DAO.internalUpdateBy [$primaryKey] : $filter")
     // By default "ReturnDocument.BEFORE" property used and returns the document before the update
     // val option = FindOneAndUpdateOptions().upsert(true).returnDocument(ReturnDocument.AFTER)
@@ -108,12 +108,12 @@ trait GreenLeafMongoDao[Id, E]
   def updateById(id: Id, e: Document, upsert: Boolean = false): Future[Option[E]] = {
     val filter = primaryKey $eq id
     log.trace(s"DAO.updateById [$primaryKey] : $filter")
-    internalUpdateBy(filter, e, upsert).asOpt[E]
+    internalUpdate(filter, e, upsert).asOpt[E]
   }
 
-  def updateBy(filter: Bson, e: Document, upsert: Boolean = false): Future[Option[E]] = {
+  def update(filter: Bson, e: Document, upsert: Boolean = false): Future[Option[E]] = {
     log.trace(s"DAO.updateBy [$primaryKey] : $filter")
-    internalUpdateBy(filter, e, upsert).asOpt[E]
+    internalUpdate(filter, e, upsert).asOpt[E]
   }
 
 
@@ -121,7 +121,7 @@ trait GreenLeafMongoDao[Id, E]
   // https://docs.mongodb.com/manual/reference/method/db.collection.findOneAndReplace/
   // ********************************************************************************
 
-  protected def internalReplaceBy(filter: Bson, replacement: Document, upsert: Boolean = false): SingleObservable[Document] = {
+  protected def internalReplace(filter: Bson, replacement: Document, upsert: Boolean = false): SingleObservable[Document] = {
     log.trace(s"DAO.internalReplaceBy : $filter")
     // By default "ReturnDocument.BEFORE" property used and returns the document before the update
     // val option = FindOneAndReplaceOptions().upsert(true).returnDocument(ReturnDocument.AFTER)
@@ -131,7 +131,7 @@ trait GreenLeafMongoDao[Id, E]
 
   def replaceById(id: Id, e: E, upsert: Boolean = false): Future[Option[E]] = {
     val filter = primaryKey $eq id
-    internalReplaceBy(filter, e.toJson.skipNull(skipNull), upsert).asOpt[E]
+    internalReplace(filter, e.toJson.skipNull(skipNull), upsert).asOpt[E]
   }
 
   def createOrReplaceById(id: Id, e: E): Future[Option[E]] = {
@@ -153,12 +153,12 @@ trait GreenLeafMongoDao[Id, E]
     }
   }
 
-  def replaceBy(filter: Bson, e: E, upsert: Boolean = false): Future[Option[E]] = {
-    internalReplaceBy(filter, e.toJson.skipNull(skipNull), upsert).asOpt[E]
+  def replace(filter: Bson, e: E, upsert: Boolean = false): Future[Option[E]] = {
+    internalReplace(filter, e.toJson.skipNull(skipNull), upsert).asOpt[E]
   }
 
-  def createOrReplaceBy(filter: Bson, e: E): Future[Option[E]] = {
-    replaceBy(filter, e, upsert = true)
+  def createOrReplace(filter: Bson, e: E): Future[Option[E]] = {
+    replace(filter, e, upsert = true)
   }
 
   def distinct[T](fieldName: String, filter: Bson)(implicit ct: ClassTag[T]): Future[Seq[T]] = {

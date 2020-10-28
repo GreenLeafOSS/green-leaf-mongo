@@ -70,15 +70,15 @@ object EntityWithIdAsObjectDaoTest {
     import protocol._
 
     def findByDate(date: ZonedDateTime): Future[Seq[ExchangeRate]] = {
-      findBy("_id.date" $eq date)
+      find("_id.date" $eq date)
     }
 
     def findByDateGt(date: ZonedDateTime): Future[Seq[ExchangeRate]] = {
-      findBy("_id.date" $gt date)
+      find("_id.date" $gt date)
     }
 
     def findByDateGte(date: ZonedDateTime): Future[Seq[ExchangeRate]] = {
-      findBy("_id.date" $gte date)
+      find("_id.date" $gte date)
     }
 
   }
