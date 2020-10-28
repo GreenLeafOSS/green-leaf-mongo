@@ -54,8 +54,8 @@ trait GreenLeafMongoDao[Id, E]
     collection.find(filter).skip(offset).limit(limit).sort(sortBy)
   }
 
-  def findOneBy(filter: Bson, offset: Int = 0, limit: Int = 0, sortBy: Bson = defaultSortBy): Future[Option[E]] = {
-    internalFindBy(filter, offset, limit, sortBy).asOpt[E]
+  def findOneBy(filter: Bson, offset: Int = 0, sortBy: Bson = defaultSortBy): Future[Option[E]] = {
+    internalFindBy(filter, offset, limit = 1, sortBy).asOpt[E]
   }
 
   def findBy(filter: Bson, offset: Int = 0, limit: Int = 0, sortBy: Bson = defaultSortBy): Future[Seq[E]] = {
