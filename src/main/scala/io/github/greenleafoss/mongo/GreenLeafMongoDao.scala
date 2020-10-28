@@ -18,7 +18,8 @@ object GreenLeafMongoDao {
 }
 
 trait GreenLeafMongoDao[Id, E]
-  extends GreenLeafMongoDsl {
+  extends GreenLeafMongoDsl
+  with MongoObservableToFuture {
 
   protected implicit val ec: ExecutionContext
 
@@ -32,28 +33,7 @@ trait GreenLeafMongoDao[Id, E]
   protected val primaryKey: String = "_id"
   protected def skipNull: Boolean = true
 
-  protected implicit val defaultSortBson: Bson = Document(s"{$primaryKey: 1}")
-
-  protected implicit class MongoFindObservableToFutureRes(x: FindObservable[Document]) {
-    def asSeq[T](implicit jf: JsonFormat[T]): Future[Seq[T]] =
-      x.toFuture().map(_.map(_.toJson().parseJson.convertTo[T]))
-    def asSeq: Future[Seq[E]] = asSeq[E]
-
-    def asOpt[T](implicit jf: JsonFormat[T]): Future[Option[T]] =
-      x.headOption().map(_.map(_.toJson().parseJson.convertTo[T]))
-    def asOpt: Future[Option[E]] = asOpt[E]
-
-    def asObj[T](implicit jf: JsonFormat[T]): Future[T] =
-      x.head().map(_.toJson().parseJson.convertTo[T])
-    def asObj: Future[E] = asObj[E]
-  }
-
-  protected implicit class MongoSingleObservableDocumentToFutureRes(x: SingleObservable[Document]) {
-    def asOpt[T](implicit jf: JsonFormat[T]): Future[Option[T]] =
-      x.toFutureOption().map { _.map(_.toJson().parseJson.convertTo[T]) }
-
-    def asOpt: Future[Option[E]] = asOpt[E]
-  }
+  protected def defaultSortBy: Bson = Document("""{}""")
 
   def insert(e: E): Future[Completed] = {
     val d: Document = e.toJson.skipNull(skipNull)
@@ -69,46 +49,48 @@ trait GreenLeafMongoDao[Id, E]
     collection.insertMany(documents).toFuture()
   }
 
-  protected def internalFindBy(filter: Bson, offset: Int, limit: Int)(implicit sort: Bson): FindObservable[Document] = {
-    log.trace(s"DAO.internalFindBy: ${filter.toString} with sort ${sort.toString}")
-    collection.find(filter).skip(offset).limit(limit).sort(sort)
+  protected def internalFindBy(filter: Bson, offset: Int, limit: Int, sortBy: Bson = defaultSortBy): FindObservable[Document] = {
+    log.trace("DAO.internalFindBy: " + filter.toString)
+    collection.find(filter).skip(offset).limit(limit).sort(sortBy)
+  }
+
+  def findOneBy(filter: Bson, offset: Int = 0, limit: Int = 0, sortBy: Bson = defaultSortBy): Future[Option[E]] = {
+    internalFindBy(filter, offset, limit, sortBy).asOpt[E]
+  }
+
+  def findBy(filter: Bson, offset: Int = 0, limit: Int = 0, sortBy: Bson = defaultSortBy): Future[Seq[E]] = {
+    internalFindBy(filter, offset, limit, sortBy).asSeq[E]
   }
 
   def getById(id: Id): Future[E] = {
     val filter = primaryKey $eq id
     log.trace(s"DAO.getById [$primaryKey] : $filter")
-    internalFindBy(filter, offset = 0, limit = 1).asObj
+    internalFindBy(filter, 0, 1).asObj[E]
   }
 
   def findById(id: Id): Future[Option[E]] = {
     val filter = primaryKey $eq id
     log.trace(s"DAO.findById [$primaryKey] : $filter")
-    internalFindBy(filter, offset = 0, limit = 1).asOpt
+    internalFindBy(filter, 0, 1).asOpt[E]
   }
 
   // JSON fields can have different order, so if Id type is object don't use this query.
   // find({"id": { $in: [ {a: 1, b: 2 }, {a: 3, b: 4 }, ...] } }) - order of 'a' and 'b' fields may change
   // find({"id": { $in: [ {"id.a": 1, "id.b": 2}, ... ] } }) - will not work
-  def findByIdsIn(ids: Seq[Id], offset: Int = 0, limit: Int = 0): Future[Seq[E]] = ids match {
+  def findByIdsIn(ids: Seq[Id], offset: Int = 0, limit: Int = 0, sortBy: Bson = defaultSortBy): Future[Seq[E]] = ids match {
     case Nil => Future.successful(Seq.empty)
-    case _ => internalFindBy(primaryKey $in (ids: _*), offset, limit).asSeq
+    case id :: Nil => findById(id).map(_.toSeq)
+    case _ => internalFindBy(primaryKey $in (ids: _*), offset, limit, sortBy).asSeq[E]
   }
 
-  def findByIdsOr(ids: Seq[Id], offset: Int = 0, limit: Int = 0): Future[Seq[E]] = ids match {
+  def findByIdsOr(ids: Seq[Id], offset: Int = 0, limit: Int = 0, sortBy: Bson = defaultSortBy): Future[Seq[E]] = ids match {
     case Nil => Future.successful(Seq.empty)
-    case _ => internalFindBy($or(ids.map(_.asJsonExpanded(primaryKey)): _*), offset, limit).asSeq
+    case id :: Nil => findById(id).map(_.toSeq)
+    case _ => internalFindBy($or(ids.map(_.asJsonExpanded(primaryKey)): _*), offset, limit, sortBy).asSeq[E]
   }
 
-  def findBy(filter: Bson, offset: Int = 0, limit: Int = 0)(implicit sort: Bson = defaultSortBson): Future[Seq[E]] = {
-    internalFindBy(filter, offset, limit)(sort).asSeq
-  }
-
-  def findOneBy(filter: Bson): Future[Option[E]] = {
-    internalFindBy(filter, offset = 0, limit = 1).asOpt
-  }
-
-  def findAll(offset: Int = 0, limit: Int = 0): Future[Seq[E]] = {
-    internalFindBy(Document.empty, offset, limit).asSeq
+  def findAll(offset: Int = 0, limit: Int = 0, sortBy: Bson = defaultSortBy): Future[Seq[E]] = {
+    findBy(Document.empty, offset, limit, sortBy)
   }
 
   // ********************************************************************************
@@ -126,12 +108,12 @@ trait GreenLeafMongoDao[Id, E]
   def updateById(id: Id, e: Document, upsert: Boolean = false): Future[Option[E]] = {
     val filter = primaryKey $eq id
     log.trace(s"DAO.updateById [$primaryKey] : $filter")
-    internalUpdateBy(filter, e, upsert).asOpt
+    internalUpdateBy(filter, e, upsert).asOpt[E]
   }
 
   def updateBy(filter: Bson, e: Document, upsert: Boolean = false): Future[Option[E]] = {
     log.trace(s"DAO.updateBy [$primaryKey] : $filter")
-    internalUpdateBy(filter, e, upsert).asOpt
+    internalUpdateBy(filter, e, upsert).asOpt[E]
   }
 
 
@@ -149,7 +131,7 @@ trait GreenLeafMongoDao[Id, E]
 
   def replaceById(id: Id, e: E, upsert: Boolean = false): Future[Option[E]] = {
     val filter = primaryKey $eq id
-    internalReplaceBy(filter, e.toJson.skipNull(skipNull), upsert).asOpt
+    internalReplaceBy(filter, e.toJson.skipNull(skipNull), upsert).asOpt[E]
   }
 
   def createOrReplaceById(id: Id, e: E): Future[Option[E]] = {
@@ -172,7 +154,7 @@ trait GreenLeafMongoDao[Id, E]
   }
 
   def replaceBy(filter: Bson, e: E, upsert: Boolean = false): Future[Option[E]] = {
-    internalReplaceBy(filter, e.toJson.skipNull(skipNull), upsert).asOpt
+    internalReplaceBy(filter, e.toJson.skipNull(skipNull), upsert).asOpt[E]
   }
 
   def createOrReplaceBy(filter: Bson, e: E): Future[Option[E]] = {
