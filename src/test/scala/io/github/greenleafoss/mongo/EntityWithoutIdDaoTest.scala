@@ -7,6 +7,7 @@ import GreenLeafMongoDao.DaoBsonProtocol
 import ZonedDateTimeOps._
 import org.mongodb.scala.bson.ObjectId
 import org.mongodb.scala.bson.collection.immutable.Document
+import org.mongodb.scala.bson.conversions.Bson
 import org.mongodb.scala.model.IndexOptions
 import org.mongodb.scala.model.Indexes._
 import org.mongodb.scala.{Completed, MongoCollection}
@@ -64,16 +65,16 @@ object EntityWithoutIdDaoTest {
     override protected val protocol = EventBsonProtocol
     import protocol._
 
-    override def findAll(offset: Int = 0, limit: Int = 0): Future[Seq[Event]] = {
-      findBy(Document.empty, offset, limit)(Document("{timestamp: 1}"))
+    override def findAll(offset: Int = 0, limit: Int = 0, sortBy: Bson = Document("""{timestamp: 1}""")): Future[Seq[Event]] = {
+      findBy(Document.empty, offset, limit, sortBy)
     }
 
-    def findLastN(limit: Int = 0): Future[Seq[Event]] = {
-      findBy(Document.empty, 0, limit)(Document("{timestamp: -1}"))
+    def findLastN(limit: Int = 0, sortBy: Bson = Document("""{timestamp: -1}""")): Future[Seq[Event]] = {
+      findBy(Document.empty, 0, limit, sortBy)
     }
 
     def findBySource(source: EventSource.EventSource): Future[Seq[Event]] = {
-      findBy("source" $eq source)
+      findBy("source" $eq source, 0, 0)
     }
   }
 
