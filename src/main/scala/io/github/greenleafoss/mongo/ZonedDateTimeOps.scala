@@ -2,7 +2,7 @@ package io.github.greenleafoss.mongo
 
 import java.time._
 import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoUnit
+import java.time.temporal.{ChronoUnit, TemporalUnit}
 
 trait ZonedDateTimeOps {
 
@@ -21,7 +21,8 @@ trait ZonedDateTimeOps {
   def printDateTime(zdt: ZonedDateTime): String = print(zdt, DateTimePattern)
   def printDateTimeIso(zdt: ZonedDateTime): String = print(zdt, DateTimeIsoPattern)
 
-  def now: ZonedDateTime = ZonedDateTime.now(ZoneOffset.UTC).truncatedTo(ChronoUnit.MILLIS)
+  def now(truncate: TemporalUnit = ChronoUnit.MILLIS): ZonedDateTime = ZonedDateTime.now(ZoneOffset.UTC).truncatedTo(truncate)
+  def now: ZonedDateTime = now(ChronoUnit.MILLIS)
 
   object Implicits {
     implicit def strToDate(str: String): ZonedDateTime = parseDate(str)
