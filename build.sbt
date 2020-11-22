@@ -22,7 +22,7 @@ libraryDependencies += "org.mongodb.scala" %% "mongo-scala-driver" % "2.9.0"
 libraryDependencies += "org.slf4j" % "slf4j-api" % "1.8.0-beta4"
 libraryDependencies += "org.slf4j" % "slf4j-simple" % "1.8.0-beta4" % Test
 
-libraryDependencies += "de.flapdoodle.embed" % "de.flapdoodle.embed.mongo" % "2.2.0" % Test
+libraryDependencies += "de.flapdoodle.embed" % "de.flapdoodle.embed.mongo" % "3.0.0" % Test
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.2" % Test
 
 resolvers += Resolver.jcenterRepo

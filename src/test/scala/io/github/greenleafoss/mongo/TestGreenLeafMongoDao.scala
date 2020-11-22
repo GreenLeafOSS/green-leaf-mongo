@@ -10,7 +10,7 @@ abstract class TestGreenLeafMongoDao[Id, E] extends GreenLeafMongoDao[Id, E] {
   override protected implicit val ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
 
   // TODO move to config
-  override protected val db: MongoDatabase = MongoClient("mongodb://localhost:27027").getDatabase("test-in-memory-db")
+  override protected val db: MongoDatabase = MongoClient("mongodb://localhost:27027").getDatabase("test")
 
   def insertDocuments(documents: Document*): Future[Completed] = {
     collection.insertMany(documents).toFuture()
