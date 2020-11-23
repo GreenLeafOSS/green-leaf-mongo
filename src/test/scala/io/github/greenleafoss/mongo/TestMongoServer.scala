@@ -27,6 +27,7 @@ object TestMongoServer {
       .net(new Net("localhost", 27027, Network.localhostIsIPv6()))
       .cmdOptions(
         MongoCmdOptions.builder()
+          .storageEngine("ephemeralForTest")
           // https://docs.mongodb.com/manual/reference/configuration-options/#storage.syncPeriodSecs
           // If you set storage.syncPeriodSecs to 0, MongoDB will not sync the memory mapped files to disk.
           // If you set storage.syncPeriodSecs to 0 for testing purposes, you should also set --nojournal to true.
