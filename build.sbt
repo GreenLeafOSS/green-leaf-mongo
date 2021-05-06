@@ -13,8 +13,8 @@ scalacOptions ++= Seq(
   "-Ywarn-unused:params"
 )
 
-parallelExecution in Test := false
-fork in Test := true
+Test / parallelExecution := false
+Test / fork := true
 
 libraryDependencies += "io.spray" %% "spray-json" % "1.3.5"
 libraryDependencies += "org.mongodb.scala" %% "mongo-scala-driver" % "2.9.0"
