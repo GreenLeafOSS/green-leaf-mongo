@@ -1,7 +1,6 @@
 # green-leaf-mongo
 ![GitHub](https://img.shields.io/github/license/GreenLeafOSS/green-leaf-mongo.svg)
 [![Build Status](https://travis-ci.org/GreenLeafOSS/green-leaf-mongo.svg?branch=master)](https://travis-ci.org/GreenLeafOSS/green-leaf-mongo)
-[ ![Download](https://api.bintray.com/packages/greenleafoss/maven/green-leaf-mongo/images/download.svg) ](https://bintray.com/greenleafoss/maven/green-leaf-mongo/_latestVersion)
 
 ## Short description
 This extension created on top of official [MongoDB Scala Driver](http://mongodb.github.io/mongo-scala-driver), allows to fully utilize [Spray JSON](https://github.com/spray/spray-json) and represents bidirectional serialization for case classes in BSON, as well as flexible DSL for [MongoDB query operators](https://docs.mongodb.com/manual/reference/operator/query/), documents and collections.
@@ -9,8 +8,8 @@ This extension created on top of official [MongoDB Scala Driver](http://mongodb.
 ## Usage
 ```scala
 // build.sbt
-resolvers += Resolver.bintrayRepo("greenleafoss", "maven")
-libraryDependencies += "io.github.greenleafoss" %% "green-leaf-mongo" % "0.1.7",
+// https://mvnrepository.com/artifact/io.github.greenleafoss/green-leaf-mongo
+libraryDependencies += "io.github.greenleafoss" %% "green-leaf-mongo" % "0.1.7"
 ```
 
 ## JSON and BSON protocols
