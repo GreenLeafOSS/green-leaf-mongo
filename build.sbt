@@ -25,6 +25,3 @@ libraryDependencies += "org.slf4j" % "slf4j-simple" % "1.8.0-beta4" % Test
 libraryDependencies += "de.flapdoodle.embed" % "de.flapdoodle.embed.mongo" % "3.0.0" % Test
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.2" % Test
 
-resolvers += Resolver.jcenterRepo
-bintrayOrganization := Some("greenleafoss")
-licenses += ("Apache-2.0", url("https://opensource.org/licenses/Apache-2.0"))
