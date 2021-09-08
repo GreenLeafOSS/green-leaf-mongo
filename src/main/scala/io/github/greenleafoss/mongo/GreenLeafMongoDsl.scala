@@ -50,7 +50,7 @@ trait GreenLeafMongoDsl {
     }
 
     private def skipNull(jsObject: JsObject): JsObject = {
-      JsObject((Map.empty[String, JsValue] /: jsObject.fields) {
+      JsObject(jsObject.fields.foldLeft(Map.empty[String, JsValue]) {
         case (res, (_, JsNull)) => res
         case (res, (k, v: JsObject)) => res ++ Map(k -> skipNull(v))
         case (res, (k, v: JsArray)) => res ++ Map(k -> skipNull(v))
@@ -72,7 +72,7 @@ trait GreenLeafMongoDsl {
     private def expandJson(path: String, jsValue: JsValue): JsValue = {
 
       def bsonQueryWithPath(path: String, in: JsValue): Map[String, JsValue] = in match {
-        case JsObject(fields) => (Map.empty[String, JsValue] /: fields) {
+        case JsObject(fields) => fields.foldLeft(Map.empty[String, JsValue]) {
           case (res, (field, v)) if field.startsWith("$") =>
             res ++ (if (path.nonEmpty) Map(path -> JsObject(field -> v)) else Map(field -> v))
           case (res, (field, v)) =>
@@ -97,7 +97,7 @@ trait GreenLeafMongoDsl {
     require(operator.nonEmpty, "QueryOperator should be non empty.")
 
     def bsonQueryWithPath(path: String, in: JsValue): Map[String, JsValue] = in match {
-      case JsObject(fields) => (Map.empty[String, JsValue] /: fields) {
+      case JsObject(fields) => fields.foldLeft(Map.empty[String, JsValue]) {
         case (res, (field, v)) if field.startsWith("$") => res ++ Map(path -> JsObject(operator -> JsObject(field -> v)))
         case (res, (field, v)) => res ++ bsonQueryWithPath(s"$path.$field", v)
       }

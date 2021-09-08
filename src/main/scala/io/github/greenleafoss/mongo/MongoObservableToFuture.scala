@@ -1,7 +1,7 @@
 package io.github.greenleafoss.mongo
 
 import org.mongodb.scala.bson.collection.immutable.Document
-import org.mongodb.scala.{AggregateObservable, DistinctObservable, FindObservable, SingleObservable}
+import org.mongodb.scala.{AggregateObservable, FindObservable, SingleObservable}
 import spray.json.{JsonFormat, _}
 
 import scala.concurrent.{ExecutionContext, Future}

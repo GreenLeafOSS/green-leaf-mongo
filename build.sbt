@@ -1,7 +1,7 @@
 
 name := "green-leaf-mongo"
 
-version := "0.1.7"
+version := "0.1.8"
 
 description := "This extension created on top of official MongoDB Scala Driver, allows to fully utilize Spray JSON and represents bidirectional serialization for case classes in BSON, as well as flexible DSL for MongoDB query operators, documents and collections."
 licenses := List("Apache 2" -> new URL("http://www.apache.org/licenses/LICENSE-2.0.txt"))
@@ -42,7 +42,9 @@ publishMavenStyle := true
 publishConfiguration := publishConfiguration.value.withOverwrite(true)
 
 
-scalaVersion := "2.12.12"
+scalaVersion := "2.13.6"
+
+crossScalaVersions := Seq("2.12.14")
 
 scalacOptions ++= Seq(
   "-explaintypes",
@@ -55,12 +57,12 @@ scalacOptions ++= Seq(
 Test / parallelExecution := false
 Test / fork := true
 
-libraryDependencies += "io.spray" %% "spray-json" % "1.3.5"
+libraryDependencies += "io.spray" %% "spray-json" % "1.3.6"
 libraryDependencies += "org.mongodb.scala" %% "mongo-scala-driver" % "2.9.0"
 
 libraryDependencies += "org.slf4j" % "slf4j-api" % "1.8.0-beta4"
 libraryDependencies += "org.slf4j" % "slf4j-simple" % "1.8.0-beta4" % Test
 
 libraryDependencies += "de.flapdoodle.embed" % "de.flapdoodle.embed.mongo" % "3.0.0" % Test
-libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.2" % Test
+libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.9" % Test
 
