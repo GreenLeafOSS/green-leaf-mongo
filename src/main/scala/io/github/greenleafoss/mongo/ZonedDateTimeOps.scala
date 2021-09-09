@@ -25,6 +25,8 @@ trait ZonedDateTimeOps {
   def now: ZonedDateTime = now(ChronoUnit.MILLIS)
 
   object Implicits {
+    import scala.language.implicitConversions
+
     implicit def strToDate(str: String): ZonedDateTime = parseDate(str)
     implicit def strToDateTime(str: String): ZonedDateTime = parseDateTime(str)
     implicit def strToDateTimeIso(str: String): ZonedDateTime = parseDateTimeIso(str)

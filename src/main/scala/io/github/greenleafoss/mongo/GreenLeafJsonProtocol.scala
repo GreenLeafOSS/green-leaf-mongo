@@ -182,7 +182,7 @@ trait GreenLeafJsonProtocol
     def write(v: e.Value): JsValue = JsNumber(v.id)
 
     def read(value: JsValue): e.Value = value match {
-      case JsNumber(v) => e.apply(v.intValue())
+      case JsNumber(v) => e.apply(v.intValue)
       case x => deserializationError(s"Expected enum, but got $x")
     }
   }
