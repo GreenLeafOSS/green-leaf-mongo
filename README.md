@@ -1,6 +1,6 @@
 # green-leaf-mongo
 ![GitHub](https://img.shields.io/github/license/GreenLeafOSS/green-leaf-mongo.svg)
-[![Build Status](https://travis-ci.org/GreenLeafOSS/green-leaf-mongo.svg?branch=master)](https://travis-ci.org/GreenLeafOSS/green-leaf-mongo)
+[![Build Status](https://app.travis-ci.com/GreenLeafOSS/green-leaf-mongo.svg?branch=master)](https://app.travis-ci.com/GreenLeafOSS/green-leaf-mongo)
 
 ## Short description
 This extension created on top of official [MongoDB Scala Driver](http://mongodb.github.io/mongo-scala-driver), allows to fully utilize [Spray JSON](https://github.com/spray/spray-json) and represents bidirectional serialization for case classes in BSON, as well as flexible DSL for [MongoDB query operators](https://docs.mongodb.com/manual/reference/operator/query/), documents and collections.
