@@ -8,8 +8,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 trait MongoObservableToFuture {
 
-  private type JF[T] = JsonFormat[T]
-  private type EC = ExecutionContext
+  protected type JF[T] = JsonFormat[T]
+  protected type EC = ExecutionContext
 
   protected def findObservableAsSeq[T](x: FindObservable[Document])(implicit jf: JF[T], ec: EC): Future[Seq[T]] = {
     x.toFuture().map(_.map(_.toJson().parseJson.convertTo[T]))
