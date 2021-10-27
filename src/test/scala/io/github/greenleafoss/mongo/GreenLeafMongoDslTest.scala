@@ -39,6 +39,20 @@ class GreenLeafMongoDslTest
       ("tags" $eq ("A", "B")).asBson shouldBe """{ tags: { $eq: [ "A", "B" ] } }""".asBson
     }
 
+    "$is ($eq operator alias)" in {
+      // https://docs.mongodb.com/manual/reference/operator/query/eq/
+
+      ("qty" $is 20).asBson shouldBe """{ qty: { $eq: 20 } }""".asBson
+      ("qty" $is 20L).asBson shouldBe """{ qty: { $eq: 20 } }""".asBson
+      ("qty" $is 0x123456789L).asBson shouldBe """{ qty: { $eq: { $numberLong: "4886718345" } } }""".asBson
+      ("qty" $is 20.0f).asBson shouldBe """{ qty: { $eq: 20.0 } }""".asBson
+      ("qty" $is 20.0d).asBson shouldBe """{ qty: { $eq: 20.0 } }""".asBson
+      ("qty" $is BigDecimal(20.0)).asBson shouldBe """{ qty: { $eq: { $numberDecimal: "20.0" } } }""".asBson
+      ("item.name" $is "ab").asBson shouldBe """{ "item.name": { $eq: "ab" } }""".asBson
+      ("tags" $is "B").asBson shouldBe """{ tags: { $eq: "B" } }""".asBson
+      ("tags" $is ("A", "B")).asBson shouldBe """{ tags: { $eq: [ "A", "B" ] } }""".asBson
+    }
+
     "$gt" in {
       // https://docs.mongodb.com/manual/reference/operator/query/gt/
 
