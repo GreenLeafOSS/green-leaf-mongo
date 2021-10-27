@@ -9,7 +9,7 @@ This extension created on top of official [MongoDB Scala Driver](http://mongodb.
 ```scala
 // build.sbt
 // https://mvnrepository.com/artifact/io.github.greenleafoss/green-leaf-mongo
-libraryDependencies += "io.github.greenleafoss" %% "green-leaf-mongo" % "0.1.8"
+libraryDependencies += "io.github.greenleafoss" %% "green-leaf-mongo" % "0.1.9"
 ```
 
 ## JSON and BSON protocols
