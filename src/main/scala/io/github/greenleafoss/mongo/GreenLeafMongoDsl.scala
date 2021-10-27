@@ -222,6 +222,20 @@ trait GreenLeafMongoDsl {
       query(field, "$eq", v)
 
     /**
+      * Specifies alias for equality condition $es operator.
+      * This method implemented to reduce possible issues with Scala 3.
+      * The $is operator matches documents where the value of a field equals the specified value.
+      * @see https://docs.mongodb.com/manual/reference/operator/query/eq/
+      *
+      * @example {{{"qty" $is 20}}}
+      *
+      * @param v is value
+      * @return the filter
+      */
+    def $is(v: JsValue): JsObject =
+      query(field, "$eq", v)
+
+    /**
       * $ne selects the documents where the value of the field is not equal to the specified value.
       * This includes documents that do not contain the field.
       * @see https://docs.mongodb.com/manual/reference/operator/query/ne/
