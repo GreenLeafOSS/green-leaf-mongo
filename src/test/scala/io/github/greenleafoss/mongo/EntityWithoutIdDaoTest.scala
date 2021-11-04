@@ -11,6 +11,7 @@ import org.mongodb.scala.bson.conversions.Bson
 import org.mongodb.scala.model.IndexOptions
 import org.mongodb.scala.model.Indexes._
 import org.mongodb.scala.{Completed, MongoCollection}
+import org.mongodb.scala._
 import spray.json.{JsonFormat, RootJsonFormat}
 
 import scala.concurrent.Future
@@ -37,7 +38,7 @@ object EntityWithoutIdDaoTest {
 
     trait EventJsonProtocol extends GreenLeafJsonProtocol {
       implicit lazy val EventSourceFormat: JsonFormat[EventSource.EventSource] = enumToJsonFormatAsString(EventSource)
-      implicit lazy val EventFormat: RootJsonFormat[Event] = jsonFormat4(Event)
+      implicit lazy val EventFormat: RootJsonFormat[Event] = jsonFormat4(Event.apply)
     }
 
     object EventJsonProtocol extends EventJsonProtocol
@@ -62,8 +63,8 @@ object EntityWithoutIdDaoTest {
     protected val collection: MongoCollection[Document] = db.getCollection(collectionName)
     collection.createIndex(key = ascending("timestamp"), IndexOptions().name("idx-timestamp")).toFuture()
 
+    import EventBsonProtocol._
     override protected val protocol = EventBsonProtocol
-    import protocol._
 
     override def findAll(offset: Int = 0, limit: Int = 0, sortBy: Bson = Document("""{timestamp: 1}""")): Future[Seq[Event]] = {
       find(Document.empty, offset, limit, sortBy)

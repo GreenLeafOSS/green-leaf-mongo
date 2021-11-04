@@ -5,6 +5,7 @@ import org.mongodb.scala.bson.collection.immutable.Document
 import org.mongodb.scala.bson.conversions.Bson
 import org.mongodb.scala.model.{FindOneAndReplaceOptions, FindOneAndUpdateOptions}
 import org.mongodb.scala.{Completed, FindObservable, MongoCollection, MongoDatabase, SingleObservable}
+import org.mongodb.scala._
 import spray.json._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -80,7 +81,7 @@ trait GreenLeafMongoDao[Id, E]
   def findByIdsIn(ids: Seq[Id], offset: Int = 0, limit: Int = 0, sortBy: Bson = defaultSortBy): Future[Seq[E]] = ids match {
     case Nil => Future.successful(Seq.empty)
     case id :: Nil => findById(id).map(_.toSeq)
-    case _ => internalFind(primaryKey $in (ids: _*), offset, limit, sortBy).asSeq[E]
+    case _ => internalFind(primaryKey.$in(ids: _*), offset, limit, sortBy).asSeq[E]
   }
 
   def findByIdsOr(ids: Seq[Id], offset: Int = 0, limit: Int = 0, sortBy: Bson = defaultSortBy): Future[Seq[E]] = ids match {
@@ -149,7 +150,7 @@ trait GreenLeafMongoDao[Id, E]
   def replaceOrInsertById(id: Id, e: E): Future[Option[E]] = {
     replaceById(id, e /* upsert = false */).flatMap {
       case beforeOpt @ Some(_) /* replaced */ => Future.successful(beforeOpt)
-      case None => insert(e).map { _: Completed => None }
+      case None => insert(e).map { (_: Completed) => None }
     }
   }
 

@@ -2,6 +2,7 @@ package io.github.greenleafoss.mongo
 
 import org.mongodb.scala.bson.collection.immutable.Document
 import org.mongodb.scala.{Completed, MongoClient, MongoDatabase}
+import org.mongodb.scala._
 
 import scala.concurrent.{ExecutionContext, Future}
 

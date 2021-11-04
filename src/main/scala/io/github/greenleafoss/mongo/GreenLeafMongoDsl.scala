@@ -27,6 +27,7 @@ trait GreenLeafMongoDsl {
   }
 
   implicit def json2document(j: JsValue): Document = {
+    import org.mongodb.scala.bsonDocumentToDocument
     org.bson.BsonDocument.parse(j.compactPrint)
   }
 

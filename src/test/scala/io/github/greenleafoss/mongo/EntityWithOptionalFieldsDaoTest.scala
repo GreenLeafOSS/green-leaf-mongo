@@ -24,8 +24,8 @@ object EntityWithOptionalFieldsDaoTest {
 
     // JSON
     trait GeoModelJsonProtocol extends GreenLeafJsonProtocol {
-      implicit val GeoKeyFormat: RootJsonFormat[GeoKey] = jsonFormat3(GeoKey)
-      implicit val GeoRecordFormat: RootJsonFormat[GeoRecord] = jsonFormat3(GeoRecord)
+      implicit val GeoKeyFormat: RootJsonFormat[GeoKey] = jsonFormat3(GeoKey.apply)
+      implicit val GeoRecordFormat: RootJsonFormat[GeoRecord] = jsonFormat3(GeoRecord.apply)
     }
 
     object GeoModelJsonProtocol extends GeoModelJsonProtocol
@@ -33,7 +33,7 @@ object EntityWithOptionalFieldsDaoTest {
     // BSON
     trait GeoModelBsonProtocol extends GeoModelJsonProtocol with GreenLeafBsonProtocol {
       override implicit val GeoRecordFormat: RootJsonFormat[GeoRecord] = jsonFormat(
-        GeoRecord, "_id", "name", "population")
+        GeoRecord.apply, "_id", "name", "population")
     }
 
     object GeoModelBsonProtocol extends GeoModelBsonProtocol with DaoBsonProtocol[GeoKey, GeoRecord] {
@@ -48,8 +48,8 @@ object EntityWithOptionalFieldsDaoTest {
 
     override protected val collection: MongoCollection[Document] = db.getCollection(collectionName)
 
+    import GeoModelBsonProtocol._
     override protected val protocol = GeoModelBsonProtocol
-    import protocol._
 
     def findCountryBy(countryCode: String): Future[Option[GeoRecord]] = {
       // will return all records with this countryCode

@@ -18,13 +18,13 @@ class GreenLeafJsonAndBsonProtocolsTest
 
   // JSON
   trait TestJsonProtocol extends GreenLeafJsonProtocol {
-    implicit def testJf: RootJsonFormat[Test] = jsonFormat5(Test)
+    implicit def testJf: RootJsonFormat[Test] = jsonFormat(Test.apply, "id", "i", "l", "b", "zdt")
   }
   object TestJsonProtocol extends TestJsonProtocol
 
   // BSON
   trait TestBsonProtocol extends TestJsonProtocol with GreenLeafBsonProtocol {
-    override implicit def testJf: RootJsonFormat[Test] = jsonFormat(Test, "_id", "i", "l", "b", "zdt")
+    override implicit def testJf: RootJsonFormat[Test] = jsonFormat(Test.apply, "_id", "i", "l", "b", "zdt")
   }
   object TestBsonProtocol extends TestBsonProtocol
 

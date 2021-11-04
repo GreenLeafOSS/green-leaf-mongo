@@ -40,8 +40,8 @@ object EntityWithIdAsObjectDaoTest {
     // JSON
     trait ExchangeRateJsonProtocol extends GreenLeafJsonProtocol {
       implicit lazy val ExchangeRateCurrencyFormat: JsonFormat[Currency] = enumToJsonFormatAsString(Currency)
-      implicit lazy val ExchangeRateIdFormat: RootJsonFormat[ExchangeRateId] = jsonFormat2(ExchangeRateId)
-      implicit lazy val ExchangeRateFormat: RootJsonFormat[ExchangeRate] = jsonFormat3(ExchangeRate)
+      implicit lazy val ExchangeRateIdFormat: RootJsonFormat[ExchangeRateId] = jsonFormat2(ExchangeRateId.apply)
+      implicit lazy val ExchangeRateFormat: RootJsonFormat[ExchangeRate] = jsonFormat3(ExchangeRate.apply)
     }
 
     object ExchangeRateJsonProtocol extends ExchangeRateJsonProtocol
@@ -50,7 +50,7 @@ object EntityWithIdAsObjectDaoTest {
 
     trait ExchangeRateBsonProtocol extends ExchangeRateJsonProtocol with GreenLeafBsonProtocol {
       override implicit lazy val ExchangeRateFormat: RootJsonFormat[ExchangeRate] =
-        jsonFormat(ExchangeRate, "_id", "rates", "updated")
+        jsonFormat(ExchangeRate.apply, "_id", "rates", "updated")
     }
 
     object ExchangeRateBsonProtocol extends ExchangeRateBsonProtocol with DaoBsonProtocol[ExchangeRateId, ExchangeRate] {
@@ -66,8 +66,8 @@ object EntityWithIdAsObjectDaoTest {
 
     override protected val collection: MongoCollection[Document] = db.getCollection(collectionName)
 
+    import ExchangeRateBsonProtocol._
     override protected val protocol = ExchangeRateBsonProtocol
-    import protocol._
 
     def findByDate(date: ZonedDateTime): Future[Seq[ExchangeRate]] = {
       find("_id.date" $eq date)
