@@ -4,7 +4,8 @@ import GreenLeafMongoDao.DaoBsonProtocol
 import org.mongodb.scala.bson.collection.immutable.Document
 import org.mongodb.scala.bson.conversions.Bson
 import org.mongodb.scala.model.{FindOneAndReplaceOptions, FindOneAndUpdateOptions}
-import org.mongodb.scala.{Completed, FindObservable, MongoCollection, MongoDatabase, SingleObservable}
+import org.mongodb.scala.{FindObservable, MongoCollection, MongoDatabase, SingleObservable}
+import org.mongodb.scala.result.{InsertManyResult, InsertOneResult}
 import org.mongodb.scala._
 import spray.json._
 
@@ -36,13 +37,13 @@ trait GreenLeafMongoDao[Id, E]
 
   protected def defaultSortBy: Bson = Document("""{}""")
 
-  def insert(e: E): Future[Completed] = {
+  def insert(e: E): Future[InsertOneResult] = {
     val d: Document = e.toJson.skipNull(skipNull)
     log.trace(s"DAO.insertOne: $d")
     collection.insertOne(d).toFuture()
   }
 
-  def insert(entities: Seq[E]): Future[Completed] = {
+  def insert(entities: Seq[E]): Future[InsertManyResult] = {
     // Document([ obj1, obj2, ... ]) can't be created
     // [ Document(obj1), Document(obj2), ... ] - OK
     val documents = entities.map(d => Document(d.toJson.skipNull(skipNull).compactPrint))
@@ -150,7 +151,7 @@ trait GreenLeafMongoDao[Id, E]
   def replaceOrInsertById(id: Id, e: E): Future[Option[E]] = {
     replaceById(id, e /* upsert = false */).flatMap {
       case beforeOpt @ Some(_) /* replaced */ => Future.successful(beforeOpt)
-      case None => insert(e).map { (_: Completed) => None }
+      case None => insert(e).map { (_: InsertOneResult) => None }
     }
   }
 

@@ -54,7 +54,7 @@ Test / parallelExecution := false
 Test / fork := true
 
 libraryDependencies += "io.spray" %% "spray-json" % "1.3.6" cross CrossVersion.for3Use2_13
-libraryDependencies += "org.mongodb.scala" %% "mongo-scala-driver" % "2.9.0" cross CrossVersion.for3Use2_13
+libraryDependencies += "org.mongodb.scala" %% "mongo-scala-driver" % "4.3.4" cross CrossVersion.for3Use2_13
 
 libraryDependencies += "org.slf4j" % "slf4j-api" % "1.8.0-beta4"
 libraryDependencies += "org.slf4j" % "slf4j-simple" % "1.8.0-beta4" % Test

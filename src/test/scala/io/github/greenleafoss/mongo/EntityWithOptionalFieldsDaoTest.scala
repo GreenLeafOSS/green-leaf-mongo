@@ -3,7 +3,7 @@ package io.github.greenleafoss.mongo
 import GreenLeafMongoDao.DaoBsonProtocol
 
 import java.util.UUID
-import org.mongodb.scala.{Completed, Document, MongoCollection}
+import org.mongodb.scala.{Document, MongoCollection}
 import spray.json._
 
 import scala.concurrent.Future
@@ -133,7 +133,7 @@ class EntityWithOptionalFieldsDaoTest extends TestMongoServer {
         uaByCode <- dao.findCountryBy("690791")
         uaByKey <- dao.findById(GeoKey("690791"))
       } yield {
-        insertRes shouldBe Completed()
+        insertRes.getInsertedIds should not be empty
 
         usaByCode shouldBe Some(GeoRecord(GeoKey("6252001"), "United States of America", 310232863))
         usaByKey shouldBe Some(GeoRecord(GeoKey("6252001"), "United States of America", 310232863))
@@ -162,7 +162,7 @@ class EntityWithOptionalFieldsDaoTest extends TestMongoServer {
         caByCode <- dao.findStateBy("6252001", "5332921")
         caByKey <- dao.findById(GeoKey("6252001", "5332921"))
       } yield {
-        insertRes shouldBe Completed()
+        insertRes.getInsertedIds should not be empty
 
         nyByCode shouldBe Some(GeoRecord(GeoKey("6252001", "5128638"), "New York", 19274244))
         nyByKey shouldBe Some(GeoRecord(GeoKey("6252001", "5128638"), "New York", 19274244))
@@ -186,7 +186,7 @@ class EntityWithOptionalFieldsDaoTest extends TestMongoServer {
         hbkByCode <- dao.findCityBy("6252001", "5101760", "5099133")
         hbkByKey <- dao.findById(GeoKey("6252001", "5101760", "5099133"))
       } yield {
-        insertRes shouldBe Completed()
+        insertRes.getInsertedIds should not be empty
 
         nycByCode shouldBe Some(GeoRecord(GeoKey("6252001", "5128638", "5128581"), "New York City", 8175133))
         nycByKey shouldBe Some(GeoRecord(GeoKey("6252001", "5128638", "5128581"), "New York City", 8175133))

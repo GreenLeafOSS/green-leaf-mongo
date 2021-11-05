@@ -9,7 +9,7 @@ import org.mongodb.scala.bson.collection.immutable.Document
 import org.mongodb.scala.bson.conversions.Bson
 import org.mongodb.scala.model.IndexOptions
 import org.mongodb.scala.model.Indexes._
-import org.mongodb.scala.{Completed, MongoCollection}
+import org.mongodb.scala.MongoCollection
 import org.mongodb.scala._
 import spray.json.{JsonFormat, RootJsonFormat}
 
@@ -24,10 +24,10 @@ object EntityWithoutIdDaoTest {
     object EventSource extends Enumeration {
       type EventSource = Value
 
-      val Internal = Value(1, "Internal")
-      val WebApp = Value(2, "WebApp")
-      val MobileApp = Value(3, "MobileApp")
-      val DesktopApp = Value(4, "DesktopApp")
+      val Internal: Value = Value(1, "Internal")
+      val WebApp: Value = Value(2, "WebApp")
+      val MobileApp: Value = Value(3, "MobileApp")
+      val DesktopApp: Value = Value(4, "DesktopApp")
 
     }
 
@@ -77,7 +77,7 @@ object EntityWithoutIdDaoTest {
     }
 
     def findBySource(source: EventSource.EventSource): Future[Seq[Event]] = {
-      find("source" $eq source, 0, 0)
+      find("source" $eq source)
     }
   }
 
@@ -114,7 +114,7 @@ class EntityWithoutIdDaoTest extends TestMongoServer {
       for {
         insertRes <- dao.insert(Events(0))
       } yield {
-        insertRes shouldBe Completed()
+        insertRes.wasAcknowledged shouldBe true
       }
     }
 
@@ -123,7 +123,7 @@ class EntityWithoutIdDaoTest extends TestMongoServer {
       for {
         insertRes <- dao.insert(Seq(Events(1), Events(2), Events(3)))
       } yield {
-        insertRes shouldBe Completed()
+        insertRes.getInsertedIds should not be empty
       }
     }
 
@@ -133,7 +133,7 @@ class EntityWithoutIdDaoTest extends TestMongoServer {
         insertRes <- dao.insert(Seq(Events(0), Events(1), Events(2), Events(3)))
         xAll <- dao.findAll()
       } yield {
-        insertRes shouldBe Completed()
+        insertRes.getInsertedIds should not be empty
         xAll.size shouldBe 4
         xAll should contain allElementsOf Seq(Events(0), Events(1), Events(2), Events(3))
         xAll(0) shouldBe Events(0)
@@ -149,7 +149,7 @@ class EntityWithoutIdDaoTest extends TestMongoServer {
         insertRes <- dao.insert(Seq(Events(0), Events(1), Events(2), Events(3)))
         xAll <- dao.findLastN(2)
       } yield {
-        insertRes shouldBe Completed()
+        insertRes.getInsertedIds should not be empty
         xAll.size shouldBe 2
         xAll should contain allElementsOf Seq(Events(2), Events(3))
         xAll(0) shouldBe Events(3) // last event
@@ -163,7 +163,7 @@ class EntityWithoutIdDaoTest extends TestMongoServer {
         insertRes <- dao.insert(Seq(Events(0), Events(1), Events(2), Events(3)))
         xAll <- dao.findBySource(EventSource.Internal)
       } yield {
-        insertRes shouldBe Completed()
+        insertRes.getInsertedIds should not be empty
         xAll.size shouldBe 2
         xAll should contain allElementsOf Seq(Events(1), Events(3))
         xAll(0) shouldBe Events(1)
