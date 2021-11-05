@@ -28,12 +28,14 @@ object EntityWithIdAsFieldDaoTest {
 
     // BSON
 
-    trait BuildingModelBsonProtocol extends BuildingModelJsonProtocol with GreenLeafBsonProtocol {
+    class BuildingModelBsonProtocol
+      extends BuildingModelJsonProtocol
+      with GreenLeafBsonProtocol
+      with DaoBsonProtocol[Long, Building] {
+
       override implicit lazy val BuildingFormat: RootJsonFormat[Building] =
         jsonFormat(Building.apply, "_id", "name", "height", "floors", "year", "address")
-    }
 
-    object BuildingModelBsonProtocol extends BuildingModelBsonProtocol with DaoBsonProtocol[Long, Building] {
       override implicit val idFormat: JsonFormat[Long] = LongJsonFormat
       override implicit val entityFormat: JsonFormat[Building] = BuildingFormat
     }
@@ -47,8 +49,8 @@ object EntityWithIdAsFieldDaoTest {
 
     override protected val collection: MongoCollection[Document] = db.getCollection(collectionName)
 
-    import BuildingModelBsonProtocol._
-    override protected val protocol = BuildingModelBsonProtocol
+    override protected val protocol: BuildingModelBsonProtocol = new BuildingModelBsonProtocol
+    import protocol._
 
     def findByName(name: String): Future[Seq[Building]] = {
       find("name" $regex (name, "i"))
