@@ -35,10 +35,6 @@ trait GreenLeafMongoDsl {
     seq.map(_.asJsonExpanded)
   }
 
-  implicit def objAsJsVal[T](t: T)(implicit writer: JsonWriter[T]): JsValue = {
-    t.asJsonExpanded
-  }
-
   implicit class JsValueWithoutNull(j: JsValue) {
 
     private def skipNull(jsArray: JsArray): JsArray = {
