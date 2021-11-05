@@ -16,7 +16,7 @@ class JsValueWithoutNullTest extends AnyWordSpec with Matchers {
       a: Option[Seq[Option[Int]]] = None)
 
   object TestNullsBsonProtocol extends GreenLeafBsonProtocol {
-    implicit val testNullsFormat: RootJsonFormat[TestNulls] = jsonFormat7(TestNulls)
+    implicit val testNullsFormat: RootJsonFormat[TestNulls] = jsonFormat(TestNulls.apply, "i", "l", "s", "d", "n", "b", "a")
   }
 
   import GreenLeafMongoDsl.JsValueWithoutNull

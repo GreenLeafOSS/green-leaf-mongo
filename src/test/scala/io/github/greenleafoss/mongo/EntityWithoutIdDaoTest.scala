@@ -2,15 +2,15 @@ package io.github.greenleafoss.mongo
 
 import java.time.ZonedDateTime
 import java.util.UUID
-
-import GreenLeafMongoDao.DaoBsonProtocol
 import ZonedDateTimeOps._
+import io.github.greenleafoss.mongo.GreenLeafMongoDao.DaoBsonProtocol
 import org.mongodb.scala.bson.ObjectId
 import org.mongodb.scala.bson.collection.immutable.Document
 import org.mongodb.scala.bson.conversions.Bson
 import org.mongodb.scala.model.IndexOptions
 import org.mongodb.scala.model.Indexes._
 import org.mongodb.scala.{Completed, MongoCollection}
+import org.mongodb.scala._
 import spray.json.{JsonFormat, RootJsonFormat}
 
 import scala.concurrent.Future
@@ -37,20 +37,23 @@ object EntityWithoutIdDaoTest {
 
     trait EventJsonProtocol extends GreenLeafJsonProtocol {
       implicit lazy val EventSourceFormat: JsonFormat[EventSource.EventSource] = enumToJsonFormatAsString(EventSource)
-      implicit lazy val EventFormat: RootJsonFormat[Event] = jsonFormat4(Event)
+      implicit lazy val EventFormat: RootJsonFormat[Event] = jsonFormat4(Event.apply)
     }
 
     object EventJsonProtocol extends EventJsonProtocol
 
     // BSON
 
-    trait EventBsonProtocol extends EventJsonProtocol with GreenLeafBsonProtocol {
-      override implicit lazy val EventSourceFormat: JsonFormat[EventSource.EventSource] = enumToJsonFormatAsInt(EventSource)
-    }
+    class EventBsonProtocol
+      extends EventJsonProtocol
+      with GreenLeafBsonProtocol
+      with DaoBsonProtocol[ObjectId, Event] {
 
-    object EventBsonProtocol extends EventBsonProtocol with DaoBsonProtocol[ObjectId, Event] {
+      override implicit lazy val EventSourceFormat: JsonFormat[EventSource.EventSource] =
+        enumToJsonFormatAsInt(EventSource)
+
       override implicit val idFormat: JsonFormat[ObjectId] = ObjectIdJsonFormat
-      override implicit val entityFormat: JsonFormat[Event] = EventFormat
+      override implicit val entityFormat: RootJsonFormat[Event] = EventFormat
     }
 
   }
@@ -62,7 +65,7 @@ object EntityWithoutIdDaoTest {
     protected val collection: MongoCollection[Document] = db.getCollection(collectionName)
     collection.createIndex(key = ascending("timestamp"), IndexOptions().name("idx-timestamp")).toFuture()
 
-    override protected val protocol = EventBsonProtocol
+    override protected val protocol: EventBsonProtocol = new EventBsonProtocol
     import protocol._
 
     override def findAll(offset: Int = 0, limit: Int = 0, sortBy: Bson = Document("""{timestamp: 1}""")): Future[Seq[Event]] = {

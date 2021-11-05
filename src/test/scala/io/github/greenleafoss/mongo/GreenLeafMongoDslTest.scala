@@ -281,7 +281,10 @@ class GreenLeafMongoDslTest
     "$elemMatch" in {
       // https://docs.mongodb.com/manual/reference/operator/query/elemMatch/
 
-      ("results" $elemMatch JsObject("$gte" -> 80, "$lt" -> 85)).asBson shouldBe
+      ("results" $elemMatch JsObject("$gte" -> JsNumber(80), "$lt" -> JsNumber(85))).asBson shouldBe
+        """{ results: { $elemMatch: { $gte: 80, $lt: 85 } } }""".asBson
+
+      ("results" $elemMatch Map("$gte" -> 80, "$lt" -> 85)).asBson shouldBe
         """{ results: { $elemMatch: { $gte: 80, $lt: 85 } } }""".asBson
 
       ("results" $elemMatch $and("product" $eq "xyz", "score" $gte 8)).asBson shouldBe

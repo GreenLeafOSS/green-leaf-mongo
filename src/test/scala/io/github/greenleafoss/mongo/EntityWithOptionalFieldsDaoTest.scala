@@ -1,8 +1,8 @@
 package io.github.greenleafoss.mongo
 
-import java.util.UUID
-
 import GreenLeafMongoDao.DaoBsonProtocol
+
+import java.util.UUID
 import org.mongodb.scala.{Completed, Document, MongoCollection}
 import spray.json._
 
@@ -24,22 +24,25 @@ object EntityWithOptionalFieldsDaoTest {
 
     // JSON
     trait GeoModelJsonProtocol extends GreenLeafJsonProtocol {
-      implicit val GeoKeyFormat: RootJsonFormat[GeoKey] = jsonFormat3(GeoKey)
-      implicit val GeoRecordFormat: RootJsonFormat[GeoRecord] = jsonFormat3(GeoRecord)
+      implicit val GeoKeyFormat: RootJsonFormat[GeoKey] = jsonFormat3(GeoKey.apply)
+      implicit val GeoRecordFormat: RootJsonFormat[GeoRecord] = jsonFormat3(GeoRecord.apply)
     }
 
     object GeoModelJsonProtocol extends GeoModelJsonProtocol
 
     // BSON
-    trait GeoModelBsonProtocol extends GeoModelJsonProtocol with GreenLeafBsonProtocol {
-      override implicit val GeoRecordFormat: RootJsonFormat[GeoRecord] = jsonFormat(
-        GeoRecord, "_id", "name", "population")
-    }
+    class GeoModelBsonProtocol
+      extends GeoModelJsonProtocol
+      with GreenLeafBsonProtocol
+      with DaoBsonProtocol[GeoKey, GeoRecord] {
 
-    object GeoModelBsonProtocol extends GeoModelBsonProtocol with DaoBsonProtocol[GeoKey, GeoRecord] {
+      override implicit val GeoRecordFormat: RootJsonFormat[GeoRecord] = jsonFormat(
+        GeoRecord.apply, "_id", "name", "population")
+
       override implicit def idFormat: RootJsonFormat[GeoKey] = GeoKeyFormat
       override implicit def entityFormat: RootJsonFormat[GeoRecord] = GeoRecordFormat
     }
+
   }
 
   import GeoModel._
@@ -48,7 +51,7 @@ object EntityWithOptionalFieldsDaoTest {
 
     override protected val collection: MongoCollection[Document] = db.getCollection(collectionName)
 
-    override protected val protocol = GeoModelBsonProtocol
+    override protected val protocol: GeoModelBsonProtocol = new GeoModelBsonProtocol
     import protocol._
 
     def findCountryBy(countryCode: String): Future[Option[GeoRecord]] = {

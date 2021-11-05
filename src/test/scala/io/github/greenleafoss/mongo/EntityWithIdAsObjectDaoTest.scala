@@ -7,7 +7,7 @@ import ZonedDateTimeOps._
 import GreenLeafMongoDao.DaoBsonProtocol
 import org.mongodb.scala.bson.collection.immutable.Document
 import org.mongodb.scala.{Completed, MongoCollection}
-import spray.json.{JsonFormat, RootJsonFormat}
+import spray.json._
 
 import scala.concurrent.Future
 
@@ -40,22 +40,24 @@ object EntityWithIdAsObjectDaoTest {
     // JSON
     trait ExchangeRateJsonProtocol extends GreenLeafJsonProtocol {
       implicit lazy val ExchangeRateCurrencyFormat: JsonFormat[Currency] = enumToJsonFormatAsString(Currency)
-      implicit lazy val ExchangeRateIdFormat: RootJsonFormat[ExchangeRateId] = jsonFormat2(ExchangeRateId)
-      implicit lazy val ExchangeRateFormat: RootJsonFormat[ExchangeRate] = jsonFormat3(ExchangeRate)
+      implicit lazy val ExchangeRateIdFormat: RootJsonFormat[ExchangeRateId] = jsonFormat2(ExchangeRateId.apply)
+      implicit lazy val ExchangeRateFormat: RootJsonFormat[ExchangeRate] = jsonFormat3(ExchangeRate.apply)
     }
 
     object ExchangeRateJsonProtocol extends ExchangeRateJsonProtocol
 
     // BSON
 
-    trait ExchangeRateBsonProtocol extends ExchangeRateJsonProtocol with GreenLeafBsonProtocol {
-      override implicit lazy val ExchangeRateFormat: RootJsonFormat[ExchangeRate] =
-        jsonFormat(ExchangeRate, "_id", "rates", "updated")
-    }
+    class ExchangeRateBsonProtocol
+      extends ExchangeRateJsonProtocol
+      with GreenLeafBsonProtocol
+      with DaoBsonProtocol[ExchangeRateId, ExchangeRate] {
 
-    object ExchangeRateBsonProtocol extends ExchangeRateBsonProtocol with DaoBsonProtocol[ExchangeRateId, ExchangeRate] {
-      override implicit val idFormat: JsonFormat[ExchangeRateId] = ExchangeRateIdFormat
-      override implicit val entityFormat: JsonFormat[ExchangeRate] = ExchangeRateFormat
+      override implicit lazy val ExchangeRateFormat: RootJsonFormat[ExchangeRate] =
+        jsonFormat(ExchangeRate.apply, "_id", "rates", "updated")
+
+      override implicit val idFormat: RootJsonFormat[ExchangeRateId] = ExchangeRateIdFormat
+      override implicit val entityFormat: RootJsonFormat[ExchangeRate] = ExchangeRateFormat
     }
 
   }
@@ -66,7 +68,7 @@ object EntityWithIdAsObjectDaoTest {
 
     override protected val collection: MongoCollection[Document] = db.getCollection(collectionName)
 
-    override protected val protocol = ExchangeRateBsonProtocol
+    override protected val protocol: ExchangeRateBsonProtocol = new ExchangeRateBsonProtocol
     import protocol._
 
     def findByDate(date: ZonedDateTime): Future[Seq[ExchangeRate]] = {

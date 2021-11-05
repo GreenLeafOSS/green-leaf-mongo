@@ -27,15 +27,12 @@ trait GreenLeafMongoDsl {
   }
 
   implicit def json2document(j: JsValue): Document = {
+    import org.mongodb.scala.bsonDocumentToDocument
     org.bson.BsonDocument.parse(j.compactPrint)
   }
 
   protected def seqObjAsSeqJsVal[T](seq: Seq[T])(implicit writer: JsonWriter[T]): Seq[JsValue] = {
     seq.map(_.asJsonExpanded)
-  }
-
-  implicit def objAsJsVal[T](t: T)(implicit writer: JsonWriter[T]): JsValue = {
-    t.asJsonExpanded
   }
 
   implicit class JsValueWithoutNull(j: JsValue) {
@@ -210,7 +207,8 @@ trait GreenLeafMongoDsl {
   implicit class FiltersDsl(field: String) {
 
     /**
-      * Specifies equality condition. The $eq operator matches documents where the value of a field equals the specified value.
+      * Specifies equality condition.
+      * The "$eq" operator matches documents where the value of a field equals the specified value.
       * @see https://docs.mongodb.com/manual/reference/operator/query/eq/
       *
       * @example {{{"qty" $eq 20}}}
@@ -219,6 +217,33 @@ trait GreenLeafMongoDsl {
       * @return the filter
       */
     def $eq(v: JsValue): JsObject =
+      query(field, "$eq", v)
+
+    /**
+      * Specifies equality condition.
+      * The "$eq" operator matches documents where the value of a field equals the specified value.
+      * @see https://docs.mongodb.com/manual/reference/operator/query/eq/
+      *
+      * @example {{{"qty" $eq 20}}}
+      *
+      * @param v is value
+      * @return the filter
+      */
+    def $eq[T](v: T)(implicit writer: JsonWriter[T]): JsObject =
+      query(field, "$eq", v.asJsonExpanded)
+
+    /**
+      * Specifies alias for equality condition "$eq" operator.
+      * This method implemented to reduce possible issues with Scala 3.
+      * The $is operator matches documents where the value of a field equals the specified value.
+      * @see https://docs.mongodb.com/manual/reference/operator/query/eq/
+      *
+      * @example {{{"qty" $is 20}}}
+      *
+      * @param v is value
+      * @return the filter
+      */
+    def $is(v: JsValue): JsObject =
       query(field, "$eq", v)
 
     /**
@@ -232,8 +257,8 @@ trait GreenLeafMongoDsl {
       * @param v is value
       * @return the filter
       */
-    def $is(v: JsValue): JsObject =
-      query(field, "$eq", v)
+    def $is[T](v: T)(implicit writer: JsonWriter[T]): JsObject =
+      query(field, "$eq", v.asJsonExpanded)
 
     /**
       * $ne selects the documents where the value of the field is not equal to the specified value.
@@ -249,6 +274,19 @@ trait GreenLeafMongoDsl {
       query(field, "$ne", v)
 
     /**
+      * $ne selects the documents where the value of the field is not equal to the specified value.
+      * This includes documents that do not contain the field.
+      * @see https://docs.mongodb.com/manual/reference/operator/query/ne/
+      *
+      * @example {{{"qty" $ne 20}}}
+      *
+      * @param v is value
+      * @return the filter
+      */
+    def $ne[T](v: T)(implicit writer: JsonWriter[T]): JsObject =
+      query(field, "$ne", v.asJsonExpanded)
+
+    /**
       * $gt selects those documents where the value of the field is greater than (i.e. >) the specified value.
       * @see https://docs.mongodb.com/manual/reference/operator/query/gt/
       *
@@ -259,6 +297,18 @@ trait GreenLeafMongoDsl {
       */
     def $gt(v: JsValue): JsObject =
       query(field, "$gt", v)
+
+    /**
+      * $gt selects those documents where the value of the field is greater than (i.e. >) the specified value.
+      * @see https://docs.mongodb.com/manual/reference/operator/query/gt/
+      *
+      * @example {{{"qty" $gt 20}}}
+      *
+      * @param v is value
+      * @return the filter
+      */
+    def $gt[T](v: T)(implicit writer: JsonWriter[T]): JsObject =
+      query(field, "$gt", v.asJsonExpanded)
 
     /**
       * $gte selects the documents where the value of the field is greater than or equal to (i.e. >=) a specified
@@ -274,6 +324,19 @@ trait GreenLeafMongoDsl {
       query(field, "$gte", v)
 
     /**
+      * $gte selects the documents where the value of the field is greater than or equal to (i.e. >=) a specified
+      * value (e.g. value.)
+      * @see https://docs.mongodb.com/manual/reference/operator/query/gte/
+      *
+      * @example {{{"qty" $gte 20}}}
+      *
+      * @param v is value
+      * @return the filter
+      */
+    def $gte[T](v: T)(implicit writer: JsonWriter[T]): JsObject =
+      query(field, "$gte", v.asJsonExpanded)
+
+    /**
       * $lt selects the documents where the value of the field is less than (i.e. <) the specified value.
       * @see https://docs.mongodb.com/manual/reference/operator/query/lt/
       *
@@ -286,6 +349,18 @@ trait GreenLeafMongoDsl {
       query(field, "$lt", v)
 
     /**
+      * $lt selects the documents where the value of the field is less than (i.e. <) the specified value.
+      * @see https://docs.mongodb.com/manual/reference/operator/query/lt/
+      *
+      * @example {{{"qty" $lt 20}}}
+      *
+      * @param v is value
+      * @return the filter
+      */
+    def $lt[T](v: T)(implicit writer: JsonWriter[T]): JsObject =
+      query(field, "$lt", v.asJsonExpanded)
+
+    /**
       * $lte selects the documents where the value of the field is less than or equal to (i.e. <=) the specified value.
       * @see https://docs.mongodb.com/manual/reference/operator/query/lte/
       *
@@ -296,6 +371,18 @@ trait GreenLeafMongoDsl {
       */
     def $lte(v: JsValue): JsObject =
       query(field, "$lte", v)
+
+    /**
+      * $lte selects the documents where the value of the field is less than or equal to (i.e. <=) the specified value.
+      * @see https://docs.mongodb.com/manual/reference/operator/query/lte/
+      *
+      * @example {{{"qty" $lte 20}}}
+      *
+      * @param v is value
+      * @return the filter
+      */
+    def $lte[T](v: T)(implicit writer: JsonWriter[T]): JsObject =
+      query(field, "$lte", v.asJsonExpanded)
 
     /**
       * The $in operator selects the documents where the value of a field equals any value in the specified array.
@@ -441,6 +528,19 @@ trait GreenLeafMongoDsl {
       */
     def $elemMatch(v: JsValue): JsObject =
       JsObject(field -> JsObject("$elemMatch" -> v))
+
+    /**
+      * The $elemMatch operator matches documents that contain an array field with at least one element that matches
+      * all the specified query criteria.
+      * @see https://docs.mongodb.com/manual/reference/operator/query/elemMatch/
+      *
+      * @example {{{"results" $elemMatch ("product" $eq "xyz")}}}
+      *
+      * @param v is value
+      * @return the filter
+      */
+    def $elemMatch[T](v: T)(implicit writer: JsonWriter[T]): JsObject =
+      JsObject(field -> JsObject("$elemMatch" -> v.asJsonExpanded))
 
     /**
       * The $size operator matches any array with the number of elements specified by the argument.

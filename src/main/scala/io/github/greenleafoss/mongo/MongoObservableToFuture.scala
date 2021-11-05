@@ -2,24 +2,22 @@ package io.github.greenleafoss.mongo
 
 import org.mongodb.scala.bson.collection.immutable.Document
 import org.mongodb.scala.{AggregateObservable, FindObservable, SingleObservable}
-import spray.json.{JsonFormat, _}
+import org.mongodb.scala._
+import spray.json._
 
 import scala.concurrent.{ExecutionContext, Future}
 
 trait MongoObservableToFuture {
 
-  protected type JF[T] = JsonFormat[T]
-  protected type EC = ExecutionContext
-
-  protected def findObservableAsSeq[T](x: FindObservable[Document])(implicit jf: JF[T], ec: EC): Future[Seq[T]] = {
+  protected def findObservableAsSeq[T](x: FindObservable[Document])(implicit jf: JsonFormat[T], ec: ExecutionContext): Future[Seq[T]] = {
     x.toFuture().map(_.map(_.toJson().parseJson.convertTo[T]))
   }
 
-  protected def findObservableAsOpt[T](x: FindObservable[Document])(implicit jf: JF[T], ec: EC): Future[Option[T]] = {
+  protected def findObservableAsOpt[T](x: FindObservable[Document])(implicit jf: JsonFormat[T], ec: ExecutionContext): Future[Option[T]] = {
     x.headOption().map(_.map(_.toJson().parseJson.convertTo[T]))
   }
 
-  protected def findObservableAsObj[T](x: FindObservable[Document])(implicit jf: JF[T], ec: EC): Future[T] = {
+  protected def findObservableAsObj[T](x: FindObservable[Document])(implicit jf: JsonFormat[T], ec: ExecutionContext): Future[T] = {
     x.head().map(_.toJson().parseJson.convertTo[T])
   }
 
@@ -30,7 +28,7 @@ trait MongoObservableToFuture {
   }
 
 
-  protected def singleObservableAsOpt[T](x: SingleObservable[Document])(implicit jf: JF[T], ec: EC): Future[Option[T]] = {
+  protected def singleObservableAsOpt[T](x: SingleObservable[Document])(implicit jf: JsonFormat[T], ec: ExecutionContext): Future[Option[T]] = {
     x.toFutureOption().map { _.map(_.toJson().parseJson.convertTo[T]) }
   }
 
@@ -39,7 +37,7 @@ trait MongoObservableToFuture {
   }
 
 
-  protected def aggObservableAsOpt[T](x: AggregateObservable[Document])(implicit jf: JF[T], ec: EC): Future[Seq[T]] = {
+  protected def aggObservableAsOpt[T](x: AggregateObservable[Document])(implicit jf: JsonFormat[T], ec: ExecutionContext): Future[Seq[T]] = {
     x.toFuture().map(_.map(_.toJson().parseJson.convertTo[T]))
   }
 
