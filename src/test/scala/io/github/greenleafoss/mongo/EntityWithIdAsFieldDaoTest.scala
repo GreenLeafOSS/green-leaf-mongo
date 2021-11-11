@@ -4,7 +4,7 @@ import java.util.UUID
 
 import GreenLeafMongoDao.DaoBsonProtocol
 import org.mongodb.scala.bson.collection.immutable.Document
-import org.mongodb.scala.{Completed, MongoCollection}
+import org.mongodb.scala.MongoCollection
 import spray.json._
 
 import scala.concurrent.Future
@@ -96,7 +96,7 @@ class EntityWithIdAsFieldDaoTest extends TestMongoServer {
       for {
         insertRes <- dao.insert(BuildingsInNyc(1))
       } yield {
-        insertRes shouldBe Completed()
+        insertRes.wasAcknowledged shouldBe true
       }
     }
 
@@ -105,7 +105,7 @@ class EntityWithIdAsFieldDaoTest extends TestMongoServer {
       for {
         insertRes <- dao.insert(Seq(BuildingsInNyc(2), BuildingsInNyc(3), BuildingsInNyc(4)))
       } yield {
-        insertRes shouldBe Completed()
+        insertRes.wasAcknowledged shouldBe true
       }
     }
 
@@ -116,7 +116,7 @@ class EntityWithIdAsFieldDaoTest extends TestMongoServer {
         findRes <- dao.findById(5)
         getRes <- dao.getById(5)
       } yield {
-        insertRes shouldBe Completed()
+        insertRes.wasAcknowledged shouldBe true
         findRes shouldBe Some(BuildingsInNyc(5))
         getRes shouldBe BuildingsInNyc(5)
       }
@@ -129,7 +129,7 @@ class EntityWithIdAsFieldDaoTest extends TestMongoServer {
         x <- dao.findByIdsIn(Seq(6, 7, 8))
         y <- dao.findByIdsIn(Seq(9))
       } yield {
-        insertRes shouldBe Completed()
+        insertRes.getInsertedIds should not be empty
         x should contain allElementsOf Seq(BuildingsInNyc(6), BuildingsInNyc(7), BuildingsInNyc(8))
         y should contain allElementsOf Seq(BuildingsInNyc(9))
       }
@@ -141,7 +141,7 @@ class EntityWithIdAsFieldDaoTest extends TestMongoServer {
         insertRes <- dao.insert(BuildingsInNyc.values.toSeq)
         findAllRes <- dao.findAll()
       } yield {
-        insertRes shouldBe Completed()
+        insertRes.getInsertedIds should not be empty
         findAllRes should contain allElementsOf Seq(
           BuildingsInNyc(1), BuildingsInNyc(2), BuildingsInNyc(3), BuildingsInNyc(4), BuildingsInNyc(5),
           BuildingsInNyc(6), BuildingsInNyc(7), BuildingsInNyc(8), BuildingsInNyc(9), BuildingsInNyc(10))
@@ -155,7 +155,7 @@ class EntityWithIdAsFieldDaoTest extends TestMongoServer {
         xNewYorkTimes <- dao.findByName("new york times")
         x35Hudson <- dao.findByName("35 Hudson")
       } yield {
-        insertRes shouldBe Completed()
+        insertRes.getInsertedIds should not be empty
         xNewYorkTimes should contain only BuildingsInNyc(9)
         x35Hudson should contain only BuildingsInNyc(10)
       }
@@ -168,7 +168,7 @@ class EntityWithIdAsFieldDaoTest extends TestMongoServer {
         xGte90 <- dao.findByFloors(90)
         xGte100 <- dao.findByFloors(100)
       } yield {
-        insertRes shouldBe Completed()
+        insertRes.getInsertedIds should not be empty
         xGte90 should contain only (BuildingsInNyc(1), BuildingsInNyc(2), BuildingsInNyc(4))
         xGte100 should contain only (BuildingsInNyc(1), BuildingsInNyc(4))
       }
@@ -180,7 +180,7 @@ class EntityWithIdAsFieldDaoTest extends TestMongoServer {
         insertRes <- dao.insert(BuildingsInNyc.values.toSeq)
         xAvenue2000 <- dao.findByAddressAndYear("aVeNue", 2000)
       } yield {
-        insertRes shouldBe Completed()
+        insertRes.getInsertedIds should not be empty
         xAvenue2000 should contain only (BuildingsInNyc(2), BuildingsInNyc(5), BuildingsInNyc(9))
       }
     }
@@ -221,7 +221,7 @@ class EntityWithIdAsFieldDaoTest extends TestMongoServer {
         findRes <- dao.findById(1)
         getRes <- dao.getById(1)
       } yield {
-        insertRes shouldBe Completed()
+        insertRes.wasAcknowledged shouldBe true
         updateRes shouldBe Some(entityToCreate)
         findRes shouldBe Some(entityToUpdate)
         getRes shouldBe entityToUpdate
@@ -238,7 +238,7 @@ class EntityWithIdAsFieldDaoTest extends TestMongoServer {
         findRes <- dao.findById(1)
         getRes <- dao.getById(1)
       } yield {
-        insertRes shouldBe Completed()
+        insertRes.wasAcknowledged shouldBe true
         updateRes shouldBe Some(entityToCreate)
         findRes shouldBe Some(entityToUpdate)
         getRes shouldBe entityToUpdate

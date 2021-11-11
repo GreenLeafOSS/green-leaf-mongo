@@ -52,12 +52,10 @@ class GreenLeafJsonAndBsonProtocolsTest
       |    "$oid": "5c72b799306e355b83ef3c86"
       |  },
       |  "i": 1,
-      |  "l": {
-      |    "$numberLong": "4886718345"
-      |  },
+      |  "l": 4886718345,
       |  "b": true,
       |  "zdt": {
-      |    "$date": 0
+      |    "$date": "1970-01-01T00:00:00Z"
       |  }
       |}
     """.stripMargin

@@ -6,7 +6,7 @@ import java.util.UUID
 import ZonedDateTimeOps._
 import GreenLeafMongoDao.DaoBsonProtocol
 import org.mongodb.scala.bson.collection.immutable.Document
-import org.mongodb.scala.{Completed, MongoCollection}
+import org.mongodb.scala.MongoCollection
 import spray.json._
 
 import scala.concurrent.Future
@@ -159,7 +159,7 @@ class EntityWithIdAsObjectDaoTest extends TestMongoServer {
       for {
         insertRes <- dao.insert(ExchangeRates("2019-01-02"))
       } yield {
-        insertRes shouldBe Completed()
+        insertRes.wasAcknowledged shouldBe true
       }
     }
 
@@ -168,7 +168,7 @@ class EntityWithIdAsObjectDaoTest extends TestMongoServer {
       for {
         insertRes <- dao.insert(Seq(ExchangeRates("2019-01-03"), ExchangeRates("2019-01-04")))
       } yield {
-        insertRes shouldBe Completed()
+        insertRes.getInsertedIds should not be empty
       }
     }
 
@@ -179,7 +179,7 @@ class EntityWithIdAsObjectDaoTest extends TestMongoServer {
           ExchangeRates("2019-01-02"), ExchangeRates("2019-01-03"), ExchangeRates("2019-01-04")))
         xAll <- dao.findAll()
       } yield {
-        insertRes shouldBe Completed()
+        insertRes.getInsertedIds should not be empty
         xAll should contain allElementsOf Set(
           ExchangeRates("2019-01-02"), ExchangeRates("2019-01-03"), ExchangeRates("2019-01-04"))
       }
@@ -193,7 +193,7 @@ class EntityWithIdAsObjectDaoTest extends TestMongoServer {
         findRes <- dao.findById(ExchangeRateId(USD, "2019-01-03"))
         getRes <- dao.getById(ExchangeRateId(USD, "2019-01-03"))
       } yield {
-        insertRes shouldBe Completed()
+        insertRes.getInsertedIds should not be empty
         findRes shouldBe Some(ExchangeRates("2019-01-03"))
         getRes shouldBe ExchangeRates("2019-01-03")
       }
@@ -245,7 +245,7 @@ class EntityWithIdAsObjectDaoTest extends TestMongoServer {
         findRes <- dao.findById(ExchangeRateId(USD, "2019-01-03"))
         getRes <- dao.getById(ExchangeRateId(USD, "2019-01-03"))
       } yield {
-        insertRes shouldBe Completed()
+        insertRes.getInsertedIds should not be empty
         val resetUpdated = now
         findRes.map(_.copy(updated = resetUpdated)) shouldBe Some(ExchangeRates("2019-01-03").copy(updated = resetUpdated))
         getRes.copy(updated = resetUpdated) shouldBe ExchangeRates("2019-01-03").copy(updated = resetUpdated)
@@ -260,7 +260,7 @@ class EntityWithIdAsObjectDaoTest extends TestMongoServer {
         x <- dao.findByIdsOr(Seq(ExchangeRateId(USD, "2019-01-03"), ExchangeRateId(USD, "2019-01-04")))
         y <- dao.findByIdsOr(Seq(ExchangeRateId(USD, "2019-01-02")))
       } yield {
-        insertRes shouldBe Completed()
+        insertRes.getInsertedIds should not be empty
         x should contain allElementsOf Set(ExchangeRates("2019-01-03"), ExchangeRates("2019-01-04"))
         y should contain allElementsOf Set(ExchangeRates("2019-01-02"))
       }
@@ -275,7 +275,7 @@ class EntityWithIdAsObjectDaoTest extends TestMongoServer {
         y <- dao.findByDateGt(date = "2019-01-03")
         z <- dao.findByDateGte(date = "2019-01-04")
       } yield {
-        insertRes shouldBe Completed()
+        insertRes.getInsertedIds should not be empty
         x should contain allElementsOf Set(ExchangeRates("2019-01-02"))
         y should contain allElementsOf Set(ExchangeRates("2019-01-04"))
         z should contain allElementsOf Set(ExchangeRates("2019-01-04"))
@@ -307,7 +307,7 @@ class EntityWithIdAsObjectDaoTest extends TestMongoServer {
         findRes2 <- dao.findById(id)
         getRes2 <- dao.getById(id)
       } yield {
-        insertRes shouldBe Completed()
+        insertRes.wasAcknowledged shouldBe true
         findRes1 shouldBe Some(oldRate)
         getRes1 shouldBe oldRate
         updateRes shouldBe Some(oldRate)
@@ -352,7 +352,7 @@ class EntityWithIdAsObjectDaoTest extends TestMongoServer {
         findRes <- dao.findById(updateEntity.id)
         getRes <- dao.getById(updateEntity.id)
       } yield {
-        insertRes shouldBe Completed()
+        insertRes.wasAcknowledged shouldBe true
         updateRes shouldBe Some(createEntity)
         findRes shouldBe Some(updateEntity)
         getRes shouldBe updateEntity
@@ -369,7 +369,7 @@ class EntityWithIdAsObjectDaoTest extends TestMongoServer {
         findRes <- dao.findById(updateEntity.id)
         getRes <- dao.getById(updateEntity.id)
       } yield {
-        insertRes shouldBe Completed()
+        insertRes.wasAcknowledged shouldBe true
         updateRes shouldBe Some(createEntity)
         findRes shouldBe Some(updateEntity)
         getRes shouldBe updateEntity
@@ -386,7 +386,7 @@ class EntityWithIdAsObjectDaoTest extends TestMongoServer {
         findRes <- dao.findById(updateEntity.id)
         getRes <- dao.getById(updateEntity.id)
       } yield {
-        insertRes shouldBe Completed()
+        insertRes.wasAcknowledged shouldBe true
         updateRes shouldBe Some(createEntity)
         findRes shouldBe Some(updateEntity)
         getRes shouldBe updateEntity
