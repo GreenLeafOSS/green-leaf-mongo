@@ -26,10 +26,10 @@ class JsValueWithoutNullTest extends AnyWordSpec with Matchers {
 
     "not remove JsNull values from JSON if skipNull(false)" in {
       TestNulls(Some(1), Some(0x123456789L), Some("a"), Some(2.7), Some(3.14), Some(true)).toJson.skipNull(false).compactPrint shouldBe
-        """{"a":null,"b":true,"d":2.7,"i":1,"l":{"$numberLong":"4886718345"},"n":{"$numberDecimal":"3.14"},"s":"a"}"""
+        """{"a":null,"b":true,"d":2.7,"i":1,"l":4886718345,"n":{"$numberDecimal":"3.14"},"s":"a"}"""
 
       TestNulls(None, Some(0x123456789L), Some("a"), Some(2.7), Some(3.14), Some(true)).toJson.skipNull(false).compactPrint shouldBe
-        """{"a":null,"b":true,"d":2.7,"i":null,"l":{"$numberLong":"4886718345"},"n":{"$numberDecimal":"3.14"},"s":"a"}"""
+        """{"a":null,"b":true,"d":2.7,"i":null,"l":4886718345,"n":{"$numberDecimal":"3.14"},"s":"a"}"""
 
       TestNulls(None, None, Some("a"), Some(2.7), Some(3.14), Some(true)).toJson.skipNull(false).compactPrint shouldBe
         """{"a":null,"b":true,"d":2.7,"i":null,"l":null,"n":{"$numberDecimal":"3.14"},"s":"a"}"""
@@ -52,10 +52,10 @@ class JsValueWithoutNullTest extends AnyWordSpec with Matchers {
 
     "remove JsNull values from JSON if skipNull(true)" in {
       TestNulls(Some(1), Some(0x123456789L), Some("a"), Some(2.7), Some(3.14), Some(true)).toJson.skipNull().compactPrint shouldBe
-        """{"s":"a","n":{"$numberDecimal":"3.14"},"i":1,"b":true,"l":{"$numberLong":"4886718345"},"d":2.7}"""
+        """{"s":"a","n":{"$numberDecimal":"3.14"},"i":1,"b":true,"l":4886718345,"d":2.7}"""
 
       TestNulls(None, Some(0x123456789L), Some("a"), Some(2.7), Some(3.14), Some(true)).toJson.skipNull().compactPrint shouldBe
-        """{"s":"a","n":{"$numberDecimal":"3.14"},"b":true,"l":{"$numberLong":"4886718345"},"d":2.7}"""
+        """{"s":"a","n":{"$numberDecimal":"3.14"},"b":true,"l":4886718345,"d":2.7}"""
 
       TestNulls(None, None, Some("a"), Some(2.7), Some(3.14), Some(true)).toJson.skipNull().compactPrint shouldBe
         """{"b":true,"d":2.7,"n":{"$numberDecimal":"3.14"},"s":"a"}"""

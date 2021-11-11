@@ -1,5 +1,6 @@
 package io.github.greenleafoss.mongo
 
+import org.bson.json.{JsonMode, JsonWriterSettings}
 import org.mongodb.scala.MongoClient
 import org.mongodb.scala.bson.BsonDocument
 import org.mongodb.scala.bson.collection.immutable.Document
@@ -17,12 +18,12 @@ trait GreenLeafMongoDsl {
 
   protected val log: Logger = LoggerFactory.getLogger(getClass)
 
+  protected def jws: JsonWriterSettings
+
   private implicit class BsonToJsObjectTransformer(d: Bson) {
-    def toJson: JsObject = {
-      d.toBsonDocument(classOf[BsonDocument], MongoClient.DEFAULT_CODEC_REGISTRY).toJson.parseJson match {
-        case jObj: JsObject => jObj
-        case x => throw new IllegalArgumentException("Expected JsObject, but got " + x)
-      }
+    def toJson: JsObject = d.toBsonDocument().toJson(jws).parseJson match {
+      case jObj: JsObject => jObj
+      case x => throw new IllegalArgumentException(s"Expected JsObject, but got $x")
     }
   }
 
@@ -571,4 +572,6 @@ trait GreenLeafMongoDsl {
 
 }
 
-object GreenLeafMongoDsl extends GreenLeafMongoDsl
+object GreenLeafMongoDsl extends GreenLeafMongoDsl {
+  override protected val jws: JsonWriterSettings = JsonWriterSettings.builder().outputMode(JsonMode.RELAXED).build()
+}

@@ -1,6 +1,7 @@
 package io.github.greenleafoss.mongo
 
 import GreenLeafMongoDao.DaoBsonProtocol
+import org.bson.json.{JsonMode, JsonWriterSettings}
 import org.mongodb.scala.bson.collection.immutable.Document
 import org.mongodb.scala.bson.conversions.Bson
 import org.mongodb.scala.model.{FindOneAndReplaceOptions, FindOneAndUpdateOptions}
@@ -14,6 +15,7 @@ import scala.reflect.ClassTag
 
 object GreenLeafMongoDao {
   trait DaoBsonProtocol[Id, E] {
+    val jws: JsonWriterSettings = JsonWriterSettings.builder().outputMode(JsonMode.RELAXED).build()
     implicit def idFormat : JsonFormat[Id]
     implicit def entityFormat: JsonFormat[E]
   }
@@ -29,7 +31,8 @@ trait GreenLeafMongoDao[Id, E]
   protected val collection: MongoCollection[Document]
 
   protected val protocol: DaoBsonProtocol[Id, E]
-  import protocol._
+  import protocol.{idFormat, entityFormat}
+  override protected lazy val jws: JsonWriterSettings = protocol.jws
 
   // _id, id, key, ...
   protected val primaryKey: String = "_id"

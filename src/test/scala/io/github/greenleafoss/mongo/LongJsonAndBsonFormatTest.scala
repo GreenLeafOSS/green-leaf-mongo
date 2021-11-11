@@ -27,7 +27,7 @@ class LongJsonAndBsonFormatTest extends AnyWordSpec with Matchers {
 
     "write large (long) value as $numberLong in BSON" in {
       import GreenLeafBsonProtocol._
-      0x123456789L.toJson shouldBe JsObject("$numberLong" -> JsString("4886718345"))
+      0x123456789L.toJson shouldBe JsNumber("4886718345")
     }
 
   }
