@@ -4,7 +4,8 @@ package io.github.greenleafoss.mongo
 import de.flapdoodle.embed.mongo.config.Defaults._
 import de.flapdoodle.embed.mongo.config.{MongoCmdOptions, MongodConfig, Net}
 import de.flapdoodle.embed.mongo.distribution.Version
-import de.flapdoodle.embed.mongo.{Command, MongodExecutable, MongodStarter}
+import de.flapdoodle.embed.mongo.packageresolver.Command
+import de.flapdoodle.embed.mongo.{MongodExecutable, MongodStarter}
 import de.flapdoodle.embed.process.runtime.Network
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.matchers.should.Matchers
@@ -23,7 +24,7 @@ object TestMongoServer {
 
   protected lazy val mongodExe: MongodExecutable = MongodStarter.getInstance(runtimeConfig).prepare(
     MongodConfig.builder()
-      .version(Version.Main.PRODUCTION)
+      .version(Version.Main.V6_0)
       .net(new Net("localhost", 27027, Network.localhostIsIPv6()))
       .cmdOptions(
         MongoCmdOptions.builder()
@@ -57,7 +58,7 @@ object TestMongoServerApp {
     val starter: MongodStarter = MongodStarter.getInstance(runtimeCfg)
 
     val mongoCfg = MongodConfig.builder()
-      .version(Version.Main.PRODUCTION)
+      .version(Version.Main.V6_0)
       .net(new Net("localhost", 27027, Network.localhostIsIPv6()))
       .build()
 

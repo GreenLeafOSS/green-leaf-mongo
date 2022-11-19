@@ -54,11 +54,12 @@ Test / parallelExecution := false
 Test / fork := true
 
 libraryDependencies += "io.spray" %% "spray-json" % "1.3.6" cross CrossVersion.for3Use2_13
-libraryDependencies += "org.mongodb.scala" %% "mongo-scala-driver" % "4.3.4" cross CrossVersion.for3Use2_13
+libraryDependencies += "org.mongodb.scala" %% "mongo-scala-driver" % "4.8.0" cross CrossVersion.for3Use2_13
 
-libraryDependencies += "org.slf4j" % "slf4j-api" % "1.8.0-beta4"
-libraryDependencies += "org.slf4j" % "slf4j-simple" % "1.8.0-beta4" % Test
 
-libraryDependencies += "de.flapdoodle.embed" % "de.flapdoodle.embed.mongo" % "3.0.0" % Test
+libraryDependencies += "org.slf4j" % "slf4j-api" % "2.0.3"
+libraryDependencies += "org.slf4j" % "slf4j-simple" % "2.0.3" % Test
+
+libraryDependencies += "de.flapdoodle.embed" % "de.flapdoodle.embed.mongo" % "3.5.1" % Test
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.10" % Test
-libraryDependencies += "org.immutables" % "value" % "2.8.8" % Test
+libraryDependencies += "org.immutables" % "value" % "2.9.2" % Test
