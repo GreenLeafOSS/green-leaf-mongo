@@ -1,6 +1,7 @@
 # green-leaf-mongo
 ![GitHub](https://img.shields.io/github/license/GreenLeafOSS/green-leaf-mongo.svg)
 [![Build Status](https://app.travis-ci.com/GreenLeafOSS/green-leaf-mongo.svg?branch=master)](https://app.travis-ci.com/GreenLeafOSS/green-leaf-mongo)
+[![Scala CI](https://github.com/GreenLeafOSS/green-leaf-mongo/actions/workflows/scala.yml/badge.svg)](https://github.com/GreenLeafOSS/green-leaf-mongo/actions/workflows/scala.yml)
 [![green-leaf-mongo Scala version support](https://index.scala-lang.org/greenleafoss/green-leaf-mongo/green-leaf-mongo/latest-by-scala-version.svg)](https://index.scala-lang.org/greenleafoss/green-leaf-mongo/green-leaf-mongo)
 
 ## Short description
