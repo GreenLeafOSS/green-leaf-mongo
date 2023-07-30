@@ -118,8 +118,8 @@ trait GreenLeafMongoDsl {
     * @param filters are expressions
     * @return the filter
     */
-  def $and(filters: JsValue*): JsObject =
-    JsObject("$and" -> JsArray(filters: _*))
+  def $and(filters: Seq[JsValue]): JsObject =
+    JsObject("$and" -> JsArray(filters.toVector))
 
   /**
     * $and performs a logical AND operation on an array of two or more expressions
@@ -133,8 +133,8 @@ trait GreenLeafMongoDsl {
     * @param filters are expressions
     * @return the filter
     */
-  def $and[T](filters: T*)(implicit writer: JsonWriter[T]): JsObject =
-    JsObject("$and" -> JsArray(seqObjAsSeqJsVal(filters): _*))
+  def $and[T](filters: Seq[T])(implicit writer: JsonWriter[T]): JsObject =
+    JsObject("$and" -> JsArray(seqObjAsSeqJsVal(filters).toVector))
 
   /**
     * The $or operator performs a logical OR operation on an array of two or more expressions and selects the documents
@@ -146,7 +146,7 @@ trait GreenLeafMongoDsl {
     * @param filters are expressions
     * @return the filter
     */
-  def $or[T](filters: T*)(implicit writer: JsonWriter[T]): JsObject =
+  def $or[T](filters: Seq[T])(implicit writer: JsonWriter[T]): JsObject =
     JsObject("$or" -> JsArray(seqObjAsSeqJsVal(filters).toVector))
 
   /**
@@ -159,8 +159,8 @@ trait GreenLeafMongoDsl {
     * @param filters are expressions
     * @return the filter
     */
-  def $or(filters: JsValue*): JsObject =
-    JsObject("$or" -> JsArray(filters: _*))
+  def $or(filters: Seq[JsValue]): JsObject =
+    JsObject("$or" -> JsArray(filters.toVector))
 
   /**
     * $nor performs a logical NOR operation on an array of one or more query expression and selects the documents that
@@ -172,8 +172,8 @@ trait GreenLeafMongoDsl {
     * @param filters are expressions
     * @return the filter
     */
-  def $nor(filters: JsValue*): JsObject =
-    JsObject("$nor" -> JsArray(filters: _*))
+  def $nor(filters: Seq[JsValue]): JsObject =
+    JsObject("$nor" -> JsArray(filters.toVector))
 
   /**
     * $nor performs a logical NOR operation on an array of one or more query expression and selects the documents that
@@ -185,8 +185,8 @@ trait GreenLeafMongoDsl {
     * @param filters are expressions
     * @return the filter
     */
-  def $nor[T](filters: T*)(implicit writer: JsonWriter[T]): JsObject =
-    JsObject("$nor" -> JsArray(seqObjAsSeqJsVal(filters): _*))
+  def $nor[T](filters: Seq[T])(implicit writer: JsonWriter[T]): JsObject =
+    JsObject("$nor" -> JsArray(seqObjAsSeqJsVal(filters).toVector))
 
   /**
     * The $elemMatch operator matches documents that contain an array field with at least one element that matches
@@ -389,25 +389,25 @@ trait GreenLeafMongoDsl {
       * The $in operator selects the documents where the value of a field equals any value in the specified array.
       * @see https://docs.mongodb.com/manual/reference/operator/query/in/
       *
-      * @example {{{"qty" $in (5, 15)}}}
+      * @example {{{"qty" $in Seq(5, 15)}}}
       *
       * @param v is value
       * @return the filter
       */
-    def $in(v: JsValue*): JsObject =
-      JsObject(field -> JsObject("$in" -> JsArray(v: _*)))
+    def $in(v: Seq[JsValue]): JsObject =
+      JsObject(field -> JsObject("$in" -> JsArray(v.toVector)))
 
     /**
       * The $in operator selects the documents where the value of a field equals any value in the specified array.
       * @see https://docs.mongodb.com/manual/reference/operator/query/in/
       *
-      * @example {{{"qty" $in (5, 15)}}}
+      * @example {{{"qty" $in Seq(5, 15)}}}
       *
       * @param v is value
       * @return the filter
       */
-    def $in[T](v: T*)(implicit writer: JsonWriter[T]): JsObject =
-      JsObject(field -> JsObject("$in" -> JsArray(seqObjAsSeqJsVal(v): _*)))
+    def $in[T](v: Seq[T])(implicit writer: JsonWriter[T]): JsObject =
+      JsObject(field -> JsObject("$in" -> JsArray(seqObjAsSeqJsVal(v).toVector)))
 
     /**
       * $nin selects the documents where:
@@ -420,8 +420,8 @@ trait GreenLeafMongoDsl {
       * @param v is value
       * @return the filter
       */
-    def $nin(v: JsValue*): JsObject =
-      JsObject(field -> JsObject("$nin" -> JsArray(v: _*)))
+    def $nin(v: Seq[JsValue]): JsObject =
+      JsObject(field -> JsObject("$nin" -> JsArray(v.toVector)))
 
     /**
       * $nin selects the documents where:
@@ -434,8 +434,8 @@ trait GreenLeafMongoDsl {
       * @param v is value
       * @return the filter
       */
-    def $nin[T](v: T*)(implicit writer: JsonWriter[T]): JsObject =
-      JsObject(field -> JsObject("$nin" -> JsArray(seqObjAsSeqJsVal(v): _*)))
+    def $nin[T](v: Seq[T])(implicit writer: JsonWriter[T]): JsObject =
+      JsObject(field -> JsObject("$nin" -> JsArray(seqObjAsSeqJsVal(v).toVector)))
 
     /**
       * When exists is true, $exists matches the documents that contain the field, including documents where the
@@ -496,33 +496,33 @@ trait GreenLeafMongoDsl {
       * elements.
       * @see https://docs.mongodb.com/manual/reference/operator/query/all/
       *
-      * @example {{{"tags" $all ("ssl", "security")}}}
+      * @example {{{"tags" $all Seq("ssl", "security")}}}
       *
       * @param v is value
       * @return the filter
       */
-    def $all(v: JsValue*): JsObject =
-      JsObject(field -> JsObject("$all" -> JsArray(v: _*)))
+    def $all(v: Seq[JsValue]): JsObject =
+      JsObject(field -> JsObject("$all" -> JsArray(v.toVector)))
 
     /**
       * The $all operator selects the documents where the value of a field is an array that contains all the specified
       * elements.
       * @see https://docs.mongodb.com/manual/reference/operator/query/all/
       *
-      * @example {{{"tags" $all ("ssl", "security")}}}
+      * @example {{{"tags" $all Seq("ssl", "security")}}}
       *
       * @param v is value
       * @return the filter
       */
-    def $all[T](v: T*)(implicit writer: JsonWriter[T]): JsObject =
-      JsObject(field -> JsObject("$all" -> JsArray(seqObjAsSeqJsVal(v): _*)))
+    def $all[T](v: Seq[T])(implicit writer: JsonWriter[T]): JsObject =
+      JsObject(field -> JsObject("$all" -> JsArray(seqObjAsSeqJsVal(v).toVector)))
 
     /**
       * The $elemMatch operator matches documents that contain an array field with at least one element that matches
       * all the specified query criteria.
       * @see https://docs.mongodb.com/manual/reference/operator/query/elemMatch/
       *
-      * @example {{{"results" $elemMatch ("product" $eq "xyz")}}}
+      * @example {{{"results" $elemMatch ("product" $is "xyz")}}}
       *
       * @param v is value
       * @return the filter

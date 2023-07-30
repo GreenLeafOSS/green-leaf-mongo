@@ -61,7 +61,7 @@ object EntityWithIdAsFieldDaoTest {
     }
 
     def findByAddressAndYear(address: String, year: Int): Future[Seq[Building]] = {
-      find($and("address" $regex (address, "i"), "year" $gte year))
+      find($and(Seq("address" $regex (address, "i"), "year" $gte year)))
     }
   }
 

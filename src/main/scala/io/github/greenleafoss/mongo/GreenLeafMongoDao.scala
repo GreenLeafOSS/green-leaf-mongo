@@ -85,13 +85,13 @@ trait GreenLeafMongoDao[Id, E]
   def findByIdsIn(ids: Seq[Id], offset: Int = 0, limit: Int = 0, sortBy: Bson = defaultSortBy): Future[Seq[E]] = ids match {
     case Nil => Future.successful(Seq.empty)
     case id :: Nil => findById(id).map(_.toSeq)
-    case _ => internalFind(primaryKey.$in(ids: _*), offset, limit, sortBy).asSeq[E]
+    case _ => internalFind(primaryKey.$in(ids), offset, limit, sortBy).asSeq[E]
   }
 
   def findByIdsOr(ids: Seq[Id], offset: Int = 0, limit: Int = 0, sortBy: Bson = defaultSortBy): Future[Seq[E]] = ids match {
     case Nil => Future.successful(Seq.empty)
     case id :: Nil => findById(id).map(_.toSeq)
-    case _ => internalFind($or(ids.map(_.asJsonExpanded(primaryKey)): _*), offset, limit, sortBy).asSeq[E]
+    case _ => internalFind($or(ids.map(_.asJsonExpanded(primaryKey))), offset, limit, sortBy).asSeq[E]
   }
 
   def findAll(offset: Int = 0, limit: Int = 0, sortBy: Bson = defaultSortBy): Future[Seq[E]] = {

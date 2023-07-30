@@ -70,12 +70,12 @@ class GreenLeafMongoDslTest
     "$in" in {
       // https://docs.mongodb.com/manual/reference/operator/query/in/
 
-      ("qty" $in (5, 15)).asBson shouldBe """{ qty: { $in: [ 5, 15 ] } }""".asBson
-      ("qty" $in (2.7, 3.1415)).asBson shouldBe """{ qty: { $in: [ 2.7, 3.1415] } }""".asBson
-      ("qty" $in (0x123456789L, 128, 256, 512)).asBson shouldBe """{ qty: { $in: [ { $numberLong: "4886718345" }, 128, 256, 512 ] } }""".asBson
-      ("tags" $in ("appliances", "school")).asBson shouldBe """{ tags: { $in: ["appliances", "school"] } }""".asBson
+      ("qty" $in Seq(5, 15)).asBson shouldBe """{ qty: { $in: [ 5, 15 ] } }""".asBson
+      ("qty" $in Seq(2.7, 3.1415)).asBson shouldBe """{ qty: { $in: [ 2.7, 3.1415] } }""".asBson
+      ("qty" $in Seq(0x123456789L, 128, 256, 512)).asBson shouldBe """{ qty: { $in: [ { $numberLong: "4886718345" }, 128, 256, 512 ] } }""".asBson
+      ("tags" $in Seq("appliances", "school")).asBson shouldBe """{ tags: { $in: ["appliances", "school"] } }""".asBson
       // Impossible too use $regex inside $in query https://jira.mongodb.org/browse/SERVER-14595
-      ("tags" $in ("^be".r, "^st".r)).asBson shouldBe """{ tags: { "$in" : [ { "$regex": "^be" }, { "$regex": "^st" }] } }""".asBson
+      ("tags" $in Seq("^be".r, "^st".r)).asBson shouldBe """{ tags: { "$in" : [ { "$regex": "^be" }, { "$regex": "^st" }] } }""".asBson
     }
 
     "$lt" in {
@@ -102,19 +102,21 @@ class GreenLeafMongoDslTest
     "$nin" in {
       // https://docs.mongodb.com/manual/reference/operator/query/nin/
 
-      ("qty" $nin (5, 15)).asBson shouldBe """{ qty: { $nin: [ 5, 15 ] } }""".asBson
-      ("tags" $nin ("appliances", "school")).asBson shouldBe """{ tags: { $nin: [ "appliances", "school" ] } }""".asBson
+      ("qty" $nin Seq(5, 15)).asBson shouldBe """{ qty: { $nin: [ 5, 15 ] } }""".asBson
+      ("tags" $nin Seq("appliances", "school")).asBson shouldBe """{ tags: { $nin: [ "appliances", "school" ] } }""".asBson
     }
 
     "$and" in {
       // https://docs.mongodb.com/manual/reference/operator/query/and/
 
-      $and("price" $ne 1.99, "price" $exists true).asBson shouldBe
+      $and(Seq("price" $ne 1.99, "price" $exists true)).asBson shouldBe
         """{$and: [{price: {$ne: 1.99}}, {price: {$exists :true}} ]}""".asBson
 
       $and(
-        $or("price" $eq 0.99, "price" $eq 1.99),
-        $or("sale" $eq true, "qty" $lt 20)
+        Seq(
+          $or(Seq("price" $eq 0.99, "price" $eq 1.99)),
+          $or(Seq("sale" $eq true, "qty" $lt 20))
+        )
       ).asBson shouldBe
         """
           |{
@@ -138,17 +140,19 @@ class GreenLeafMongoDslTest
     "$nor" in {
       // https://docs.mongodb.com/manual/reference/operator/query/nor/
 
-      $nor("price" $eq 1.99, "sale" $eq true).asBson shouldBe
+      $nor(Seq("price" $eq 1.99, "sale" $eq true)).asBson shouldBe
         """{ $nor: [ { price: { $eq: 1.99 } }, { sale: { $eq: true } } ]  }""".asBson
 
-      $nor("price" $eq 1.99, "qty" $lt 20, "sale" $eq true).asBson shouldBe
+      $nor(Seq("price" $eq 1.99, "qty" $lt 20, "sale" $eq true)).asBson shouldBe
         """{ $nor: [ { price: { $eq: 1.99 } }, { qty: { $lt: 20 } }, { sale: { $eq: true } } ] }""".asBson
 
       $nor(
-        "price" $eq 1.99,
-        "price" $exists false,
-        "sale" $eq true,
-        "sale" $exists false
+        Seq(
+          "price" $eq 1.99,
+          "price" $exists false,
+          "sale" $eq true,
+          "sale" $exists false
+        )
       ).asBson shouldBe
         """
           |{
@@ -165,14 +169,14 @@ class GreenLeafMongoDslTest
     "$or" in {
       // https://docs.mongodb.com/manual/reference/operator/query/or/
 
-      $or("quantity" $lt 20, "price" $eq 10).asBson shouldBe
+      $or(Seq("quantity" $lt 20, "price" $eq 10)).asBson shouldBe
         """{ $or: [ { quantity: { $lt: 20 } }, { price: { $eq: 10 } } ] }""".asBson
     }
 
     "$exists" in {
       // https://docs.mongodb.com/manual/reference/operator/query/exists/
 
-      $and("qty" $exists true, "qty" $nin (5, 15)).asBson shouldBe
+      $and(Seq("qty" $exists true, "qty" $nin Seq(5, 15))).asBson shouldBe
         """{ $and: [ { qty: {$exists: true} }, { qty: { $nin: [5,15] } } ] }""".asBson
     }
 
@@ -203,7 +207,7 @@ class GreenLeafMongoDslTest
     "$regex" in {
       // https://docs.mongodb.com/manual/reference/operator/query/regex/
 
-      $and("name" $regex "acme.*corp", "name" $nin "acmeblahcorp").asBson shouldBe
+      $and(Seq("name" $regex "acme.*corp", "name" $nin Seq("acmeblahcorp"))).asBson shouldBe
         """
           |{
           |  $and: [
@@ -213,7 +217,7 @@ class GreenLeafMongoDslTest
           |}
         """.stripMargin.asBson
 
-      $and("name" $regex ("acme.*corp", "i"), "name" $nin "acmeblahcorp").asBson shouldBe
+      $and(Seq("name" $regex ("acme.*corp", "i"), "name" $nin Seq("acmeblahcorp"))).asBson shouldBe
         """
           |{
           |  $and: [
@@ -223,7 +227,7 @@ class GreenLeafMongoDslTest
           |}
         """.stripMargin.asBson
 
-      $and("name" $regex "acme.*corp".r, "name" $nin "acmeblahcorp").asBson shouldBe
+      $and(Seq("name" $regex "acme.*corp".r, "name" $nin Seq("acmeblahcorp"))).asBson shouldBe
         """
           |{
           |  $and: [
@@ -256,14 +260,14 @@ class GreenLeafMongoDslTest
     "$all" in {
       // https://docs.mongodb.com/manual/reference/operator/query/all/
 
-      ("tags" $all ("ssl", "security")).asBson shouldBe """{ tags: { $all: [ "ssl" , "security" ] } }""".asBson
+      ("tags" $all Seq("ssl", "security")).asBson shouldBe """{ tags: { $all: [ "ssl" , "security" ] } }""".asBson
 
-      ("qty.num" $all 50).asBson shouldBe """{ "qty.num": { $all: [ 50 ] } }""".asBson
+      ("qty.num" $all Seq(50)).asBson shouldBe """{ "qty.num": { $all: [ 50 ] } }""".asBson
 
       (
-        "qty" $all (
-          $elemMatch ($and("size" $eq "M", "num" $gt 50)),
-          $elemMatch ($and("num" $eq 100, "color" $eq "green"))
+        "qty" $all Seq(
+          $elemMatch ($and(Seq("size" $eq "M", "num" $gt 50))),
+          $elemMatch ($and(Seq("num" $eq 100, "color" $eq "green")))
         )
       ).asBson shouldBe
         """
@@ -287,7 +291,7 @@ class GreenLeafMongoDslTest
       ("results" $elemMatch Map("$gte" -> 80, "$lt" -> 85)).asBson shouldBe
         """{ results: { $elemMatch: { $gte: 80, $lt: 85 } } }""".asBson
 
-      ("results" $elemMatch $and("product" $eq "xyz", "score" $gte 8)).asBson shouldBe
+      ("results" $elemMatch $and(Seq("product" $eq "xyz", "score" $gte 8))).asBson shouldBe
         """{ results: { $elemMatch: { $and: [ { product: { $eq: "xyz" } }, { score: { $gte : 8 } }] } } }""".asBson
 
       ("results" $elemMatch ("product" $eq "xyz")).asBson shouldBe

@@ -61,17 +61,17 @@ object EntityWithOptionalFieldsDaoTest {
       // will not works because 'state' and 'city' fields may not exist or be nulls
       // val filter = Document(s"""{ "_id": { "country": $countryCode } }""")
 
-      val filter = $and("_id.country" $eq countryCode, "_id.state" $eq JsNull, "_id.city" $eq JsNull)
+      val filter = $and(Seq("_id.country" $eq countryCode, "_id.state" $eq JsNull, "_id.city" $eq JsNull))
       findOne(filter)
     }
 
     def findStateBy(countryCode: String, stateCode: String): Future[Option[GeoRecord]] = {
-      val filter = $and("_id.country" $eq countryCode, "_id.state" $eq stateCode, "_id.city" $eq JsNull)
+      val filter = $and(Seq("_id.country" $eq countryCode, "_id.state" $eq stateCode, "_id.city" $eq JsNull))
       findOne(filter)
     }
 
     def findCityBy(countryCode: String, stateCode: String, cityCode: String): Future[Option[GeoRecord]] = {
-      val filter = $and("_id.country" $eq countryCode, "_id.state" $eq stateCode, "_id.city" $eq cityCode)
+      val filter = $and(Seq("_id.country" $eq countryCode, "_id.state" $eq stateCode, "_id.city" $eq cityCode))
       findOne(filter)
     }
 
