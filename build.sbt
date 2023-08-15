@@ -1,7 +1,7 @@
 
 name := "green-leaf-mongo"
 
-version := "0.1.13"
+version := "0.1.16.1"
 
 description := "This extension created on top of official MongoDB Scala Driver, allows to fully utilize Spray JSON and represents bidirectional serialization for case classes in BSON, as well as flexible DSL for MongoDB query operators, documents and collections."
 licenses := List("Apache 2" -> new URL("http://www.apache.org/licenses/LICENSE-2.0.txt"))
@@ -40,7 +40,6 @@ sonatypeCredentialHost := "https://s01.oss.sonatype.org"
 publishMavenStyle := true
 
 publishConfiguration := publishConfiguration.value.withOverwrite(true)
-
 
 scalaVersion := "3.3.0"
 
