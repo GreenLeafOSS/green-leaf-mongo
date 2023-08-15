@@ -42,9 +42,9 @@ publishMavenStyle := true
 publishConfiguration := publishConfiguration.value.withOverwrite(true)
 
 
-scalaVersion := "3.2.2"
+scalaVersion := "3.3.0"
 
-crossScalaVersions := Seq("2.12.17", "2.13.10")
+crossScalaVersions := Seq("2.12.18", "2.13.11")
 
 scalacOptions ++= Seq(
   "-deprecation"
@@ -53,13 +53,13 @@ scalacOptions ++= Seq(
 Test / parallelExecution := false
 Test / fork := true
 
-libraryDependencies += "io.spray" %% "spray-json" % "1.3.6" cross CrossVersion.for3Use2_13
-libraryDependencies += "org.mongodb.scala" %% "mongo-scala-driver" % "4.9.0" cross CrossVersion.for3Use2_13
+libraryDependencies += "io.spray" %% "spray-json" % "1.3.6"
+libraryDependencies += "org.mongodb.scala" %% "mongo-scala-driver" % "4.10.2" cross CrossVersion.for3Use2_13
 
 
-libraryDependencies += "org.slf4j" % "slf4j-api" % "2.0.5"
-libraryDependencies += "org.slf4j" % "slf4j-simple" % "2.0.5" % Test
+libraryDependencies += "org.slf4j" % "slf4j-api" % "2.0.7"
+libraryDependencies += "org.slf4j" % "slf4j-simple" % "2.0.7" % Test
 
-libraryDependencies += "de.flapdoodle.embed" % "de.flapdoodle.embed.mongo" % "3.5.4" % Test
-libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.15" % Test
-libraryDependencies += "org.immutables" % "value" % "2.9.2" % Test
+libraryDependencies += "de.flapdoodle.embed" % "de.flapdoodle.embed.mongo" % "4.8.0" % Test
+libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.16" % Test
+libraryDependencies += "org.immutables" % "value" % "2.9.3" % Test
