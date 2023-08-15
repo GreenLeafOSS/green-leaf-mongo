@@ -1,68 +1,65 @@
 package io.github.greenleafoss.mongo
 
 
-import de.flapdoodle.embed.mongo.config.Defaults._
-import de.flapdoodle.embed.mongo.config.{MongoCmdOptions, MongodConfig, Net}
+import de.flapdoodle.embed.mongo.commands.{ImmutableMongodArguments, MongodArguments}
+import de.flapdoodle.embed.mongo.config.Net
 import de.flapdoodle.embed.mongo.distribution.Version
-import de.flapdoodle.embed.mongo.packageresolver.Command
-import de.flapdoodle.embed.mongo.{MongodExecutable, MongodStarter}
-import de.flapdoodle.embed.process.runtime.Network
+import de.flapdoodle.embed.mongo.transitions.{ImmutableMongod, Mongod, RunningMongodProcess}
+import de.flapdoodle.embed.process.io.{ImmutableProcessOutput, ProcessOutput, Processors, Slf4jLevel}
+import de.flapdoodle.reverse.TransitionWalker
+import de.flapdoodle.reverse.transitions.Start
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AsyncWordSpec
+import org.slf4j.{Logger, LoggerFactory}
 
 object TestMongoServer {
 
-  // https://github.com/flapdoodle-oss/de.flapdoodle.embed.mongo#usage---optimization
+  private val logger: Logger = LoggerFactory.getLogger(getClass)
 
-  private val command = Command.MongoD
+  private val mongoPort: Int = 27027
+  private val mongoVersion: Version.Main = Version.Main.V6_0
 
-  private val runtimeConfig = runtimeConfigFor(command)
-    .artifactStore(extractedArtifactStoreFor(command).withDownloadConfig(downloadConfigFor(command).build()))
-    // .processOutput(new ProcessOutput(new ConsoleOutputStreamProcessor(), new ConsoleOutputStreamProcessor(), new ConsoleOutputStreamProcessor()))
-    .build()
+  private val processOutput: ImmutableProcessOutput = ProcessOutput.builder
+    .commands(Processors.logTo(logger, Slf4jLevel.DEBUG))
+    .output(Processors.logTo(logger, Slf4jLevel.INFO))
+    .error(Processors.logTo(logger, Slf4jLevel.ERROR))
+    .build
 
-  protected lazy val mongodExe: MongodExecutable = MongodStarter.getInstance(runtimeConfig).prepare(
-    MongodConfig.builder()
-      .version(Version.Main.V6_0)
-      .net(new Net("localhost", 27027, Network.localhostIsIPv6()))
-      .cmdOptions(
-        MongoCmdOptions.builder()
-          .storageEngine("ephemeralForTest")
-          // https://docs.mongodb.com/manual/reference/configuration-options/#storage.syncPeriodSecs
-          // If you set storage.syncPeriodSecs to 0, MongoDB will not sync the memory mapped files to disk.
-          // If you set storage.syncPeriodSecs to 0 for testing purposes, you should also set --nojournal to true.
-          .syncDelay(0)
-          .useNoJournal(true)
-          .build())
-      .build())
+  // @see https://www.mongodb.com/docs/manual/reference/program/mongod/
+  private val mongodArguments: ImmutableMongodArguments = MongodArguments.defaults
+    .withSyncDelay(0)
+    .withStorageEngine("ephemeralForTest")
+    .withUseNoJournal(true)
+    .withUseNoPrealloc(true)
 
+  private val mongod: ImmutableMongod = Mongod.instance
+    .withNet(Start.to(classOf[Net]).initializedWith(Net.defaults.withPort(mongoPort)))
+    .withProcessOutput(Start.to(classOf[ProcessOutput]).initializedWith(processOutput))
+    .withMongodArguments(Start.to(classOf[MongodArguments]).initializedWith(mongodArguments))
+
+  def start(): TransitionWalker.ReachedState[RunningMongodProcess] =
+    mongod.start(mongoVersion)
+
+  def stop(runningMongod: TransitionWalker.ReachedState[RunningMongodProcess]): Unit =
+    if (runningMongod.current().isAlive) runningMongod.close()
 }
 
 trait TestMongoServer extends AsyncWordSpec with Matchers with BeforeAndAfterAll {
-  private val mongod = TestMongoServer.mongodExe.start()
+  private val runningMongoDb = TestMongoServer.start()
 
   // we can preload test data here if needed
   override protected def beforeAll(): Unit = super.beforeAll()
 
-  override protected def afterAll(): Unit = if (mongod.isProcessRunning) mongod.stop()
+  override protected def afterAll(): Unit = TestMongoServer.stop(runningMongoDb)
 }
 
-object TestMongoServerApp {
+object TestMongoServerApp extends App {
+  import scala.io.StdIn.readLine
 
-  def main(args: Array[String]): Unit = {
-    val runtimeCfg = runtimeConfigFor(Command.MongoD)
-      //    .processOutput(new ProcessOutput(new ConsoleOutputStreamProcessor(), new ConsoleOutputStreamProcessor(), new ConsoleOutputStreamProcessor()))
-      .build()
+  private val runningMongod = TestMongoServer.start()
 
-    val starter: MongodStarter = MongodStarter.getInstance(runtimeCfg)
+  readLine("Press 'Enter' to shutdown MongoDB")
 
-    val mongoCfg = MongodConfig.builder()
-      .version(Version.Main.V6_0)
-      .net(new Net("localhost", 27027, Network.localhostIsIPv6()))
-      .build()
-
-    starter.prepare(mongoCfg).start()
-  }
-
+  TestMongoServer.stop(runningMongod)
 }
