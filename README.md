@@ -2,10 +2,19 @@
 ![GitHub](https://img.shields.io/github/license/GreenLeafOSS/green-leaf-mongo.svg)
 [![Build Status](https://app.travis-ci.com/GreenLeafOSS/green-leaf-mongo.svg?branch=master)](https://app.travis-ci.com/GreenLeafOSS/green-leaf-mongo)
 [![Scala CI](https://github.com/GreenLeafOSS/green-leaf-mongo/actions/workflows/scala.yml/badge.svg)](https://github.com/GreenLeafOSS/green-leaf-mongo/actions/workflows/scala.yml)
-[![green-leaf-mongo Scala version support](https://index.scala-lang.org/greenleafoss/green-leaf-mongo/green-leaf-mongo/latest-by-scala-version.svg)](https://index.scala-lang.org/greenleafoss/green-leaf-mongo/green-leaf-mongo)
+[![green-leaf-mongo-core](https://index.scala-lang.org/greenleafoss/green-leaf-mongo/green-leaf-mongo-core/latest-by-scala-version.svg)](https://index.scala-lang.org/greenleafoss/green-leaf-mongo/green-leaf-mongo)
+[![green-leaf-mongo-spray](https://index.scala-lang.org/greenleafoss/green-leaf-mongo/green-leaf-mongo-spray/latest-by-scala-version.svg)](https://index.scala-lang.org/greenleafoss/green-leaf-mongo/green-leaf-mongo)
+[![green-leaf-mongo-play](https://index.scala-lang.org/greenleafoss/green-leaf-mongo/green-leaf-mongo-play/latest-by-scala-version.svg)](https://index.scala-lang.org/greenleafoss/green-leaf-mongo/green-leaf-mongo)
+
 
 ## Short description
 This extension created on top of official [MongoDB Scala Driver](https://mongodb.github.io/mongo-scala-driver) and allows to fully utilize [Spray JSON](https://github.com/spray/spray-json) or [Play JSON](https://github.com/playframework/play-json) to represent bidirectional serialization for case classes in BSON, as well as flexible DSL for [MongoDB query operators](https://www.mongodb.com/docs/manual/reference/operator/query/), documents and collections.
+
+It was introduced in 2019 - [Andrii Lashchenko at #ScalaUA - Spray JSON and MongoDB Queries: Insights and Simple Tricks
+](https://www.youtube.com/watch?v=NBgKkQtydAo)
+Related slides available at https://www.slideshare.net/lashchenko/spray-json-and-mongodb-queries-insights-and-simple-tricks
+[<img src="https://image.slidesharecdn.com/sprayjsonandmongodbqueries-190330123716/75/spray-json-and-mongodb-queries-insights-and-simple-tricks-1-2048.jpg" width="75%" geight="75%" />](https://www.slideshare.net/lashchenko/spray-json-and-mongodb-queries-insights-and-simple-tricks)
+
 
 ## Usage
 ```scala
@@ -33,19 +42,16 @@ This trait also includes a few additional JsonFormats for _LocalDate_, _LocalDat
 These base protocols allow to simply (de)serialize this instance to and from both JSON and BSON the same way as in Spray JSON:
 ```scala 3
 // MODEL
-case class Test(id: ObjectId, i: Int, l: Long, b: Boolean, zdt: ZonedDateTime)
+case class Test(_id: ObjectId, i: Int, l: Long, b: Boolean, zdt: ZonedDateTime)
 
 // JSON
-trait TestJsonProtocol extends SprayBsonProtocol:
+trait TestJsonProtocol extends SprayJsonProtocol:
   given testJsonFormat = jsonFormat5(Test)
 
 object TestJsonProtocol extends TestJsonProtocol
 
 // BSON
-trait TestBsonProtocol extends SprayBsonProtocol:
-  given testBsonFormat = jsonFormat(Test, "_id", "i", "l", "b", "zdt")
-
-object TestBsonProtocol extends TestBsonProtocol
+object TestBsonProtocol extends TestJsonProtocol with SprayBsonProtocol
 ```
 
 Once protocols defined, we can make instance of Test case class and use TestJsonProtocol to print related JSON:
@@ -58,11 +64,11 @@ println(obj.toJson.prettyPrint)
 Output in this case will be:
 ```js
 {
-  "id": "5c72b799306e355b83ef3c86",
+  "_id": "5c72b799306e355b83ef3c86",
   "i": 1,
   "l": 4886718345,
   "b": true,
-  "zdt": "1970-01-01 00:00:00"
+  "zdt": "1970-01-01T00:00:00Z"
 }
 ```
 
@@ -81,13 +87,17 @@ Output in this case will be:
   "_id": {
     "$oid": "5c72b799306e355b83ef3c86"
   },
-  "i": 1,
+  "i": {
+    "$numberInt": "1"
+  },
   "l": {
     "$numberLong": "4886718345"
   },
   "b": true,
   "zdt": {
-    "$date": 0
+    "$date": {
+      "$numberLong": "0"
+    }
   }
 }
 ```
