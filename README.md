@@ -13,6 +13,7 @@ This extension created on top of official [MongoDB Scala Driver](https://mongodb
 It was introduced in 2019 - [Andrii Lashchenko at #ScalaUA - Spray JSON and MongoDB Queries: Insights and Simple Tricks
 ](https://www.youtube.com/watch?v=NBgKkQtydAo)
 Related slides available at https://www.slideshare.net/lashchenko/spray-json-and-mongodb-queries-insights-and-simple-tricks
+
 [<img src="https://image.slidesharecdn.com/sprayjsonandmongodbqueries-190330123716/75/spray-json-and-mongodb-queries-insights-and-simple-tricks-1-2048.jpg" width="75%" geight="75%" />](https://www.slideshare.net/lashchenko/spray-json-and-mongodb-queries-insights-and-simple-tricks)
 
 
