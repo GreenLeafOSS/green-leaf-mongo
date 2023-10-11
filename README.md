@@ -2,9 +2,9 @@
 ![GitHub](https://img.shields.io/github/license/GreenLeafOSS/green-leaf-mongo.svg)
 [![Build Status](https://app.travis-ci.com/GreenLeafOSS/green-leaf-mongo.svg?branch=master)](https://app.travis-ci.com/GreenLeafOSS/green-leaf-mongo)
 [![Scala CI](https://github.com/GreenLeafOSS/green-leaf-mongo/actions/workflows/scala.yml/badge.svg)](https://github.com/GreenLeafOSS/green-leaf-mongo/actions/workflows/scala.yml)
-[![green-leaf-mongo-core](https://index.scala-lang.org/greenleafoss/green-leaf-mongo/green-leaf-mongo-core/latest-by-scala-version.svg)](https://index.scala-lang.org/greenleafoss/green-leaf-mongo/green-leaf-mongo)
-[![green-leaf-mongo-spray](https://index.scala-lang.org/greenleafoss/green-leaf-mongo/green-leaf-mongo-spray/latest-by-scala-version.svg)](https://index.scala-lang.org/greenleafoss/green-leaf-mongo/green-leaf-mongo)
-[![green-leaf-mongo-play](https://index.scala-lang.org/greenleafoss/green-leaf-mongo/green-leaf-mongo-play/latest-by-scala-version.svg)](https://index.scala-lang.org/greenleafoss/green-leaf-mongo/green-leaf-mongo)
+[![green-leaf-mongo-core](https://index.scala-lang.org/greenleafoss/green-leaf-mongo/green-leaf-mongo-core/latest-by-scala-version.svg)](https://index.scala-lang.org/greenleafoss/green-leaf-mongo/green-leaf-mongo-core)
+[![green-leaf-mongo-spray](https://index.scala-lang.org/greenleafoss/green-leaf-mongo/green-leaf-mongo-spray/latest-by-scala-version.svg)](https://index.scala-lang.org/greenleafoss/green-leaf-mongo/green-leaf-mongo-spray)
+[![green-leaf-mongo-play](https://index.scala-lang.org/greenleafoss/green-leaf-mongo/green-leaf-mongo-play/latest-by-scala-version.svg)](https://index.scala-lang.org/greenleafoss/green-leaf-mongo/green-leaf-mongo-play)
 
 
 ## Short description
@@ -36,7 +36,7 @@ libraryDependencies += "io.github.greenleafoss" %% "green-leaf-mongo-play" % "3.
 `GreenLeafMongoJsonBasicFormats` based on DefaultJsonProtocol from Spray JSON and allows to override predefined JsonFormats to make possible use custom serialization in BSON format.
 This trait also includes a few additional JsonFormats for _LocalDate_, _LocalDateTime_, _ZonedDateTime_, _ObjectId_, _scala Enumeration_ and _UUID_.
 
-`PlayJsonProtocol` is a related extension for Play JSON library and `PlayJsonProtocol` for Spray JSON library. 
+`PlayJsonProtocol` is a related extension for the Play JSON library and `SprayJsonProtocol` for the Spray JSON library. 
 
 `SprayBsonProtocol`/`PlayBsonProtocol` extends related JsonProtocols and overrides _Int_, _Long_, _BigDecimal_, _LocalDate_, _LocalDateTime_, _ZonedDateTime_, _ObjectId_, _scala Enumeration_, _UUID_ and _Regex_ JSON formats to represent them in related BSON (MongoDB Extended JSON V2) formats https://www.mongodb.com/docs/manual/reference/mongodb-extended-json/#mongodb-extended-json-v2-usage.
 
@@ -131,7 +131,7 @@ More examples of queries available in **GreenLeafMongoFilterOpsSpec**.
 
 
 ## GreenLeafMongoDao
-`GreenLeafMongoDao` extends `GreenLeafMongoObservableToFutureOps` with `GreenLeafMongoFilterOps` and provides simple DSL to transform Mongo's _Observable[Document]_ instances to _Future[Seq[T]]_, _Future[Option[T]]_ and _Future[T]_.
+`GreenLeafMongoDao` extends `GreenLeafMongoFilterOps` with `GreenLeafMongoObservableToFutureOps` to provide a simple DSL to transform Mongo's _Observable[Document]_ instances to _Future[Seq[T]]_, _Future[Option[T]]_ and _Future[T]_.
 In addition, this trait provides many useful generic methods such as _insert_, _getById_, _findById_, _updateById_, _replaceById_ and others.
 `SprayMongoDao`/`PlayMongoDao` are related implementations for Spray and Play JSON libraries. 
 You can find more details and examples in the dao tests.
