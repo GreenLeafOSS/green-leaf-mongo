@@ -78,7 +78,15 @@ lazy val play = (project in file("play"))
   .settings(libraryDependencies += "com.typesafe.play" %% "play-json" % "2.10.1")
   .dependsOn(core % "compile->compile;test->test")
 
-lazy val extensions: Seq[ProjectReference] = List[ProjectReference](spray, play)
+lazy val circe = (project in file("circe"))
+  .settings(name := "green-leaf-mongo-circe")
+  .settings(commonSettings)
+  .settings(libraryDependencies += "io.circe" %% "circe-core" % "0.14.7")
+  .settings(libraryDependencies += "io.circe" %% "circe-generic" % "0.14.7")
+  .settings(libraryDependencies += "io.circe" %% "circe-parser" % "0.14.7")
+  .dependsOn(core % "compile->compile;test->test")
+
+lazy val extensions: Seq[ProjectReference] = List[ProjectReference](spray, play, circe)
 lazy val aggregated: Seq[ProjectReference] = List[ProjectReference](core) ++ extensions
 
 lazy val root = (project in file("."))
