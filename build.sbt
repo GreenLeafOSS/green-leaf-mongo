@@ -3,7 +3,7 @@
 // **************************************************
 
 lazy val commonSettings = Seq(
-  version              := "3.0",
+  version              := "3.1",
   description          :=
     """
         |This extension created on top of official MongoDB Scala Driver.
