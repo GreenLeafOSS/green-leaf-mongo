@@ -13,24 +13,17 @@ import org.mongodb.scala.bson.BsonDouble
 import org.mongodb.scala.bson.BsonInt32
 import org.mongodb.scala.bson.BsonInt64
 import org.mongodb.scala.bson.BsonNull
-import org.mongodb.scala.bson.BsonNumber
 import org.mongodb.scala.bson.BsonObjectId
 import org.mongodb.scala.bson.BsonString
 import org.mongodb.scala.bson.BsonValue
 import org.mongodb.scala.bson.ObjectId
 
-import org.bson.json.JsonMode
-import org.bson.json.JsonWriterSettings
-
 import java.time.ZonedDateTime
-import java.util.Date
 
 import scala.jdk.CollectionConverters.*
 import scala.language.implicitConversions
-import scala.util.chaining.*
 
 import play.api.libs.json.*
-import play.api.libs.json.given
 
 trait PlayJsonBsonOps extends GreenLeafJsonBsonOps:
 
@@ -83,6 +76,5 @@ trait PlayJsonBsonOps extends GreenLeafJsonBsonOps:
     case x: BsonDecimal128 => BigDecimal(x.decimal128Value().bigDecimalValue()).convertToJson
     case _: BsonNull       => JsNull
     case _                 => throw JsonBsonErr(s"Unknown input in BSON to JSON: $bson")
-
 
 object PlayJsonBsonOps extends PlayJsonBsonOps

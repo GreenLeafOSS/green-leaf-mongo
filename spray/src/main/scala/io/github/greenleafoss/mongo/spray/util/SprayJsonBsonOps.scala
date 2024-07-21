@@ -4,7 +4,6 @@ import io.github.greenleafoss.mongo.core.util.GreenLeafJsonBsonOps
 import io.github.greenleafoss.mongo.core.util.GreenLeafJsonBsonOps.JsonBsonErr
 import io.github.greenleafoss.mongo.core.util.ZonedDateTimeOps
 import io.github.greenleafoss.mongo.core.util.ZonedDateTimeOps.*
-import io.github.greenleafoss.mongo.spray.bson.SprayBsonProtocol
 
 import org.mongodb.scala.bson.BsonArray
 import org.mongodb.scala.bson.BsonBoolean
@@ -20,15 +19,10 @@ import org.mongodb.scala.bson.BsonString
 import org.mongodb.scala.bson.BsonValue
 import org.mongodb.scala.bson.ObjectId
 
-import org.bson.json.JsonMode
-import org.bson.json.JsonWriterSettings
-
 import java.time.ZonedDateTime
-import java.util.Date
 
 import scala.jdk.CollectionConverters.*
 import scala.language.implicitConversions
-import scala.util.chaining.*
 
 import spray.json.*
 import spray.json.DefaultJsonProtocol.*
@@ -50,8 +44,9 @@ trait SprayJsonBsonOps extends GreenLeafJsonBsonOps:
   extension [E: JsonFormat](e: E) override def convertToJson: Json = e.toJson
   extension (json: Json) override def convertTo[E: JsonFormat]: E  = json.convertTo[E]
 
-  import SprayBsonProtocol.*
-  import SprayBsonProtocol.given
+  import io.github.greenleafoss.mongo.spray.bson.SprayBsonProtocol.*
+  import io.github.greenleafoss.mongo.spray.bson.SprayBsonProtocol.given
+
   override protected def convertJsonToBson(json: Json): BsonValue = json match
     case JsObject(x) if x.contains($oid)           => BsonObjectId(json.convertTo[ObjectId])
     case JsObject(x) if x.contains($date)          => BsonDateTime(json.convertTo[ZonedDateTime].toEpochMilli)

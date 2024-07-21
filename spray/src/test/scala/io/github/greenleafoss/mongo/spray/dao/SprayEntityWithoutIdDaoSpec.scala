@@ -3,6 +3,7 @@ package io.github.greenleafoss.mongo.spray.dao
 import io.github.greenleafoss.mongo.core.dao.EntityWithoutIdDaoSpec
 import io.github.greenleafoss.mongo.core.dao.EntityWithoutIdDaoSpec.*
 import io.github.greenleafoss.mongo.core.dao.EntityWithoutIdDaoSpec.EventSource.EventSource
+
 import io.github.greenleafoss.mongo.spray.json.SprayJsonProtocol
 
 import spray.json.*

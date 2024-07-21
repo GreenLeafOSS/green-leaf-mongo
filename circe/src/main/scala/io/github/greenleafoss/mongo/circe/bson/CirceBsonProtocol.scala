@@ -1,7 +1,8 @@
 package io.github.greenleafoss.mongo.circe.bson
 
-import io.github.greenleafoss.mongo.circe.json.CirceJsonProtocol
 import io.github.greenleafoss.mongo.core.util.ZonedDateTimeOps.*
+
+import io.github.greenleafoss.mongo.circe.json.CirceJsonProtocol
 
 import org.mongodb.scala.bson.ObjectId
 

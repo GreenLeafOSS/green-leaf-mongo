@@ -1,8 +1,9 @@
 package io.github.greenleafoss.mongo.circe.filter
 
+import io.github.greenleafoss.mongo.core.filter.GreenLeafMongoFilterOpsSpec
+
 import io.github.greenleafoss.mongo.circe.bson.CirceBsonProtocol
 import io.github.greenleafoss.mongo.circe.util.CirceJsonBsonOps
-import io.github.greenleafoss.mongo.core.filter.GreenLeafMongoFilterOpsSpec
 
 import scala.language.implicitConversions
 

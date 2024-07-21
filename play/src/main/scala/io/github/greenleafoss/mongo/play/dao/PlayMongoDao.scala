@@ -1,6 +1,7 @@
 package io.github.greenleafoss.mongo.play.dao
 
 import io.github.greenleafoss.mongo.core.dao.GreenLeafMongoDao
+
 import io.github.greenleafoss.mongo.play.util.PlayJsonBsonOps
 
 import scala.concurrent.ExecutionContext

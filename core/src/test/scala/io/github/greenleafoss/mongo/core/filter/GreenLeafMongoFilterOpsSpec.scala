@@ -171,9 +171,6 @@ trait GreenLeafMongoFilterOpsSpec extends AnyWordSpec with Matchers with GreenLe
     "$exists" in:
       // https://mongodb.com/docs/manual/reference/operator/query/exists/
 
-      // https://mongodb.github.io/mongo-java-driver/4.10/driver-scala/builders/filters/
-      // and(exists("qty"), nin("qty", 5, 15))
-      //
       $and("qty" $exists true, "qty" $nin Seq(5, 15)) shouldBe
         """{ $and: [ { qty: {$exists: true} }, { qty: { $nin: [5,15] } } ] }""".parseBson
 

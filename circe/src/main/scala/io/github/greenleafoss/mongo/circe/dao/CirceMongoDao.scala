@@ -1,7 +1,8 @@
 package io.github.greenleafoss.mongo.circe.dao
 
-import io.github.greenleafoss.mongo.circe.util.CirceJsonBsonOps
 import io.github.greenleafoss.mongo.core.dao.GreenLeafMongoDao
+
+import io.github.greenleafoss.mongo.circe.util.CirceJsonBsonOps
 
 import scala.concurrent.ExecutionContext
 

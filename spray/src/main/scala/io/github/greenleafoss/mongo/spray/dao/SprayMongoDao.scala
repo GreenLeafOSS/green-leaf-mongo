@@ -1,6 +1,7 @@
 package io.github.greenleafoss.mongo.spray.dao
 
 import io.github.greenleafoss.mongo.core.dao.GreenLeafMongoDao
+
 import io.github.greenleafoss.mongo.spray.util.SprayJsonBsonOps
 
 import scala.concurrent.ExecutionContext
