@@ -3,11 +3,11 @@
 // **************************************************
 
 lazy val commonSettings = Seq(
-  version              := "3.0",
+  version              := "3.1",
   description          :=
     """
         |This extension created on top of official MongoDB Scala Driver.
-        |It allows to fully utilize Spray JSON and represents bidirectional serialization for case classes in BSON,
+        |It allows to fully utilize Spray, Play or Circe JSON and represents bidirectional serialization for case classes in BSON,
         |as well as flexible DSL for MongoDB query operators, documents and collections.
         |""".stripMargin,
   licenses             := List("Apache 2" -> new URL("https://www.apache.org/licenses/LICENSE-2.0.txt")),
@@ -50,11 +50,11 @@ lazy val commonSettings = Seq(
   scalafmtOnCompile                           := true,
   Test / parallelExecution                    := false,
   Test / fork                                 := true,
-  libraryDependencies += "org.slf4j"           % "slf4j-api"                 % "2.0.7",
-  libraryDependencies += "org.slf4j"           % "slf4j-simple"              % "2.0.7"  % Test,
+  libraryDependencies += "org.slf4j"           % "slf4j-api"                 % "2.0.12",
+  libraryDependencies += "org.slf4j"           % "slf4j-simple"              % "2.0.13" % Test,
   libraryDependencies += "de.flapdoodle.embed" % "de.flapdoodle.embed.mongo" % "3.5.4"  % Test,
-  libraryDependencies += "org.scalatest"      %% "scalatest"                 % "3.2.15" % Test,
-  libraryDependencies += "org.immutables"      % "value"                     % "2.9.2"  % Test
+  libraryDependencies += "org.scalatest"      %% "scalatest"                 % "3.2.18" % Test,
+  libraryDependencies += "org.immutables"      % "value"                     % "2.10.1" % Test
 )
 
 // **************************************************
@@ -64,7 +64,7 @@ lazy val commonSettings = Seq(
 lazy val core = (project in file("core"))
   .settings(name := "green-leaf-mongo-core")
   .settings(commonSettings)
-  .settings(libraryDependencies += "org.mongodb.scala" %% "mongo-scala-driver" % "4.9.0" cross CrossVersion.for3Use2_13)
+  .settings(libraryDependencies += "org.mongodb.scala" %% "mongo-scala-driver" % "5.1.2" cross CrossVersion.for3Use2_13)
 
 lazy val spray = (project in file("spray"))
   .settings(name := "green-leaf-mongo-spray")
@@ -75,10 +75,18 @@ lazy val spray = (project in file("spray"))
 lazy val play = (project in file("play"))
   .settings(name := "green-leaf-mongo-play")
   .settings(commonSettings)
-  .settings(libraryDependencies += "com.typesafe.play" %% "play-json" % "2.10.1")
+  .settings(libraryDependencies += "com.typesafe.play" %% "play-json" % "2.10.5")
   .dependsOn(core % "compile->compile;test->test")
 
-lazy val extensions: Seq[ProjectReference] = List[ProjectReference](spray, play)
+lazy val circe = (project in file("circe"))
+  .settings(name := "green-leaf-mongo-circe")
+  .settings(commonSettings)
+  .settings(libraryDependencies += "io.circe" %% "circe-core" % "0.14.7")
+  .settings(libraryDependencies += "io.circe" %% "circe-generic" % "0.14.7")
+  .settings(libraryDependencies += "io.circe" %% "circe-parser" % "0.14.7")
+  .dependsOn(core % "compile->compile;test->test")
+
+lazy val extensions: Seq[ProjectReference] = List[ProjectReference](spray, play, circe)
 lazy val aggregated: Seq[ProjectReference] = List[ProjectReference](core) ++ extensions
 
 lazy val root = (project in file("."))

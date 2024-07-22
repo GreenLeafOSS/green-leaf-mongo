@@ -1,6 +1,7 @@
 package io.github.greenleafoss.mongo.spray.bson
 
 import io.github.greenleafoss.mongo.core.util.ZonedDateTimeOps.*
+
 import io.github.greenleafoss.mongo.spray.json.SprayJsonProtocol
 
 import org.mongodb.scala.bson.ObjectId

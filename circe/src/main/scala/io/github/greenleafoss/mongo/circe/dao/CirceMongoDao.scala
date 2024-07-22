@@ -1,14 +1,14 @@
-package io.github.greenleafoss.mongo.play.dao
+package io.github.greenleafoss.mongo.circe.dao
 
 import io.github.greenleafoss.mongo.core.dao.GreenLeafMongoDao
 
-import io.github.greenleafoss.mongo.play.util.PlayJsonBsonOps
+import io.github.greenleafoss.mongo.circe.util.CirceJsonBsonOps
 
 import scala.concurrent.ExecutionContext
 
-trait PlayMongoDao[Id, E](
+trait CirceMongoDao[Id, E](
     using
     override protected val ec: ExecutionContext)
   extends GreenLeafMongoDao[Id, E]
-  with PlayMongoDaoProtocol[Id, E]
-  with PlayJsonBsonOps
+  with CirceMongoDaoProtocol[Id, E]
+  with CirceJsonBsonOps

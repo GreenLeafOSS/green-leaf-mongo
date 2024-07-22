@@ -271,6 +271,7 @@ trait GreenLeafMongoFilterOpsSpec extends AnyWordSpec with Matchers with GreenLe
     "$elemMatch" in:
       // https://mongodb.com/docs/manual/reference/operator/query/elemMatch/
 
+      // { results: { $elemMatch: { product: "xyz", score: { $gte: 8 } } } }
       ("results" $elemMatch $and("product" $eq "xyz", "score" $gte 8)) shouldBe
         """{ results: { $elemMatch: { $and: [ { product: { $eq: "xyz" } }, { score: { $gte : 8 } }] } } }""".parseBson
 

@@ -2,6 +2,7 @@ package io.github.greenleafoss.mongo.play.json
 
 import io.github.greenleafoss.mongo.core.json.GreenLeafMongoJsonBasicFormats
 import io.github.greenleafoss.mongo.core.util.ZonedDateTimeOps
+
 import io.github.greenleafoss.mongo.play.util.PlayJsonBsonOps
 
 import org.mongodb.scala.bson.ObjectId
@@ -13,6 +14,7 @@ import java.util.UUID
 
 import play.api.libs.json.*
 import play.api.libs.json.given
+
 trait PlayJsonProtocol extends GreenLeafMongoJsonBasicFormats with PlayJsonBsonOps:
 
   override protected def formatInt: JsonFormat[Int] = Format(Reads.IntReads, Writes.IntWrites)

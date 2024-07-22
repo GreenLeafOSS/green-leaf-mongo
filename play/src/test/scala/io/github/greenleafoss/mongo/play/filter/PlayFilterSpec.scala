@@ -1,6 +1,7 @@
 package io.github.greenleafoss.mongo.play.filter
 
 import io.github.greenleafoss.mongo.core.filter.GreenLeafMongoFilterOpsSpec
+
 import io.github.greenleafoss.mongo.play.bson.PlayBsonProtocol
 import io.github.greenleafoss.mongo.play.util.PlayJsonBsonOps
 

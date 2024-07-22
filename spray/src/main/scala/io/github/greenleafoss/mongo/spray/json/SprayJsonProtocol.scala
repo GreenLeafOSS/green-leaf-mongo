@@ -4,6 +4,7 @@ import io.github.greenleafoss.mongo.core.json.GreenLeafMongoJsonBasicFormats
 import io.github.greenleafoss.mongo.core.util.LocalDateOps.*
 import io.github.greenleafoss.mongo.core.util.LocalDateTimeOps.*
 import io.github.greenleafoss.mongo.core.util.ZonedDateTimeOps.*
+
 import io.github.greenleafoss.mongo.spray.util.SprayJsonBsonOps
 
 import org.mongodb.scala.bson.ObjectId
