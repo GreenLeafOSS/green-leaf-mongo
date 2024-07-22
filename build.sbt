@@ -7,7 +7,7 @@ lazy val commonSettings = Seq(
   description          :=
     """
         |This extension created on top of official MongoDB Scala Driver.
-        |It allows to fully utilize Spray JSON and represents bidirectional serialization for case classes in BSON,
+        |It allows to fully utilize Spray, Play or Circe JSON and represents bidirectional serialization for case classes in BSON,
         |as well as flexible DSL for MongoDB query operators, documents and collections.
         |""".stripMargin,
   licenses             := List("Apache 2" -> new URL("https://www.apache.org/licenses/LICENSE-2.0.txt")),
